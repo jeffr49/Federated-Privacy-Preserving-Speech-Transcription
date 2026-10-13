@@ -45,6 +45,16 @@ try:
 except ImportError:
     HAVE_GRADIO = False
 
+try:
+    import spaces
+
+    @spaces.GPU
+    def _zerogpu_probe():
+        """Satisfies ZeroGPU startup check if running on ZeroGPU hardware."""
+        return True
+except Exception:
+    pass
+
 log = logging.getLogger("fl-server")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
