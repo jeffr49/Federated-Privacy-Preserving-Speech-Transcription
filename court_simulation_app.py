@@ -37,8 +37,19 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-# Setup sys.path to find local modules
+# ROOT_DIR must be defined first — used by dotenv loader and sys.path setup
 ROOT_DIR = Path(__file__).resolve().parent
+
+# Load .env so HF_TOKEN (and other secrets) are injected before any HF calls
+try:
+    from dotenv import load_dotenv
+    _env_path = ROOT_DIR / ".env"
+    if _env_path.exists():
+        load_dotenv(dotenv_path=_env_path, override=False)
+except ImportError:
+    pass  # python-dotenv not installed; rely on shell env
+
+# Setup sys.path to find local modules
 if str(ROOT_DIR / "training_scripts") not in sys.path:
     sys.path.insert(0, str(ROOT_DIR / "training_scripts"))
 if str(ROOT_DIR / "server") not in sys.path:
