@@ -39,6 +39,12 @@ from fastapi.responses import HTMLResponse, Response
 import aggregator as agg
 from store import ADAPTER_FILES, make_store
 
+try:
+    import gradio as gr
+    HAVE_GRADIO = True
+except ImportError:
+    HAVE_GRADIO = False
+
 log = logging.getLogger("fl-server")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
@@ -106,7 +112,6 @@ t();setInterval(t,5000);</script></body></html>"""
 def create_app(cfg: Optional[Config] = None, store=None) -> FastAPI:
     cfg = cfg or Config.from_env()
     store = store or make_store(cfg)
-    app = FastAPI(title="Federated Court ASR aggregator")
 
     agg_lock = threading.Lock()
     state: dict = {"last_aggregation": None, "ref_version": None, "ref_state": None}
@@ -208,10 +213,51 @@ def create_app(cfg: Optional[Config] = None, store=None) -> FastAPI:
         finally:
             agg_lock.release()
 
-    # ------------------------------------------------------------------ routes
-    @app.get("/", response_class=HTMLResponse)
-    def dashboard():
-        return DASHBOARD_HTML
+    # ------------------------------------------------------------------ routes & ui
+    if HAVE_GRADIO:
+        def get_dashboard_data():
+            try:
+                cur = store.read_version()
+                v = cur.get("version", 0)
+                pending = len(store.pending_clients(int(v)))
+                return f"v{v}", f"{pending} / {cfg.min_clients} needed", str(state["last_aggregation"] or "None yet")
+            except Exception as e:
+                return "Error", str(e), str(e)
+
+        with gr.Blocks(title="⚖️ Federated Court ASR Aggregator") as demo:
+            gr.Markdown("# ⚖️ Federated Court ASR Aggregator")
+            gr.Markdown(
+                "Central aggregation hub for regional Tamil Nadu court devices. "
+                "**Zero audio or transcripts ever reach this server** — only L2-clipped LoRA adapter deltas."
+            )
+            with gr.Row():
+                ver_box = gr.Textbox(label="Promoted Adapter Version", value="Loading...", interactive=False)
+                pending_box = gr.Textbox(label="Pending Court Submissions", value="Loading...", interactive=False)
+                last_box = gr.Textbox(label="Last Aggregation", value="Loading...", interactive=False)
+
+            refresh_btn = gr.Button("🔄 Refresh Status")
+            refresh_btn.click(get_dashboard_data, outputs=[ver_box, pending_box, last_box])
+            demo.load(get_dashboard_data, outputs=[ver_box, pending_box, last_box])
+
+            with gr.Accordion("Admin Controls", open=False):
+                admin_key_in = gr.Textbox(label="Admin API Key", type="password")
+                force_btn = gr.Button("⚡ Force Aggregation Round Now")
+                admin_out = gr.JSON(label="Result")
+
+                def do_force(k):
+                    if not cfg.admin_api_key or not _safe_eq(cfg.admin_api_key, k):
+                        return {"error": "Invalid admin API key"}
+                    return maybe_aggregate(force=True)
+
+                force_btn.click(do_force, inputs=[admin_key_in], outputs=[admin_out])
+
+        app = demo.app
+    else:
+        app = FastAPI(title="Federated Court ASR aggregator")
+
+        @app.get("/", response_class=HTMLResponse)
+        def dashboard():
+            return DASHBOARD_HTML
 
     @app.get("/healthz")
     def healthz():
@@ -276,5 +322,9 @@ def create_app(cfg: Optional[Config] = None, store=None) -> FastAPI:
     return app
 
 
-# `uvicorn app:app` entrypoint. Config comes from environment variables (see README).
+# Entrypoint for uvicorn or python app.py on port 7860 (Hugging Face default)
 app = create_app() if os.environ.get("FL_SERVER_AUTOSTART", "1") == "1" else None
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app:app", host="0.0.0.0", port=7860, reload=False)

@@ -81,9 +81,9 @@ private repo (AI4Bharat releases can be research-only). **Never real court recor
 ### 3. Deploy the aggregation server (Hugging Face Space)
 ```bash
 python scripts/issue_client_keys.py court-chennai court-madurai court-coimbatore   # prints secrets
-# Create a Space: SDK = Docker, hardware = CPU basic (free). Then:
+# Create a Space: SDK = Gradio (Free), template = Blank, hardware = CPU basic (free). Then:
 git clone https://huggingface.co/spaces/<user>/court-asr-aggregator
-cp server/{Dockerfile,README.md,requirements.txt,app.py,aggregator.py,store.py} court-asr-aggregator/
+cp server/{README.md,requirements.txt,app.py,aggregator.py,store.py} court-asr-aggregator/
 cd court-asr-aggregator && git add . && git commit -m "deploy" && git push
 ```
 In the Space → Settings:
