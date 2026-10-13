@@ -20,3 +20,5 @@ fastapi>=0.110
 uvicorn[standard]>=0.29
 python-multipart>=0.0.9
 jiwer>=3.0
+torchvision
+
