@@ -46,7 +46,7 @@ except ImportError:
     HAVE_GRADIO = False
 
 try:
-    import spaces
+    import spaces  # type: ignore[import-untyped]  # only available on HF ZeroGPU runtime
 
     @spaces.GPU
     def _zerogpu_probe():
