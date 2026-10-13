@@ -1,9 +1,44 @@
+# Environment & Secret files
 .env
+.env.local
+.env.*.local
+*.env
+
+# Python caches & virtual environments
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+
+# Node & Next.js frontend builds
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+out/
+frontend/out/
+build/
+frontend/build/
+.turbo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Federated learning local caches & artifacts
 fl_cache/
 local_store/
 promote_out/
 demo_run*/
 fl_runs/
+*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Explicit inclusions
 !sample_audio/*.wav

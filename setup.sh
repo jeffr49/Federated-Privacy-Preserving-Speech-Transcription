@@ -111,15 +111,20 @@ success "All dependencies installed."
 
 # -- 5. Verify core imports ---------------------------------------------------
 info "Verifying key imports..."
-python -c "import streamlit, transformers, peft, librosa, safetensors" \
+python -c "import fastapi, uvicorn, transformers, peft, librosa, safetensors" \
     && success "All imports OK." \
     || error "Import check failed -- see output above for details."
 
-# -- 6. Launch ----------------------------------------------------------------
-echo ""
-echo "Setup complete! Launching the Court ASR Simulation..."
-echo "Open http://localhost:8501 in your browser"
-echo "Press Ctrl+C to stop."
-echo ""
+# -- 6. Install Frontend Dependencies ------------------------------------------
+info "Installing Next.js frontend dependencies..."
+cd frontend && npm install && cd ..
+success "Frontend dependencies ready."
 
-streamlit run court_simulation_app.py
+# -- 7. Launch Instructions ---------------------------------------------------
+echo ""
+echo "Setup complete!"
+echo "To start the application:"
+echo "  1. Backend API:  uvicorn backend.api:app --port 8080 --reload"
+echo "  2. Frontend UI:  cd frontend && npm run dev"
+echo "  3. Open:         http://localhost:3000 in your browser"
+echo ""

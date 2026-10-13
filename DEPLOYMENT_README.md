@@ -27,7 +27,8 @@ promotes a new adapter only if it doesn't regress on a held-out set.
 
 | Path | Purpose |
 |---|---|
-| `court_simulation_app.py` | Court-device & review panel UI: live Whisper-LoRA transcription, clerk feedback loop, animated visual FL flow |
+| `frontend/` | Premium Next.js App Router UI: live Whisper-LoRA transcription, clerk feedback loop, animated visual FL flow |
+| `backend/api.py` | FastAPI backend service exposing REST endpoints for the Next.js frontend |
 | `fl_client_sync.py` | HTTP client for court devices: pulls promoted adapter, submits clipped deltas to aggregation server |
 | `demo_fl_rl_live.py` | CLI live demonstration: clerk correction SFT loop + simulated FedAvg rounds |
 | `server/` | Aggregation service (FastAPI, Dockerfile + HF Space deployment card) |
@@ -104,10 +105,10 @@ pip install -r requirements.txt
 export FL_SERVER_URL=https://<user>-court-asr-aggregator.hf.space
 export FL_CLIENT_ID=court-chennai
 export FL_API_KEY=<that court's key>
-streamlit run court_simulation_app.py      # sidebar: "Hosted federation" -> Load model
+python -m uvicorn backend.api:app --port 8080    # Starts backend API
+cd frontend && npm run dev                       # Starts Next.js UI on http://localhost:3000
 ```
-Each court uses **its own key**. Three courts on one machine works for a demo: run three Streamlit processes on
-different ports (`--server.port 8501/8502/8503`) with different `FL_CLIENT_ID`/`FL_API_KEY`.
+Each court uses **its own key**. Three courts on one machine works for a demo: run instances with different `FL_CLIENT_ID`/`FL_API_KEY`.
 
 ## Smoke test, in this order
 1. **Local, no accounts** (proves the code on your machine before any cloud):

@@ -98,15 +98,22 @@ Success "All dependencies installed."
 
 # -- 5. Verify core imports ---------------------------------------------------
 Info "Verifying key imports..."
-python -c "import streamlit, transformers, peft, librosa, safetensors"
+python -c "import fastapi, uvicorn, transformers, peft, librosa, safetensors"
 if ($LASTEXITCODE -ne 0) { Err "Import check failed -- see output above." }
 Success "All imports OK."
 
-# -- 6. Launch ----------------------------------------------------------------
-Write-Host ""
-Write-Host "Setup complete! Launching the Court ASR Simulation..." -ForegroundColor Green
-Write-Host "Open http://localhost:8501 in your browser" -ForegroundColor Cyan
-Write-Host "Press Ctrl+C to stop." -ForegroundColor Cyan
-Write-Host ""
+# -- 6. Install Frontend Dependencies ------------------------------------------
+Info "Installing Next.js frontend dependencies..."
+Push-Location frontend
+npm install
+Pop-Location
+Success "Frontend dependencies ready."
 
-streamlit run court_simulation_app.py
+# -- 7. Launch Instructions ---------------------------------------------------
+Write-Host ""
+Write-Host "Setup complete!" -ForegroundColor Green
+Write-Host "To start the application:" -ForegroundColor Cyan
+Write-Host "  1. Backend API:  uvicorn backend.api:app --port 8080 --reload" -ForegroundColor Yellow
+Write-Host "  2. Frontend UI:  cd frontend; npm run dev" -ForegroundColor Yellow
+Write-Host "  3. Open:         http://localhost:3000 in your browser" -ForegroundColor Cyan
+Write-Host ""

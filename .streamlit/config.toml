@@ -1,8 +1,0 @@
-[server]
-headless = false
-runOnSave = true
-fileWatcherType = "poll"
-
-[client]
-toolbarMode = "minimal"
-showErrorDetails = true
