@@ -1,0 +1,19 @@
+{
+  "finished": "2026-09-23T01:53:03",
+  "train_minutes_this_session": 808.3305520733197,
+  "global_step": 27520,
+  "epochs_completed": 10.0,
+  "best_eval_wer_subset": 41.58461824261564,
+  "best_checkpoint": "runs\\whisper-small_lora_r32\\checkpoints\\checkpoint-27520",
+  "peak_gpu_mem_gb": 8.753790855407715,
+  "per_device_batch": 8,
+  "grad_accum": 2,
+  "grad_checkpointing": false,
+  "train_metrics": {
+    "train_runtime": 48499.5427,
+    "train_samples_per_second": 9.076,
+    "train_steps_per_second": 0.567,
+    "train_loss": 0.39293182772952456,
+    "epoch": 10.0
+  }
+}

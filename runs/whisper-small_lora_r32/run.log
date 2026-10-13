@@ -1,0 +1,1319 @@
+[2026-09-22 12:13:03] ===== START whisper-small_lora_r32 ===== argv: --data-root D:\Refuse\dataset\tamil_fl_data --benchmark
+[2026-09-22 12:13:03] Windows keep-awake enabled.
+[2026-09-22 12:13:04] GPU: NVIDIA RTX 2000 Ada Generation | compute 8.9 | 16.0 GB | bf16=yes
+[2026-09-22 12:13:04] torch 2.14.0+cu130 | transformers 5.17.0 | peft 0.21.0
+[2026-09-22 12:13:04] Free disk space at output dir: 1843.4 GB
+[2026-09-22 12:13:04] Total rows: 62917
+split
+train    44061
+test      9982
+valid     8874
+[2026-09-22 12:13:05] Audio probe OK.
+[2026-09-22 12:13:05] After train cap of 15.0h/district:
+split
+train    44061
+test      9982
+valid     8874
+[2026-09-22 12:13:10] Measuring label lengths (tokens)...
+[2026-09-22 12:13:18] Length filter (<= 448 tokens): dropped 67 of 62917 rows.
+[2026-09-22 12:13:18] Label length in tokens: p50=121  p95=286  p99=359  max=448  -> generation cap = 395
+[2026-09-22 12:13:18] NOTE: the Kaggle notebook used generation_max_length=100, but 61.8% of references are longer than 100 tokens -> its eval WER was inflated by truncated hypotheses.
+[2026-09-22 12:13:18] Train: 44019 | Valid (full): 8862 | in-training eval subset: 600
+Loading weights:   0%|                                                                                                                                                    | 0/479 [00:00<?, ?it/s]Loading weights:   6%|████████▎                                                                                                                                 | 29/479 [00:00<00:01, 256.25it/s]Loading weights:  13%|██████████████████▏                                                                                                                       | 63/479 [00:00<00:01, 300.22it/s]Loading weights:  20%|███████████████████████████                                                                                                               | 94/479 [00:00<00:01, 245.43it/s]Loading weights:  26%|███████████████████████████████████▏                                                                                                     | 123/479 [00:00<00:01, 259.13it/s]Loading weights: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 479/479 [00:00<00:00, 849.23it/s]
+trainable params: 3,538,944 || all params: 245,273,856 || trainable%: 1.4429
+[2026-09-22 12:13:31] TRAIN attempt: per-device batch=8 x accum=2 (effective 16), grad-checkpointing=False, bf16, steps/epoch=2752, eval/save every 1376 steps
+[progress] step 10/40 | epoch 0.00 | loss 2.6326 | lr 9.00e-05 | elapsed 0.01h | ETA 0.04h
+{'loss': '2.633', 'grad_norm': '3.087', 'learning_rate': '9e-05', 'epoch': '0.003634'}
+[progress] step 20/40 | epoch 0.01 | loss 2.0688 | lr 1.90e-04 | elapsed 0.02h | ETA 0.02h
+{'loss': '2.069', 'grad_norm': '1.576', 'learning_rate': '0.00019', 'epoch': '0.007269'}
+[progress] step 30/40 | epoch 0.01 | loss 1.6034 | lr 2.90e-04 | elapsed 0.02h | ETA 0.01h
+{'loss': '1.603', 'grad_norm': '1.502', 'learning_rate': '0.00029', 'epoch': '0.0109'}
+[progress] step 40/40 | epoch 0.01 | loss 1.5217 | lr 3.90e-04 | elapsed 0.03h | ETA 0.00h
+{'loss': '1.522', 'grad_norm': '1.544', 'learning_rate': '0.00039', 'epoch': '0.01454'}
+{'train_runtime': '91.67', 'train_samples_per_second': '6.981', 'train_steps_per_second': '0.436', 'train_loss': '1.957', 'epoch': '0.01454'}
+[2026-09-22 12:15:36] (benchmark eval timing skipped: Input type (float) and bias type (struct c10::BFloat16) should be the same)
+
+================ BENCHMARK RESULT ================
+Config that fits : per-device batch 8 x accum 2, grad-checkpointing=False
+Peak GPU memory  : 7.82 GB
+Speed            : 1.45 s / optimizer step (11.0 samples/s)
+Steps per epoch  : 2752  ->  67 min / epoch (training only)
+In-training eval : ~nan min per eval on 600 rows x 2 per epoch
+    5 epochs  ->  ~  nan h
+    8 epochs  ->  ~  nan h
+   10 epochs  ->  ~  nan h
+   15 epochs  ->  ~  nan h
+   20 epochs  ->  ~  nan h
+(First 10 steps are excluded; real speed can drift lower if the laptop heats up.)
+===================================================
+
+[2026-09-22 12:18:44] ===== START whisper-small_lora_r32 ===== argv: --data-root D:\Refuse\dataset\tamil_fl_data --benchmark
+[2026-09-22 12:18:44] Windows keep-awake enabled.
+[2026-09-22 12:18:44] GPU: NVIDIA RTX 2000 Ada Generation | compute 8.9 | 16.0 GB | bf16=yes
+[2026-09-22 12:18:44] torch 2.14.0+cu130 | transformers 5.17.0 | peft 0.21.0
+[2026-09-22 12:18:44] Free disk space at output dir: 1843.4 GB
+[2026-09-22 12:18:44] Total rows: 62917
+split
+train    44061
+test      9982
+valid     8874
+[2026-09-22 12:18:44] Audio probe OK.
+[2026-09-22 12:18:44] After train cap of 15.0h/district:
+split
+train    44061
+test      9982
+valid     8874
+[2026-09-22 12:18:48] Measuring label lengths (tokens)...
+[2026-09-22 12:18:55] Length filter (<= 448 tokens): dropped 67 of 62917 rows.
+[2026-09-22 12:18:55] Label length in tokens: p50=121  p95=286  p99=359  max=448  -> generation cap = 395
+[2026-09-22 12:18:55] NOTE: the Kaggle notebook used generation_max_length=100, but 61.8% of references are longer than 100 tokens -> its eval WER was inflated by truncated hypotheses.
+[2026-09-22 12:18:55] Train: 44019 | Valid (full): 8862 | in-training eval subset: 600
+Loading weights:   0%|                                                                                                                                                    | 0/479 [00:00<?, ?it/s]Loading weights:  12%|████████████████▋                                                                                                                         | 58/479 [00:00<00:00, 555.70it/s]Loading weights:  24%|████████████████████████████████▌                                                                                                        | 114/479 [00:00<00:00, 426.25it/s]Loading weights:  33%|█████████████████████████████████████████████▍                                                                                           | 159/479 [00:00<00:00, 361.34it/s]Loading weights:  41%|████████████████████████████████████████████████████████▎                                                                                | 197/479 [00:00<00:00, 344.64it/s]Loading weights: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 479/479 [00:00<00:00, 890.66it/s]
+trainable params: 3,538,944 || all params: 245,273,856 || trainable%: 1.4429
+[2026-09-22 12:18:58] TRAIN attempt: per-device batch=8 x accum=2 (effective 16), grad-checkpointing=False, bf16, steps/epoch=2752, eval/save every 1376 steps
+[progress] step 10/40 | epoch 0.00 | loss 2.6338 | lr 9.00e-05 | elapsed 0.01h | ETA 0.04h
+{'loss': '2.634', 'grad_norm': '2.946', 'learning_rate': '9e-05', 'epoch': '0.003634'}
+[progress] step 20/40 | epoch 0.01 | loss 2.0721 | lr 1.90e-04 | elapsed 0.02h | ETA 0.02h
+{'loss': '2.072', 'grad_norm': '1.588', 'learning_rate': '0.00019', 'epoch': '0.007269'}
+[progress] step 30/40 | epoch 0.01 | loss 1.6060 | lr 2.90e-04 | elapsed 0.02h | ETA 0.01h
+{'loss': '1.606', 'grad_norm': '1.437', 'learning_rate': '0.00029', 'epoch': '0.0109'}
+[progress] step 40/40 | epoch 0.01 | loss 1.5228 | lr 3.90e-04 | elapsed 0.02h | ETA 0.00h
+{'loss': '1.523', 'grad_norm': '1.581', 'learning_rate': '0.00039', 'epoch': '0.01454'}
+{'train_runtime': '86.42', 'train_samples_per_second': '7.406', 'train_steps_per_second': '0.463', 'train_loss': '1.959', 'epoch': '0.01454'}
+{'eval_loss': '0.6843', 'eval_wer': '83.18', 'eval_cer': '37.97', 'eval_runtime': '90.93', 'eval_samples_per_second': '1.056', 'eval_steps_per_second': '0.066', 'epoch': '0.01454'}
+[eval] step 40 epoch 0.01 | WER 83.18 | CER 37.97 | loss 0.6843
+
+================ BENCHMARK RESULT ================
+Config that fits : per-device batch 8 x accum 2, grad-checkpointing=False
+Peak GPU memory  : 8.75 GB
+Speed            : 1.47 s / optimizer step (10.9 samples/s)
+Steps per epoch  : 2752  ->  68 min / epoch (training only)
+In-training eval : ~9.5 min per eval on 600 rows x 2 per epoch
+    5 epochs  ->  ~  7.2 h
+    8 epochs  ->  ~ 11.5 h
+   10 epochs  ->  ~ 14.4 h
+   15 epochs  ->  ~ 21.6 h
+   20 epochs  ->  ~ 28.8 h
+(First 10 steps are excluded; real speed can drift lower if the laptop heats up.)
+===================================================
+
+[2026-09-22 12:24:28] ===== START whisper-small_lora_r32 ===== argv: --data-root D:\Refuse\dataset\tamil_fl_data --epochs 10
+[2026-09-22 12:24:28] Windows keep-awake enabled.
+[2026-09-22 12:24:28] GPU: NVIDIA RTX 2000 Ada Generation | compute 8.9 | 16.0 GB | bf16=yes
+[2026-09-22 12:24:28] torch 2.14.0+cu130 | transformers 5.17.0 | peft 0.21.0
+[2026-09-22 12:24:28] Free disk space at output dir: 1843.4 GB
+[2026-09-22 12:24:28] Total rows: 62917
+split
+train    44061
+test      9982
+valid     8874
+[2026-09-22 12:24:28] Audio probe OK.
+[2026-09-22 12:24:28] After train cap of 15.0h/district:
+split
+train    44061
+test      9982
+valid     8874
+[2026-09-22 12:24:32] Measuring label lengths (tokens)...
+[2026-09-22 12:24:40] Length filter (<= 448 tokens): dropped 67 of 62917 rows.
+[2026-09-22 12:24:40] Label length in tokens: p50=121  p95=286  p99=359  max=448  -> generation cap = 395
+[2026-09-22 12:24:40] NOTE: the Kaggle notebook used generation_max_length=100, but 61.8% of references are longer than 100 tokens -> its eval WER was inflated by truncated hypotheses.
+[2026-09-22 12:24:40] Train: 44019 | Valid (full): 8862 | in-training eval subset: 600
+Loading weights:   0%|                                                                                                                                                    | 0/479 [00:00<?, ?it/s]Loading weights:   8%|██████████▉                                                                                                                               | 38/479 [00:00<00:01, 370.69it/s]Loading weights:  16%|█████████████████████▉                                                                                                                    | 76/479 [00:00<00:01, 319.36it/s]Loading weights:  23%|███████████████████████████████▏                                                                                                         | 109/479 [00:00<00:01, 296.00it/s]Loading weights:  29%|███████████████████████████████████████▊                                                                                                 | 139/479 [00:00<00:01, 275.25it/s]Loading weights: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 479/479 [00:00<00:00, 974.33it/s]
+trainable params: 3,538,944 || all params: 245,273,856 || trainable%: 1.4429
+[2026-09-22 12:24:42] TRAIN attempt: per-device batch=8 x accum=2 (effective 16), grad-checkpointing=False, bf16, steps/epoch=2752, eval/save every 1376 steps
+[progress] step 50/27520 | epoch 0.02 | loss 1.8538 | lr 4.90e-04 | elapsed 0.03h | ETA 15.79h
+{'loss': '1.854', 'grad_norm': '1.512', 'learning_rate': '0.00049', 'epoch': '0.01817'}
+[progress] step 100/27520 | epoch 0.04 | loss 1.1640 | lr 9.90e-04 | elapsed 0.05h | ETA 13.64h
+{'loss': '1.164', 'grad_norm': '1.203', 'learning_rate': '0.00099', 'epoch': '0.03634'}
+[progress] step 150/27520 | epoch 0.05 | loss 0.9136 | lr 9.98e-04 | elapsed 0.07h | ETA 12.88h
+{'loss': '0.9136', 'grad_norm': '1.422', 'learning_rate': '0.0009982', 'epoch': '0.05452'}
+[progress] step 200/27520 | epoch 0.07 | loss 0.8860 | lr 9.96e-04 | elapsed 0.09h | ETA 12.49h
+{'loss': '0.886', 'grad_norm': '1.392', 'learning_rate': '0.0009964', 'epoch': '0.07269'}
+[progress] step 250/27520 | epoch 0.09 | loss 0.8623 | lr 9.95e-04 | elapsed 0.11h | ETA 12.25h
+{'loss': '0.8623', 'grad_norm': '1.345', 'learning_rate': '0.0009946', 'epoch': '0.09086'}
+[progress] step 300/27520 | epoch 0.11 | loss 0.8013 | lr 9.93e-04 | elapsed 0.13h | ETA 12.09h
+{'loss': '0.8013', 'grad_norm': '1.173', 'learning_rate': '0.0009927', 'epoch': '0.109'}
+[progress] step 350/27520 | epoch 0.13 | loss 0.7807 | lr 9.91e-04 | elapsed 0.15h | ETA 11.97h
+{'loss': '0.7807', 'grad_norm': '1.216', 'learning_rate': '0.0009909', 'epoch': '0.1272'}
+[progress] step 400/27520 | epoch 0.15 | loss 0.7688 | lr 9.89e-04 | elapsed 0.17h | ETA 11.86h
+{'loss': '0.7688', 'grad_norm': '1.206', 'learning_rate': '0.0009891', 'epoch': '0.1454'}
+[progress] step 450/27520 | epoch 0.16 | loss 0.7630 | lr 9.87e-04 | elapsed 0.20h | ETA 11.79h
+{'loss': '0.763', 'grad_norm': '1.388', 'learning_rate': '0.0009873', 'epoch': '0.1635'}
+[progress] step 500/27520 | epoch 0.18 | loss 0.7524 | lr 9.85e-04 | elapsed 0.22h | ETA 11.73h
+{'loss': '0.7524', 'grad_norm': '1.177', 'learning_rate': '0.0009854', 'epoch': '0.1817'}
+[progress] step 550/27520 | epoch 0.20 | loss 0.7346 | lr 9.84e-04 | elapsed 0.24h | ETA 11.67h
+{'loss': '0.7346', 'grad_norm': '1.277', 'learning_rate': '0.0009836', 'epoch': '0.1999'}
+[progress] step 600/27520 | epoch 0.22 | loss 0.7183 | lr 9.82e-04 | elapsed 0.26h | ETA 11.62h
+{'loss': '0.7183', 'grad_norm': '1.323', 'learning_rate': '0.0009818', 'epoch': '0.2181'}
+[progress] step 650/27520 | epoch 0.24 | loss 0.7192 | lr 9.80e-04 | elapsed 0.28h | ETA 11.57h
+{'loss': '0.7192', 'grad_norm': '1.25', 'learning_rate': '0.00098', 'epoch': '0.2362'}
+[progress] step 700/27520 | epoch 0.25 | loss 0.6921 | lr 9.78e-04 | elapsed 0.30h | ETA 11.53h
+{'loss': '0.6921', 'grad_norm': '1.194', 'learning_rate': '0.0009782', 'epoch': '0.2544'}
+[progress] step 750/27520 | epoch 0.27 | loss 0.7396 | lr 9.76e-04 | elapsed 0.32h | ETA 11.48h
+{'loss': '0.7396', 'grad_norm': '1.314', 'learning_rate': '0.0009763', 'epoch': '0.2726'}
+[progress] step 800/27520 | epoch 0.29 | loss 0.7056 | lr 9.75e-04 | elapsed 0.34h | ETA 11.44h
+{'loss': '0.7056', 'grad_norm': '1.269', 'learning_rate': '0.0009745', 'epoch': '0.2908'}
+[progress] step 850/27520 | epoch 0.31 | loss 0.7137 | lr 9.73e-04 | elapsed 0.36h | ETA 11.40h
+{'loss': '0.7137', 'grad_norm': '1.337', 'learning_rate': '0.0009727', 'epoch': '0.3089'}
+[progress] step 900/27520 | epoch 0.33 | loss 0.6793 | lr 9.71e-04 | elapsed 0.38h | ETA 11.36h
+{'loss': '0.6793', 'grad_norm': '1.237', 'learning_rate': '0.0009709', 'epoch': '0.3271'}
+[progress] step 950/27520 | epoch 0.35 | loss 0.6872 | lr 9.69e-04 | elapsed 0.40h | ETA 11.32h
+{'loss': '0.6872', 'grad_norm': '1.289', 'learning_rate': '0.000969', 'epoch': '0.3453'}
+[progress] step 1000/27520 | epoch 0.36 | loss 0.6782 | lr 9.67e-04 | elapsed 0.43h | ETA 11.29h
+{'loss': '0.6782', 'grad_norm': '1.115', 'learning_rate': '0.0009672', 'epoch': '0.3634'}
+[progress] step 1050/27520 | epoch 0.38 | loss 0.6799 | lr 9.65e-04 | elapsed 0.45h | ETA 11.26h
+{'loss': '0.6799', 'grad_norm': '1.535', 'learning_rate': '0.0009654', 'epoch': '0.3816'}
+[progress] step 1100/27520 | epoch 0.40 | loss 0.6412 | lr 9.64e-04 | elapsed 0.47h | ETA 11.23h
+{'loss': '0.6412', 'grad_norm': '1.204', 'learning_rate': '0.0009636', 'epoch': '0.3998'}
+[progress] step 1150/27520 | epoch 0.42 | loss 0.6777 | lr 9.62e-04 | elapsed 0.49h | ETA 11.20h
+{'loss': '0.6777', 'grad_norm': '1.333', 'learning_rate': '0.0009617', 'epoch': '0.418'}
+[progress] step 1200/27520 | epoch 0.44 | loss 0.6541 | lr 9.60e-04 | elapsed 0.51h | ETA 11.17h
+{'loss': '0.6541', 'grad_norm': '1.326', 'learning_rate': '0.0009599', 'epoch': '0.4361'}
+[progress] step 1250/27520 | epoch 0.45 | loss 0.6414 | lr 9.58e-04 | elapsed 0.53h | ETA 11.14h
+{'loss': '0.6414', 'grad_norm': '1.095', 'learning_rate': '0.0009581', 'epoch': '0.4543'}
+[progress] step 1300/27520 | epoch 0.47 | loss 0.6387 | lr 9.56e-04 | elapsed 0.55h | ETA 11.11h
+{'loss': '0.6387', 'grad_norm': '1.219', 'learning_rate': '0.0009563', 'epoch': '0.4725'}
+[progress] step 1350/27520 | epoch 0.49 | loss 0.6587 | lr 9.54e-04 | elapsed 0.57h | ETA 11.08h
+{'loss': '0.6587', 'grad_norm': '1.309', 'learning_rate': '0.0009544', 'epoch': '0.4906'}
+{'eval_loss': '0.3418', 'eval_wer': '56.05', 'eval_cer': '20', 'eval_runtime': '349', 'eval_samples_per_second': '1.719', 'eval_steps_per_second': '0.109', 'epoch': '0.5001'}
+[eval] step 1376 epoch 0.50 | WER 56.05 | CER 20.00 | loss 0.3418
+[progress] step 1400/27520 | epoch 0.51 | loss 0.6447 | lr 9.53e-04 | elapsed 0.69h | ETA 12.87h
+{'loss': '0.6447', 'grad_norm': '1.1', 'learning_rate': '0.0009526', 'epoch': '0.5088'}
+[progress] step 1450/27520 | epoch 0.53 | loss 0.6629 | lr 9.51e-04 | elapsed 0.71h | ETA 12.79h
+{'loss': '0.6629', 'grad_norm': '1.174', 'learning_rate': '0.0009508', 'epoch': '0.527'}
+[progress] step 1500/27520 | epoch 0.55 | loss 0.6387 | lr 9.49e-04 | elapsed 0.73h | ETA 12.70h
+{'loss': '0.6387', 'grad_norm': '1.272', 'learning_rate': '0.000949', 'epoch': '0.5452'}
+[progress] step 1550/27520 | epoch 0.56 | loss 0.6519 | lr 9.47e-04 | elapsed 0.75h | ETA 12.62h
+{'loss': '0.6519', 'grad_norm': '1.254', 'learning_rate': '0.0009472', 'epoch': '0.5633'}
+[progress] step 1600/27520 | epoch 0.58 | loss 0.6408 | lr 9.45e-04 | elapsed 0.77h | ETA 12.54h
+{'loss': '0.6408', 'grad_norm': '1.306', 'learning_rate': '0.0009453', 'epoch': '0.5815'}
+[progress] step 1650/27520 | epoch 0.60 | loss 0.6584 | lr 9.44e-04 | elapsed 0.81h | ETA 12.65h
+{'loss': '0.6584', 'grad_norm': '1.397', 'learning_rate': '0.0009435', 'epoch': '0.5997'}
+[progress] step 1700/27520 | epoch 0.62 | loss 0.6310 | lr 9.42e-04 | elapsed 0.84h | ETA 12.77h
+{'loss': '0.631', 'grad_norm': '1.355', 'learning_rate': '0.0009417', 'epoch': '0.6178'}
+[progress] step 1750/27520 | epoch 0.64 | loss 0.6344 | lr 9.40e-04 | elapsed 0.87h | ETA 12.88h
+{'loss': '0.6344', 'grad_norm': '1.228', 'learning_rate': '0.0009399', 'epoch': '0.636'}
+[progress] step 1800/27520 | epoch 0.65 | loss 0.6331 | lr 9.38e-04 | elapsed 0.91h | ETA 12.98h
+{'loss': '0.6331', 'grad_norm': '1.678', 'learning_rate': '0.000938', 'epoch': '0.6542'}
+[progress] step 1850/27520 | epoch 0.67 | loss 0.6338 | lr 9.36e-04 | elapsed 0.94h | ETA 13.08h
+{'loss': '0.6338', 'grad_norm': '1.35', 'learning_rate': '0.0009362', 'epoch': '0.6724'}
+[progress] step 1900/27520 | epoch 0.69 | loss 0.6068 | lr 9.34e-04 | elapsed 0.98h | ETA 13.17h
+{'loss': '0.6068', 'grad_norm': '1.225', 'learning_rate': '0.0009344', 'epoch': '0.6905'}
+[progress] step 1950/27520 | epoch 0.71 | loss 0.6055 | lr 9.33e-04 | elapsed 1.01h | ETA 13.25h
+{'loss': '0.6055', 'grad_norm': '1.171', 'learning_rate': '0.0009326', 'epoch': '0.7087'}
+[progress] step 2000/27520 | epoch 0.73 | loss 0.6147 | lr 9.31e-04 | elapsed 1.04h | ETA 13.33h
+{'loss': '0.6147', 'grad_norm': '1.291', 'learning_rate': '0.0009307', 'epoch': '0.7269'}
+[progress] step 2050/27520 | epoch 0.75 | loss 0.6082 | lr 9.29e-04 | elapsed 1.08h | ETA 13.40h
+{'loss': '0.6082', 'grad_norm': '1.26', 'learning_rate': '0.0009289', 'epoch': '0.745'}
+[progress] step 2100/27520 | epoch 0.76 | loss 0.6317 | lr 9.27e-04 | elapsed 1.11h | ETA 13.47h
+{'loss': '0.6317', 'grad_norm': '1.39', 'learning_rate': '0.0009271', 'epoch': '0.7632'}
+[progress] step 2150/27520 | epoch 0.78 | loss 0.6166 | lr 9.25e-04 | elapsed 1.15h | ETA 13.53h
+{'loss': '0.6166', 'grad_norm': '1.226', 'learning_rate': '0.0009253', 'epoch': '0.7814'}
+[progress] step 2200/27520 | epoch 0.80 | loss 0.5780 | lr 9.23e-04 | elapsed 1.18h | ETA 13.58h
+{'loss': '0.578', 'grad_norm': '1.236', 'learning_rate': '0.0009235', 'epoch': '0.7996'}
+[progress] step 2250/27520 | epoch 0.82 | loss 0.6068 | lr 9.22e-04 | elapsed 1.21h | ETA 13.63h
+{'loss': '0.6068', 'grad_norm': '1.082', 'learning_rate': '0.0009216', 'epoch': '0.8177'}
+[progress] step 2300/27520 | epoch 0.84 | loss 0.6185 | lr 9.20e-04 | elapsed 1.25h | ETA 13.68h
+{'loss': '0.6185', 'grad_norm': '1.358', 'learning_rate': '0.0009198', 'epoch': '0.8359'}
+[progress] step 2350/27520 | epoch 0.85 | loss 0.6068 | lr 9.18e-04 | elapsed 1.28h | ETA 13.72h
+{'loss': '0.6068', 'grad_norm': '1.301', 'learning_rate': '0.000918', 'epoch': '0.8541'}
+[progress] step 2400/27520 | epoch 0.87 | loss 0.6065 | lr 9.16e-04 | elapsed 1.31h | ETA 13.76h
+{'loss': '0.6065', 'grad_norm': '1.181', 'learning_rate': '0.0009162', 'epoch': '0.8723'}
+[progress] step 2450/27520 | epoch 0.89 | loss 0.6071 | lr 9.14e-04 | elapsed 1.35h | ETA 13.79h
+{'loss': '0.6071', 'grad_norm': '1.145', 'learning_rate': '0.0009143', 'epoch': '0.8904'}
+[progress] step 2500/27520 | epoch 0.91 | loss 0.6257 | lr 9.13e-04 | elapsed 1.38h | ETA 13.82h
+{'loss': '0.6257', 'grad_norm': '1.596', 'learning_rate': '0.0009125', 'epoch': '0.9086'}
+[progress] step 2550/27520 | epoch 0.93 | loss 0.5942 | lr 9.11e-04 | elapsed 1.41h | ETA 13.85h
+{'loss': '0.5942', 'grad_norm': '1.141', 'learning_rate': '0.0009107', 'epoch': '0.9268'}
+[progress] step 2600/27520 | epoch 0.94 | loss 0.5932 | lr 9.09e-04 | elapsed 1.45h | ETA 13.87h
+{'loss': '0.5932', 'grad_norm': '1.261', 'learning_rate': '0.0009089', 'epoch': '0.9449'}
+[progress] step 2650/27520 | epoch 0.96 | loss 0.5843 | lr 9.07e-04 | elapsed 1.48h | ETA 13.90h
+{'loss': '0.5843', 'grad_norm': '1.116', 'learning_rate': '0.000907', 'epoch': '0.9631'}
+[progress] step 2700/27520 | epoch 0.98 | loss 0.5871 | lr 9.05e-04 | elapsed 1.51h | ETA 13.92h
+{'loss': '0.5871', 'grad_norm': '1.193', 'learning_rate': '0.0009052', 'epoch': '0.9813'}
+[progress] step 2750/27520 | epoch 1.00 | loss 0.5998 | lr 9.03e-04 | elapsed 1.55h | ETA 13.94h
+{'loss': '0.5998', 'grad_norm': '1.19', 'learning_rate': '0.0009034', 'epoch': '0.9995'}
+{'eval_loss': '0.318', 'eval_wer': '53.72', 'eval_cer': '20.42', 'eval_runtime': '314.5', 'eval_samples_per_second': '1.907', 'eval_steps_per_second': '0.121', 'epoch': '1'}
+[eval] step 2752 epoch 1.00 | WER 53.72 | CER 20.42 | loss 0.3180
+[2026-09-22 14:02:53] Saved epoch adapter -> runs\whisper-small_lora_r32\adapters\epoch_01
+[progress] step 2800/27520 | epoch 1.02 | loss 0.5423 | lr 9.02e-04 | elapsed 1.66h | ETA 14.62h
+{'loss': '0.5423', 'grad_norm': '1.122', 'learning_rate': '0.0009016', 'epoch': '1.017'}
+[progress] step 2850/27520 | epoch 1.04 | loss 0.5428 | lr 9.00e-04 | elapsed 1.68h | ETA 14.52h
+{'loss': '0.5428', 'grad_norm': '1.042', 'learning_rate': '0.0008997', 'epoch': '1.036'}
+[progress] step 2900/27520 | epoch 1.05 | loss 0.5535 | lr 8.98e-04 | elapsed 1.70h | ETA 14.42h
+{'loss': '0.5535', 'grad_norm': '1.057', 'learning_rate': '0.0008979', 'epoch': '1.054'}
+[progress] step 2950/27520 | epoch 1.07 | loss 0.5298 | lr 8.96e-04 | elapsed 1.72h | ETA 14.32h
+{'loss': '0.5298', 'grad_norm': '1.2', 'learning_rate': '0.0008961', 'epoch': '1.072'}
+[progress] step 3000/27520 | epoch 1.09 | loss 0.5525 | lr 8.94e-04 | elapsed 1.74h | ETA 14.22h
+{'loss': '0.5525', 'grad_norm': '1.503', 'learning_rate': '0.0008943', 'epoch': '1.09'}
+[progress] step 3050/27520 | epoch 1.11 | loss 0.5340 | lr 8.92e-04 | elapsed 1.76h | ETA 14.12h
+{'loss': '0.534', 'grad_norm': '1.322', 'learning_rate': '0.0008925', 'epoch': '1.108'}
+[progress] step 3100/27520 | epoch 1.13 | loss 0.5658 | lr 8.91e-04 | elapsed 1.78h | ETA 14.03h
+{'loss': '0.5658', 'grad_norm': '1.535', 'learning_rate': '0.0008906', 'epoch': '1.126'}
+[progress] step 3150/27520 | epoch 1.14 | loss 0.5635 | lr 8.89e-04 | elapsed 1.80h | ETA 13.94h
+{'loss': '0.5635', 'grad_norm': '1.291', 'learning_rate': '0.0008888', 'epoch': '1.145'}
+[progress] step 3200/27520 | epoch 1.16 | loss 0.5557 | lr 8.87e-04 | elapsed 1.82h | ETA 13.85h
+{'loss': '0.5557', 'grad_norm': '1.096', 'learning_rate': '0.000887', 'epoch': '1.163'}
+[progress] step 3250/27520 | epoch 1.18 | loss 0.5630 | lr 8.85e-04 | elapsed 1.84h | ETA 13.77h
+{'loss': '0.563', 'grad_norm': '1.249', 'learning_rate': '0.0008852', 'epoch': '1.181'}
+[progress] step 3300/27520 | epoch 1.20 | loss 0.5506 | lr 8.83e-04 | elapsed 1.86h | ETA 13.68h
+{'loss': '0.5506', 'grad_norm': '1.194', 'learning_rate': '0.0008833', 'epoch': '1.199'}
+[progress] step 3350/27520 | epoch 1.22 | loss 0.5548 | lr 8.82e-04 | elapsed 1.89h | ETA 13.60h
+{'loss': '0.5548', 'grad_norm': '0.9453', 'learning_rate': '0.0008815', 'epoch': '1.217'}
+[progress] step 3400/27520 | epoch 1.24 | loss 0.5425 | lr 8.80e-04 | elapsed 1.91h | ETA 13.52h
+{'loss': '0.5425', 'grad_norm': '1.066', 'learning_rate': '0.0008797', 'epoch': '1.236'}
+[progress] step 3450/27520 | epoch 1.25 | loss 0.5543 | lr 8.78e-04 | elapsed 1.93h | ETA 13.44h
+{'loss': '0.5543', 'grad_norm': '1.447', 'learning_rate': '0.0008779', 'epoch': '1.254'}
+[progress] step 3500/27520 | epoch 1.27 | loss 0.5692 | lr 8.76e-04 | elapsed 1.95h | ETA 13.37h
+{'loss': '0.5692', 'grad_norm': '1.399', 'learning_rate': '0.000876', 'epoch': '1.272'}
+[progress] step 3550/27520 | epoch 1.29 | loss 0.5379 | lr 8.74e-04 | elapsed 1.97h | ETA 13.29h
+{'loss': '0.5379', 'grad_norm': '1.07', 'learning_rate': '0.0008742', 'epoch': '1.29'}
+[progress] step 3600/27520 | epoch 1.31 | loss 0.5529 | lr 8.72e-04 | elapsed 1.99h | ETA 13.22h
+{'loss': '0.5529', 'grad_norm': '1.386', 'learning_rate': '0.0008724', 'epoch': '1.308'}
+[progress] step 3650/27520 | epoch 1.33 | loss 0.5499 | lr 8.71e-04 | elapsed 2.01h | ETA 13.14h
+{'loss': '0.5499', 'grad_norm': '1.149', 'learning_rate': '0.0008706', 'epoch': '1.326'}
+[progress] step 3700/27520 | epoch 1.34 | loss 0.5597 | lr 8.69e-04 | elapsed 2.03h | ETA 13.07h
+{'loss': '0.5597', 'grad_norm': '1.684', 'learning_rate': '0.0008687', 'epoch': '1.345'}
+[progress] step 3750/27520 | epoch 1.36 | loss 0.5478 | lr 8.67e-04 | elapsed 2.05h | ETA 13.00h
+{'loss': '0.5478', 'grad_norm': '1.436', 'learning_rate': '0.0008669', 'epoch': '1.363'}
+[progress] step 3800/27520 | epoch 1.38 | loss 0.5384 | lr 8.65e-04 | elapsed 2.07h | ETA 12.94h
+{'loss': '0.5384', 'grad_norm': '1.35', 'learning_rate': '0.0008651', 'epoch': '1.381'}
+[progress] step 3850/27520 | epoch 1.40 | loss 0.5371 | lr 8.63e-04 | elapsed 2.09h | ETA 12.87h
+{'loss': '0.5371', 'grad_norm': '1.288', 'learning_rate': '0.0008633', 'epoch': '1.399'}
+[progress] step 3900/27520 | epoch 1.42 | loss 0.5407 | lr 8.61e-04 | elapsed 2.11h | ETA 12.80h
+{'loss': '0.5407', 'grad_norm': '1.481', 'learning_rate': '0.0008615', 'epoch': '1.417'}
+[progress] step 3950/27520 | epoch 1.44 | loss 0.5467 | lr 8.60e-04 | elapsed 2.13h | ETA 12.74h
+{'loss': '0.5467', 'grad_norm': '1.584', 'learning_rate': '0.0008596', 'epoch': '1.435'}
+[progress] step 4000/27520 | epoch 1.45 | loss 0.5257 | lr 8.58e-04 | elapsed 2.16h | ETA 12.67h
+{'loss': '0.5257', 'grad_norm': '1.041', 'learning_rate': '0.0008578', 'epoch': '1.454'}
+[progress] step 4050/27520 | epoch 1.47 | loss 0.5467 | lr 8.56e-04 | elapsed 2.18h | ETA 12.61h
+{'loss': '0.5467', 'grad_norm': '1.311', 'learning_rate': '0.000856', 'epoch': '1.472'}
+[progress] step 4100/27520 | epoch 1.49 | loss 0.5533 | lr 8.54e-04 | elapsed 2.20h | ETA 12.55h
+{'loss': '0.5533', 'grad_norm': '1.466', 'learning_rate': '0.0008542', 'epoch': '1.49'}
+{'eval_loss': '0.2976', 'eval_wer': '51.07', 'eval_cer': '17.22', 'eval_runtime': '311.1', 'eval_samples_per_second': '1.929', 'eval_steps_per_second': '0.122', 'epoch': '1.5'}
+[eval] step 4128 epoch 1.50 | WER 51.07 | CER 17.22 | loss 0.2976
+[progress] step 4150/27520 | epoch 1.51 | loss 0.5495 | lr 8.52e-04 | elapsed 2.30h | ETA 12.98h
+{'loss': '0.5495', 'grad_norm': '1.227', 'learning_rate': '0.0008523', 'epoch': '1.508'}
+[progress] step 4200/27520 | epoch 1.53 | loss 0.5395 | lr 8.51e-04 | elapsed 2.33h | ETA 12.91h
+{'loss': '0.5395', 'grad_norm': '1.282', 'learning_rate': '0.0008505', 'epoch': '1.526'}
+[progress] step 4250/27520 | epoch 1.54 | loss 0.5508 | lr 8.49e-04 | elapsed 2.35h | ETA 12.84h
+{'loss': '0.5508', 'grad_norm': '1.286', 'learning_rate': '0.0008487', 'epoch': '1.544'}
+[progress] step 4300/27520 | epoch 1.56 | loss 0.5371 | lr 8.47e-04 | elapsed 2.37h | ETA 12.78h
+{'loss': '0.5371', 'grad_norm': '1.232', 'learning_rate': '0.0008469', 'epoch': '1.563'}
+[progress] step 4350/27520 | epoch 1.58 | loss 0.5355 | lr 8.45e-04 | elapsed 2.39h | ETA 12.72h
+{'loss': '0.5355', 'grad_norm': '1.47', 'learning_rate': '0.000845', 'epoch': '1.581'}
+[progress] step 4400/27520 | epoch 1.60 | loss 0.5238 | lr 8.43e-04 | elapsed 2.41h | ETA 12.65h
+{'loss': '0.5238', 'grad_norm': '1.041', 'learning_rate': '0.0008432', 'epoch': '1.599'}
+[progress] step 4450/27520 | epoch 1.62 | loss 0.5323 | lr 8.41e-04 | elapsed 2.43h | ETA 12.59h
+{'loss': '0.5323', 'grad_norm': '1.313', 'learning_rate': '0.0008414', 'epoch': '1.617'}
+[progress] step 4500/27520 | epoch 1.64 | loss 0.5361 | lr 8.40e-04 | elapsed 2.45h | ETA 12.53h
+{'loss': '0.5361', 'grad_norm': '1.107', 'learning_rate': '0.0008396', 'epoch': '1.635'}
+[progress] step 4550/27520 | epoch 1.65 | loss 0.5579 | lr 8.38e-04 | elapsed 2.47h | ETA 12.47h
+{'loss': '0.5579', 'grad_norm': '1.006', 'learning_rate': '0.0008377', 'epoch': '1.653'}
+[progress] step 4600/27520 | epoch 1.67 | loss 0.5376 | lr 8.36e-04 | elapsed 2.49h | ETA 12.41h
+{'loss': '0.5376', 'grad_norm': '1.097', 'learning_rate': '0.0008359', 'epoch': '1.672'}
+[progress] step 4650/27520 | epoch 1.69 | loss 0.5116 | lr 8.34e-04 | elapsed 2.51h | ETA 12.35h
+{'loss': '0.5116', 'grad_norm': '1.256', 'learning_rate': '0.0008341', 'epoch': '1.69'}
+[progress] step 4700/27520 | epoch 1.71 | loss 0.5314 | lr 8.32e-04 | elapsed 2.53h | ETA 12.30h
+{'loss': '0.5314', 'grad_norm': '1.287', 'learning_rate': '0.0008323', 'epoch': '1.708'}
+[progress] step 4750/27520 | epoch 1.73 | loss 0.5240 | lr 8.30e-04 | elapsed 2.55h | ETA 12.24h
+{'loss': '0.524', 'grad_norm': '1.261', 'learning_rate': '0.0008305', 'epoch': '1.726'}
+[progress] step 4800/27520 | epoch 1.74 | loss 0.5427 | lr 8.29e-04 | elapsed 2.57h | ETA 12.18h
+{'loss': '0.5427', 'grad_norm': '1.209', 'learning_rate': '0.0008286', 'epoch': '1.744'}
+[progress] step 4850/27520 | epoch 1.76 | loss 0.5490 | lr 8.27e-04 | elapsed 2.59h | ETA 12.13h
+{'loss': '0.549', 'grad_norm': '1.675', 'learning_rate': '0.0008268', 'epoch': '1.762'}
+[progress] step 4900/27520 | epoch 1.78 | loss 0.5420 | lr 8.25e-04 | elapsed 2.62h | ETA 12.07h
+{'loss': '0.542', 'grad_norm': '1.189', 'learning_rate': '0.000825', 'epoch': '1.781'}
+[progress] step 4950/27520 | epoch 1.80 | loss 0.5293 | lr 8.23e-04 | elapsed 2.64h | ETA 12.02h
+{'loss': '0.5293', 'grad_norm': '1.37', 'learning_rate': '0.0008232', 'epoch': '1.799'}
+[progress] step 5000/27520 | epoch 1.82 | loss 0.5309 | lr 8.21e-04 | elapsed 2.66h | ETA 11.97h
+{'loss': '0.5309', 'grad_norm': '1.271', 'learning_rate': '0.0008213', 'epoch': '1.817'}
+[progress] step 5050/27520 | epoch 1.84 | loss 0.5224 | lr 8.20e-04 | elapsed 2.68h | ETA 11.92h
+{'loss': '0.5224', 'grad_norm': '0.9732', 'learning_rate': '0.0008195', 'epoch': '1.835'}
+[progress] step 5100/27520 | epoch 1.85 | loss 0.5400 | lr 8.18e-04 | elapsed 2.70h | ETA 11.86h
+{'loss': '0.54', 'grad_norm': '1.264', 'learning_rate': '0.0008177', 'epoch': '1.853'}
+[progress] step 5150/27520 | epoch 1.87 | loss 0.5292 | lr 8.16e-04 | elapsed 2.72h | ETA 11.81h
+{'loss': '0.5292', 'grad_norm': '1.178', 'learning_rate': '0.0008159', 'epoch': '1.872'}
+[progress] step 5200/27520 | epoch 1.89 | loss 0.5271 | lr 8.14e-04 | elapsed 2.74h | ETA 11.76h
+{'loss': '0.5271', 'grad_norm': '1.608', 'learning_rate': '0.000814', 'epoch': '1.89'}
+[progress] step 5250/27520 | epoch 1.91 | loss 0.5414 | lr 8.12e-04 | elapsed 2.76h | ETA 11.71h
+{'loss': '0.5414', 'grad_norm': '1.572', 'learning_rate': '0.0008122', 'epoch': '1.908'}
+[progress] step 5300/27520 | epoch 1.93 | loss 0.5341 | lr 8.10e-04 | elapsed 2.78h | ETA 11.66h
+{'loss': '0.5341', 'grad_norm': '1.217', 'learning_rate': '0.0008104', 'epoch': '1.926'}
+[progress] step 5350/27520 | epoch 1.94 | loss 0.5310 | lr 8.09e-04 | elapsed 2.80h | ETA 11.61h
+{'loss': '0.531', 'grad_norm': '1.198', 'learning_rate': '0.0008086', 'epoch': '1.944'}
+[progress] step 5400/27520 | epoch 1.96 | loss 0.5293 | lr 8.07e-04 | elapsed 2.82h | ETA 11.56h
+{'loss': '0.5293', 'grad_norm': '0.9742', 'learning_rate': '0.0008067', 'epoch': '1.962'}
+[progress] step 5450/27520 | epoch 1.98 | loss 0.5117 | lr 8.05e-04 | elapsed 2.84h | ETA 11.52h
+{'loss': '0.5117', 'grad_norm': '1.148', 'learning_rate': '0.0008049', 'epoch': '1.981'}
+[progress] step 5500/27520 | epoch 2.00 | loss 0.5383 | lr 8.03e-04 | elapsed 2.86h | ETA 11.47h
+{'loss': '0.5383', 'grad_norm': '1.137', 'learning_rate': '0.0008031', 'epoch': '1.999'}
+{'eval_loss': '0.2904', 'eval_wer': '48.72', 'eval_cer': '16.25', 'eval_runtime': '298.7', 'eval_samples_per_second': '2.008', 'eval_steps_per_second': '0.127', 'epoch': '2'}
+[eval] step 5504 epoch 2.00 | WER 48.72 | CER 16.25 | loss 0.2904
+[2026-09-22 15:21:40] Saved epoch adapter -> runs\whisper-small_lora_r32\adapters\epoch_02
+[progress] step 5550/27520 | epoch 2.02 | loss 0.4637 | lr 8.01e-04 | elapsed 2.97h | ETA 11.75h
+{'loss': '0.4637', 'grad_norm': '1.051', 'learning_rate': '0.0008013', 'epoch': '2.017'}
+[progress] step 5600/27520 | epoch 2.03 | loss 0.4863 | lr 7.99e-04 | elapsed 2.99h | ETA 11.70h
+{'loss': '0.4863', 'grad_norm': '1.278', 'learning_rate': '0.0007995', 'epoch': '2.035'}
+[progress] step 5650/27520 | epoch 2.05 | loss 0.4772 | lr 7.98e-04 | elapsed 3.01h | ETA 11.65h
+{'loss': '0.4772', 'grad_norm': '1.187', 'learning_rate': '0.0007976', 'epoch': '2.053'}
+[progress] step 5700/27520 | epoch 2.07 | loss 0.4715 | lr 7.96e-04 | elapsed 3.03h | ETA 11.60h
+{'loss': '0.4715', 'grad_norm': '1.081', 'learning_rate': '0.0007958', 'epoch': '2.071'}
+[progress] step 5750/27520 | epoch 2.09 | loss 0.4804 | lr 7.94e-04 | elapsed 3.05h | ETA 11.55h
+{'loss': '0.4804', 'grad_norm': '1.123', 'learning_rate': '0.000794', 'epoch': '2.089'}
+[progress] step 5800/27520 | epoch 2.11 | loss 0.5005 | lr 7.92e-04 | elapsed 3.07h | ETA 11.51h
+{'loss': '0.5005', 'grad_norm': '1.396', 'learning_rate': '0.0007922', 'epoch': '2.108'}
+[progress] step 5850/27520 | epoch 2.13 | loss 0.4850 | lr 7.90e-04 | elapsed 3.09h | ETA 11.46h
+{'loss': '0.485', 'grad_norm': '1.35', 'learning_rate': '0.0007903', 'epoch': '2.126'}
+[progress] step 5900/27520 | epoch 2.14 | loss 0.4976 | lr 7.89e-04 | elapsed 3.11h | ETA 11.41h
+{'loss': '0.4976', 'grad_norm': '1.508', 'learning_rate': '0.0007885', 'epoch': '2.144'}
+[progress] step 5950/27520 | epoch 2.16 | loss 0.4745 | lr 7.87e-04 | elapsed 3.13h | ETA 11.36h
+{'loss': '0.4745', 'grad_norm': '1.024', 'learning_rate': '0.0007867', 'epoch': '2.162'}
+[progress] step 6000/27520 | epoch 2.18 | loss 0.4741 | lr 7.85e-04 | elapsed 3.16h | ETA 11.32h
+{'loss': '0.4741', 'grad_norm': '1.161', 'learning_rate': '0.0007849', 'epoch': '2.18'}
+[progress] step 6050/27520 | epoch 2.20 | loss 0.4808 | lr 7.83e-04 | elapsed 3.18h | ETA 11.27h
+{'loss': '0.4808', 'grad_norm': '1.208', 'learning_rate': '0.000783', 'epoch': '2.198'}
+[progress] step 6100/27520 | epoch 2.22 | loss 0.4921 | lr 7.81e-04 | elapsed 3.20h | ETA 11.23h
+{'loss': '0.4921', 'grad_norm': '1.092', 'learning_rate': '0.0007812', 'epoch': '2.217'}
+[progress] step 6150/27520 | epoch 2.23 | loss 0.4798 | lr 7.79e-04 | elapsed 3.22h | ETA 11.18h
+{'loss': '0.4798', 'grad_norm': '1.401', 'learning_rate': '0.0007794', 'epoch': '2.235'}
+[progress] step 6200/27520 | epoch 2.25 | loss 0.4759 | lr 7.78e-04 | elapsed 3.24h | ETA 11.13h
+{'loss': '0.4759', 'grad_norm': '1.372', 'learning_rate': '0.0007776', 'epoch': '2.253'}
+[progress] step 6250/27520 | epoch 2.27 | loss 0.4957 | lr 7.76e-04 | elapsed 3.26h | ETA 11.09h
+{'loss': '0.4957', 'grad_norm': '1.191', 'learning_rate': '0.0007757', 'epoch': '2.271'}
+[progress] step 6300/27520 | epoch 2.29 | loss 0.4890 | lr 7.74e-04 | elapsed 3.28h | ETA 11.05h
+{'loss': '0.489', 'grad_norm': '1.279', 'learning_rate': '0.0007739', 'epoch': '2.289'}
+[progress] step 6350/27520 | epoch 2.31 | loss 0.4843 | lr 7.72e-04 | elapsed 3.30h | ETA 11.00h
+{'loss': '0.4843', 'grad_norm': '1.148', 'learning_rate': '0.0007721', 'epoch': '2.307'}
+[progress] step 6400/27520 | epoch 2.33 | loss 0.4804 | lr 7.70e-04 | elapsed 3.32h | ETA 10.96h
+{'loss': '0.4804', 'grad_norm': '1.325', 'learning_rate': '0.0007703', 'epoch': '2.326'}
+[progress] step 6450/27520 | epoch 2.34 | loss 0.4949 | lr 7.68e-04 | elapsed 3.34h | ETA 10.91h
+{'loss': '0.4949', 'grad_norm': '2.002', 'learning_rate': '0.0007685', 'epoch': '2.344'}
+[progress] step 6500/27520 | epoch 2.36 | loss 0.4877 | lr 7.67e-04 | elapsed 3.36h | ETA 10.87h
+{'loss': '0.4877', 'grad_norm': '1.526', 'learning_rate': '0.0007666', 'epoch': '2.362'}
+[progress] step 6550/27520 | epoch 2.38 | loss 0.4885 | lr 7.65e-04 | elapsed 3.38h | ETA 10.83h
+{'loss': '0.4885', 'grad_norm': '1.312', 'learning_rate': '0.0007648', 'epoch': '2.38'}
+[progress] step 6600/27520 | epoch 2.40 | loss 0.4832 | lr 7.63e-04 | elapsed 3.40h | ETA 10.79h
+{'loss': '0.4832', 'grad_norm': '1.069', 'learning_rate': '0.000763', 'epoch': '2.398'}
+[progress] step 6650/27520 | epoch 2.42 | loss 0.5015 | lr 7.61e-04 | elapsed 3.42h | ETA 10.75h
+{'loss': '0.5015', 'grad_norm': '1.097', 'learning_rate': '0.0007612', 'epoch': '2.417'}
+[progress] step 6700/27520 | epoch 2.43 | loss 0.4925 | lr 7.59e-04 | elapsed 3.45h | ETA 10.71h
+{'loss': '0.4925', 'grad_norm': '1.391', 'learning_rate': '0.0007593', 'epoch': '2.435'}
+[progress] step 6750/27520 | epoch 2.45 | loss 0.4764 | lr 7.58e-04 | elapsed 3.47h | ETA 10.66h
+{'loss': '0.4764', 'grad_norm': '1.236', 'learning_rate': '0.0007575', 'epoch': '2.453'}
+[progress] step 6800/27520 | epoch 2.47 | loss 0.4977 | lr 7.56e-04 | elapsed 3.49h | ETA 10.62h
+{'loss': '0.4977', 'grad_norm': '1.166', 'learning_rate': '0.0007557', 'epoch': '2.471'}
+[progress] step 6850/27520 | epoch 2.49 | loss 0.4909 | lr 7.54e-04 | elapsed 3.51h | ETA 10.58h
+{'loss': '0.4909', 'grad_norm': '1.183', 'learning_rate': '0.0007539', 'epoch': '2.489'}
+{'eval_loss': '0.2848', 'eval_wer': '49.76', 'eval_cer': '16.66', 'eval_runtime': '306.5', 'eval_samples_per_second': '1.957', 'eval_steps_per_second': '0.124', 'epoch': '2.5'}
+[eval] step 6880 epoch 2.50 | WER 49.76 | CER 16.66 | loss 0.2848
+[progress] step 6900/27520 | epoch 2.51 | loss 0.4910 | lr 7.52e-04 | elapsed 3.61h | ETA 10.80h
+{'loss': '0.491', 'grad_norm': '1.132', 'learning_rate': '0.000752', 'epoch': '2.507'}
+[progress] step 6950/27520 | epoch 2.53 | loss 0.4925 | lr 7.50e-04 | elapsed 3.63h | ETA 10.76h
+{'loss': '0.4925', 'grad_norm': '1.213', 'learning_rate': '0.0007502', 'epoch': '2.526'}
+[progress] step 7000/27520 | epoch 2.54 | loss 0.4834 | lr 7.48e-04 | elapsed 3.65h | ETA 10.71h
+{'loss': '0.4834', 'grad_norm': '1.226', 'learning_rate': '0.0007484', 'epoch': '2.544'}
+[progress] step 7050/27520 | epoch 2.56 | loss 0.4841 | lr 7.47e-04 | elapsed 3.68h | ETA 10.67h
+{'loss': '0.4841', 'grad_norm': '1.294', 'learning_rate': '0.0007466', 'epoch': '2.562'}
+[progress] step 7100/27520 | epoch 2.58 | loss 0.5165 | lr 7.45e-04 | elapsed 3.70h | ETA 10.63h
+{'loss': '0.5165', 'grad_norm': '1.403', 'learning_rate': '0.0007447', 'epoch': '2.58'}
+[progress] step 7150/27520 | epoch 2.60 | loss 0.4804 | lr 7.43e-04 | elapsed 3.72h | ETA 10.59h
+{'loss': '0.4804', 'grad_norm': '1.068', 'learning_rate': '0.0007429', 'epoch': '2.598'}
+[progress] step 7200/27520 | epoch 2.62 | loss 0.4961 | lr 7.41e-04 | elapsed 3.74h | ETA 10.55h
+{'loss': '0.4961', 'grad_norm': '0.9908', 'learning_rate': '0.0007411', 'epoch': '2.616'}
+[progress] step 7250/27520 | epoch 2.63 | loss 0.4929 | lr 7.39e-04 | elapsed 3.76h | ETA 10.51h
+{'loss': '0.4929', 'grad_norm': '1.342', 'learning_rate': '0.0007393', 'epoch': '2.635'}
+[progress] step 7300/27520 | epoch 2.65 | loss 0.4988 | lr 7.37e-04 | elapsed 3.78h | ETA 10.47h
+{'loss': '0.4988', 'grad_norm': '0.9599', 'learning_rate': '0.0007375', 'epoch': '2.653'}
+[progress] step 7350/27520 | epoch 2.67 | loss 0.4938 | lr 7.36e-04 | elapsed 3.80h | ETA 10.43h
+{'loss': '0.4938', 'grad_norm': '1.206', 'learning_rate': '0.0007356', 'epoch': '2.671'}
+[progress] step 7400/27520 | epoch 2.69 | loss 0.4839 | lr 7.34e-04 | elapsed 3.82h | ETA 10.39h
+{'loss': '0.4839', 'grad_norm': '1.321', 'learning_rate': '0.0007338', 'epoch': '2.689'}
+[progress] step 7450/27520 | epoch 2.71 | loss 0.4837 | lr 7.32e-04 | elapsed 3.84h | ETA 10.35h
+{'loss': '0.4837', 'grad_norm': '1.238', 'learning_rate': '0.000732', 'epoch': '2.707'}
+[progress] step 7500/27520 | epoch 2.73 | loss 0.4757 | lr 7.30e-04 | elapsed 3.86h | ETA 10.31h
+{'loss': '0.4757', 'grad_norm': '1.199', 'learning_rate': '0.0007302', 'epoch': '2.725'}
+[progress] step 7550/27520 | epoch 2.74 | loss 0.4902 | lr 7.28e-04 | elapsed 3.88h | ETA 10.27h
+{'loss': '0.4902', 'grad_norm': '1.239', 'learning_rate': '0.0007283', 'epoch': '2.744'}
+[progress] step 7600/27520 | epoch 2.76 | loss 0.4986 | lr 7.27e-04 | elapsed 3.90h | ETA 10.23h
+{'loss': '0.4986', 'grad_norm': '1.358', 'learning_rate': '0.0007265', 'epoch': '2.762'}
+[progress] step 7650/27520 | epoch 2.78 | loss 0.4971 | lr 7.25e-04 | elapsed 3.92h | ETA 10.19h
+{'loss': '0.4971', 'grad_norm': '1.278', 'learning_rate': '0.0007247', 'epoch': '2.78'}
+[progress] step 7700/27520 | epoch 2.80 | loss 0.4835 | lr 7.23e-04 | elapsed 3.94h | ETA 10.15h
+{'loss': '0.4835', 'grad_norm': '1.173', 'learning_rate': '0.0007229', 'epoch': '2.798'}
+[progress] step 7750/27520 | epoch 2.82 | loss 0.4751 | lr 7.21e-04 | elapsed 3.97h | ETA 10.12h
+{'loss': '0.4751', 'grad_norm': '1.329', 'learning_rate': '0.000721', 'epoch': '2.816'}
+[progress] step 7800/27520 | epoch 2.83 | loss 0.4931 | lr 7.19e-04 | elapsed 3.99h | ETA 10.08h
+{'loss': '0.4931', 'grad_norm': '1.245', 'learning_rate': '0.0007192', 'epoch': '2.834'}
+[progress] step 7850/27520 | epoch 2.85 | loss 0.4900 | lr 7.17e-04 | elapsed 4.01h | ETA 10.04h
+{'loss': '0.49', 'grad_norm': '1.053', 'learning_rate': '0.0007174', 'epoch': '2.853'}
+[progress] step 7900/27520 | epoch 2.87 | loss 0.4855 | lr 7.16e-04 | elapsed 4.03h | ETA 10.00h
+{'loss': '0.4855', 'grad_norm': '1.115', 'learning_rate': '0.0007156', 'epoch': '2.871'}
+[progress] step 7950/27520 | epoch 2.89 | loss 0.4677 | lr 7.14e-04 | elapsed 4.05h | ETA 9.97h
+{'loss': '0.4677', 'grad_norm': '1.25', 'learning_rate': '0.0007137', 'epoch': '2.889'}
+[progress] step 8000/27520 | epoch 2.91 | loss 0.4932 | lr 7.12e-04 | elapsed 4.07h | ETA 9.93h
+{'loss': '0.4932', 'grad_norm': '1.117', 'learning_rate': '0.0007119', 'epoch': '2.907'}
+[progress] step 8050/27520 | epoch 2.93 | loss 0.4802 | lr 7.10e-04 | elapsed 4.09h | ETA 9.89h
+{'loss': '0.4802', 'grad_norm': '1.105', 'learning_rate': '0.0007101', 'epoch': '2.925'}
+[progress] step 8100/27520 | epoch 2.94 | loss 0.4866 | lr 7.08e-04 | elapsed 4.11h | ETA 9.86h
+{'loss': '0.4866', 'grad_norm': '1.239', 'learning_rate': '0.0007083', 'epoch': '2.943'}
+[progress] step 8150/27520 | epoch 2.96 | loss 0.4736 | lr 7.06e-04 | elapsed 4.13h | ETA 9.82h
+{'loss': '0.4736', 'grad_norm': '1.364', 'learning_rate': '0.0007065', 'epoch': '2.962'}
+[progress] step 8200/27520 | epoch 2.98 | loss 0.4852 | lr 7.05e-04 | elapsed 4.15h | ETA 9.78h
+{'loss': '0.4852', 'grad_norm': '1.249', 'learning_rate': '0.0007046', 'epoch': '2.98'}
+[progress] step 8250/27520 | epoch 3.00 | loss 0.4792 | lr 7.03e-04 | elapsed 4.17h | ETA 9.75h
+{'loss': '0.4792', 'grad_norm': '1.316', 'learning_rate': '0.0007028', 'epoch': '2.998'}
+{'eval_loss': '0.2753', 'eval_wer': '48.19', 'eval_cer': '15.92', 'eval_runtime': '305', 'eval_samples_per_second': '1.967', 'eval_steps_per_second': '0.125', 'epoch': '3'}
+[eval] step 8256 epoch 3.00 | WER 48.19 | CER 15.92 | loss 0.2753
+[2026-09-22 16:40:20] Saved epoch adapter -> runs\whisper-small_lora_r32\adapters\epoch_03
+[progress] step 8300/27520 | epoch 3.02 | loss 0.4326 | lr 7.01e-04 | elapsed 4.28h | ETA 9.91h
+{'loss': '0.4326', 'grad_norm': '1.053', 'learning_rate': '0.000701', 'epoch': '3.016'}
+[progress] step 8350/27520 | epoch 3.03 | loss 0.4324 | lr 6.99e-04 | elapsed 4.30h | ETA 9.87h
+{'loss': '0.4324', 'grad_norm': '1.207', 'learning_rate': '0.0006992', 'epoch': '3.034'}
+[progress] step 8400/27520 | epoch 3.05 | loss 0.4258 | lr 6.97e-04 | elapsed 4.32h | ETA 9.83h
+{'loss': '0.4258', 'grad_norm': '1.152', 'learning_rate': '0.0006973', 'epoch': '3.052'}
+[progress] step 8450/27520 | epoch 3.07 | loss 0.4451 | lr 6.96e-04 | elapsed 4.34h | ETA 9.80h
+{'loss': '0.4451', 'grad_norm': '1.204', 'learning_rate': '0.0006955', 'epoch': '3.071'}
+[progress] step 8500/27520 | epoch 3.09 | loss 0.4264 | lr 6.94e-04 | elapsed 4.36h | ETA 9.76h
+{'loss': '0.4264', 'grad_norm': '1.19', 'learning_rate': '0.0006937', 'epoch': '3.089'}
+[progress] step 8550/27520 | epoch 3.11 | loss 0.4298 | lr 6.92e-04 | elapsed 4.38h | ETA 9.72h
+{'loss': '0.4298', 'grad_norm': '0.8893', 'learning_rate': '0.0006919', 'epoch': '3.107'}
+[progress] step 8600/27520 | epoch 3.13 | loss 0.4509 | lr 6.90e-04 | elapsed 4.40h | ETA 9.69h
+{'loss': '0.4509', 'grad_norm': '1.279', 'learning_rate': '0.00069', 'epoch': '3.125'}
+[progress] step 8650/27520 | epoch 3.14 | loss 0.4477 | lr 6.88e-04 | elapsed 4.42h | ETA 9.65h
+{'loss': '0.4477', 'grad_norm': '1.11', 'learning_rate': '0.0006882', 'epoch': '3.143'}
+[progress] step 8700/27520 | epoch 3.16 | loss 0.4464 | lr 6.86e-04 | elapsed 4.44h | ETA 9.61h
+{'loss': '0.4464', 'grad_norm': '1.146', 'learning_rate': '0.0006864', 'epoch': '3.161'}
+[progress] step 8750/27520 | epoch 3.18 | loss 0.4379 | lr 6.85e-04 | elapsed 4.47h | ETA 9.58h
+{'loss': '0.4379', 'grad_norm': '1.014', 'learning_rate': '0.0006846', 'epoch': '3.18'}
+[progress] step 8800/27520 | epoch 3.20 | loss 0.4394 | lr 6.83e-04 | elapsed 4.49h | ETA 9.54h
+{'loss': '0.4394', 'grad_norm': '1.112', 'learning_rate': '0.0006827', 'epoch': '3.198'}
+[progress] step 8850/27520 | epoch 3.22 | loss 0.4334 | lr 6.81e-04 | elapsed 4.51h | ETA 9.51h
+{'loss': '0.4334', 'grad_norm': '0.8869', 'learning_rate': '0.0006809', 'epoch': '3.216'}
+[progress] step 8900/27520 | epoch 3.23 | loss 0.4281 | lr 6.79e-04 | elapsed 4.53h | ETA 9.47h
+{'loss': '0.4281', 'grad_norm': '1.136', 'learning_rate': '0.0006791', 'epoch': '3.234'}
+[progress] step 8950/27520 | epoch 3.25 | loss 0.4534 | lr 6.77e-04 | elapsed 4.55h | ETA 9.44h
+{'loss': '0.4534', 'grad_norm': '1.271', 'learning_rate': '0.0006773', 'epoch': '3.252'}
+[progress] step 9000/27520 | epoch 3.27 | loss 0.4533 | lr 6.75e-04 | elapsed 4.57h | ETA 9.40h
+{'loss': '0.4533', 'grad_norm': '1.398', 'learning_rate': '0.0006755', 'epoch': '3.27'}
+[progress] step 9050/27520 | epoch 3.29 | loss 0.4317 | lr 6.74e-04 | elapsed 4.59h | ETA 9.37h
+{'loss': '0.4317', 'grad_norm': '1.234', 'learning_rate': '0.0006736', 'epoch': '3.289'}
+[progress] step 9100/27520 | epoch 3.31 | loss 0.4254 | lr 6.72e-04 | elapsed 4.61h | ETA 9.33h
+{'loss': '0.4254', 'grad_norm': '0.9926', 'learning_rate': '0.0006718', 'epoch': '3.307'}
+[progress] step 9150/27520 | epoch 3.32 | loss 0.4349 | lr 6.70e-04 | elapsed 4.63h | ETA 9.30h
+{'loss': '0.4349', 'grad_norm': '1.048', 'learning_rate': '0.00067', 'epoch': '3.325'}
+[progress] step 9200/27520 | epoch 3.34 | loss 0.4474 | lr 6.68e-04 | elapsed 4.65h | ETA 9.26h
+{'loss': '0.4474', 'grad_norm': '1.501', 'learning_rate': '0.0006682', 'epoch': '3.343'}
+[progress] step 9250/27520 | epoch 3.36 | loss 0.4427 | lr 6.66e-04 | elapsed 4.67h | ETA 9.23h
+{'loss': '0.4427', 'grad_norm': '1.493', 'learning_rate': '0.0006663', 'epoch': '3.361'}
+[progress] step 9300/27520 | epoch 3.38 | loss 0.4422 | lr 6.65e-04 | elapsed 4.69h | ETA 9.20h
+{'loss': '0.4422', 'grad_norm': '1.092', 'learning_rate': '0.0006645', 'epoch': '3.379'}
+[progress] step 9350/27520 | epoch 3.40 | loss 0.4383 | lr 6.63e-04 | elapsed 4.71h | ETA 9.16h
+{'loss': '0.4383', 'grad_norm': '0.9728', 'learning_rate': '0.0006627', 'epoch': '3.398'}
+[progress] step 9400/27520 | epoch 3.42 | loss 0.4462 | lr 6.61e-04 | elapsed 4.74h | ETA 9.13h
+{'loss': '0.4462', 'grad_norm': '1.279', 'learning_rate': '0.0006609', 'epoch': '3.416'}
+[progress] step 9450/27520 | epoch 3.43 | loss 0.4527 | lr 6.59e-04 | elapsed 4.76h | ETA 9.10h
+{'loss': '0.4527', 'grad_norm': '1.151', 'learning_rate': '0.000659', 'epoch': '3.434'}
+[progress] step 9500/27520 | epoch 3.45 | loss 0.4498 | lr 6.57e-04 | elapsed 4.78h | ETA 9.06h
+{'loss': '0.4498', 'grad_norm': '1.191', 'learning_rate': '0.0006572', 'epoch': '3.452'}
+[progress] step 9550/27520 | epoch 3.47 | loss 0.4301 | lr 6.55e-04 | elapsed 4.80h | ETA 9.03h
+{'loss': '0.4301', 'grad_norm': '1.146', 'learning_rate': '0.0006554', 'epoch': '3.47'}
+[progress] step 9600/27520 | epoch 3.49 | loss 0.4518 | lr 6.54e-04 | elapsed 4.82h | ETA 9.00h
+{'loss': '0.4518', 'grad_norm': '1.143', 'learning_rate': '0.0006536', 'epoch': '3.488'}
+{'eval_loss': '0.2681', 'eval_wer': '51.2', 'eval_cer': '16.4', 'eval_runtime': '312.2', 'eval_samples_per_second': '1.922', 'eval_steps_per_second': '0.122', 'epoch': '3.5'}
+[eval] step 9632 epoch 3.50 | WER 51.20 | CER 16.40 | loss 0.2681
+[progress] step 9650/27520 | epoch 3.51 | loss 0.4540 | lr 6.52e-04 | elapsed 4.93h | ETA 9.12h
+{'loss': '0.454', 'grad_norm': '1.474', 'learning_rate': '0.0006518', 'epoch': '3.507'}
+[progress] step 9700/27520 | epoch 3.52 | loss 0.4489 | lr 6.50e-04 | elapsed 4.95h | ETA 9.09h
+{'loss': '0.4489', 'grad_norm': '1.183', 'learning_rate': '0.0006499', 'epoch': '3.525'}
+[progress] step 9750/27520 | epoch 3.54 | loss 0.4396 | lr 6.48e-04 | elapsed 4.97h | ETA 9.06h
+{'loss': '0.4396', 'grad_norm': '0.8893', 'learning_rate': '0.0006481', 'epoch': '3.543'}
+[progress] step 9800/27520 | epoch 3.56 | loss 0.4635 | lr 6.46e-04 | elapsed 4.99h | ETA 9.02h
+{'loss': '0.4635', 'grad_norm': '0.88', 'learning_rate': '0.0006463', 'epoch': '3.561'}
+[progress] step 9850/27520 | epoch 3.58 | loss 0.4358 | lr 6.44e-04 | elapsed 5.01h | ETA 8.99h
+{'loss': '0.4358', 'grad_norm': '1.178', 'learning_rate': '0.0006445', 'epoch': '3.579'}
+[progress] step 9900/27520 | epoch 3.60 | loss 0.4467 | lr 6.43e-04 | elapsed 5.03h | ETA 8.95h
+{'loss': '0.4467', 'grad_norm': '1.405', 'learning_rate': '0.0006426', 'epoch': '3.597'}
+[progress] step 9950/27520 | epoch 3.62 | loss 0.4473 | lr 6.41e-04 | elapsed 5.05h | ETA 8.92h
+{'loss': '0.4473', 'grad_norm': '1.461', 'learning_rate': '0.0006408', 'epoch': '3.616'}
+[progress] step 10000/27520 | epoch 3.63 | loss 0.4407 | lr 6.39e-04 | elapsed 5.07h | ETA 8.89h
+{'loss': '0.4407', 'grad_norm': '1.031', 'learning_rate': '0.000639', 'epoch': '3.634'}
+[progress] step 10050/27520 | epoch 3.65 | loss 0.4418 | lr 6.37e-04 | elapsed 5.09h | ETA 8.85h
+{'loss': '0.4418', 'grad_norm': '1.071', 'learning_rate': '0.0006372', 'epoch': '3.652'}
+[progress] step 10100/27520 | epoch 3.67 | loss 0.4325 | lr 6.35e-04 | elapsed 5.11h | ETA 8.82h
+{'loss': '0.4325', 'grad_norm': '1.219', 'learning_rate': '0.0006353', 'epoch': '3.67'}
+[progress] step 10150/27520 | epoch 3.69 | loss 0.4464 | lr 6.34e-04 | elapsed 5.14h | ETA 8.79h
+{'loss': '0.4464', 'grad_norm': '1.311', 'learning_rate': '0.0006335', 'epoch': '3.688'}
+[progress] step 10200/27520 | epoch 3.71 | loss 0.4349 | lr 6.32e-04 | elapsed 5.16h | ETA 8.76h
+{'loss': '0.4349', 'grad_norm': '1.451', 'learning_rate': '0.0006317', 'epoch': '3.707'}
+[progress] step 10250/27520 | epoch 3.72 | loss 0.4460 | lr 6.30e-04 | elapsed 5.18h | ETA 8.72h
+{'loss': '0.446', 'grad_norm': '1.291', 'learning_rate': '0.0006299', 'epoch': '3.725'}
+[progress] step 10300/27520 | epoch 3.74 | loss 0.4556 | lr 6.28e-04 | elapsed 5.20h | ETA 8.69h
+{'loss': '0.4556', 'grad_norm': '1.396', 'learning_rate': '0.000628', 'epoch': '3.743'}
+[progress] step 10350/27520 | epoch 3.76 | loss 0.4387 | lr 6.26e-04 | elapsed 5.22h | ETA 8.66h
+{'loss': '0.4387', 'grad_norm': '1.195', 'learning_rate': '0.0006262', 'epoch': '3.761'}
+[progress] step 10400/27520 | epoch 3.78 | loss 0.4632 | lr 6.24e-04 | elapsed 5.24h | ETA 8.62h
+{'loss': '0.4632', 'grad_norm': '1.188', 'learning_rate': '0.0006244', 'epoch': '3.779'}
+[progress] step 10450/27520 | epoch 3.80 | loss 0.4374 | lr 6.23e-04 | elapsed 5.26h | ETA 8.59h
+{'loss': '0.4374', 'grad_norm': '1.37', 'learning_rate': '0.0006226', 'epoch': '3.797'}
+[progress] step 10500/27520 | epoch 3.82 | loss 0.4268 | lr 6.21e-04 | elapsed 5.28h | ETA 8.56h
+{'loss': '0.4268', 'grad_norm': '1.123', 'learning_rate': '0.0006208', 'epoch': '3.816'}
+[progress] step 10550/27520 | epoch 3.83 | loss 0.4360 | lr 6.19e-04 | elapsed 5.30h | ETA 8.53h
+{'loss': '0.436', 'grad_norm': '1.1', 'learning_rate': '0.0006189', 'epoch': '3.834'}
+[progress] step 10600/27520 | epoch 3.85 | loss 0.4442 | lr 6.17e-04 | elapsed 5.32h | ETA 8.50h
+{'loss': '0.4442', 'grad_norm': '1.107', 'learning_rate': '0.0006171', 'epoch': '3.852'}
+[progress] step 10650/27520 | epoch 3.87 | loss 0.4509 | lr 6.15e-04 | elapsed 5.34h | ETA 8.46h
+{'loss': '0.4509', 'grad_norm': '1.265', 'learning_rate': '0.0006153', 'epoch': '3.87'}
+[progress] step 10700/27520 | epoch 3.89 | loss 0.4404 | lr 6.13e-04 | elapsed 5.36h | ETA 8.43h
+{'loss': '0.4404', 'grad_norm': '0.9758', 'learning_rate': '0.0006135', 'epoch': '3.888'}
+[progress] step 10750/27520 | epoch 3.91 | loss 0.4592 | lr 6.12e-04 | elapsed 5.39h | ETA 8.40h
+{'loss': '0.4592', 'grad_norm': '1.255', 'learning_rate': '0.0006116', 'epoch': '3.906'}
+[progress] step 10800/27520 | epoch 3.92 | loss 0.4419 | lr 6.10e-04 | elapsed 5.41h | ETA 8.37h
+{'loss': '0.4419', 'grad_norm': '0.9735', 'learning_rate': '0.0006098', 'epoch': '3.925'}
+[progress] step 10850/27520 | epoch 3.94 | loss 0.4477 | lr 6.08e-04 | elapsed 5.43h | ETA 8.34h
+{'loss': '0.4477', 'grad_norm': '1.49', 'learning_rate': '0.000608', 'epoch': '3.943'}
+[progress] step 10900/27520 | epoch 3.96 | loss 0.4369 | lr 6.06e-04 | elapsed 5.45h | ETA 8.31h
+{'loss': '0.4369', 'grad_norm': '0.9952', 'learning_rate': '0.0006062', 'epoch': '3.961'}
+[progress] step 10950/27520 | epoch 3.98 | loss 0.4344 | lr 6.04e-04 | elapsed 5.47h | ETA 8.27h
+{'loss': '0.4344', 'grad_norm': '1.353', 'learning_rate': '0.0006043', 'epoch': '3.979'}
+[progress] step 11000/27520 | epoch 4.00 | loss 0.4419 | lr 6.03e-04 | elapsed 5.49h | ETA 8.24h
+{'loss': '0.4419', 'grad_norm': '1.029', 'learning_rate': '0.0006025', 'epoch': '3.997'}
+{'eval_loss': '0.2618', 'eval_wer': '47.13', 'eval_cer': '16.16', 'eval_runtime': '316.1', 'eval_samples_per_second': '1.898', 'eval_steps_per_second': '0.12', 'epoch': '4'}
+[eval] step 11008 epoch 4.00 | WER 47.13 | CER 16.16 | loss 0.2618
+[2026-09-22 17:59:32] Saved epoch adapter -> runs\whisper-small_lora_r32\adapters\epoch_04
+[progress] step 11050/27520 | epoch 4.02 | loss 0.3816 | lr 6.01e-04 | elapsed 5.60h | ETA 8.34h
+{'loss': '0.3816', 'grad_norm': '1.043', 'learning_rate': '0.0006007', 'epoch': '4.015'}
+[progress] step 11100/27520 | epoch 4.03 | loss 0.3887 | lr 5.99e-04 | elapsed 5.62h | ETA 8.31h
+{'loss': '0.3887', 'grad_norm': '1.599', 'learning_rate': '0.0005989', 'epoch': '4.033'}
+[progress] step 11150/27520 | epoch 4.05 | loss 0.3836 | lr 5.97e-04 | elapsed 5.64h | ETA 8.28h
+{'loss': '0.3836', 'grad_norm': '1.314', 'learning_rate': '0.000597', 'epoch': '4.052'}
+[progress] step 11200/27520 | epoch 4.07 | loss 0.3983 | lr 5.95e-04 | elapsed 5.66h | ETA 8.25h
+{'loss': '0.3983', 'grad_norm': '1.345', 'learning_rate': '0.0005952', 'epoch': '4.07'}
+[progress] step 11250/27520 | epoch 4.09 | loss 0.3882 | lr 5.93e-04 | elapsed 5.68h | ETA 8.22h
+{'loss': '0.3882', 'grad_norm': '1.186', 'learning_rate': '0.0005934', 'epoch': '4.088'}
+[progress] step 11300/27520 | epoch 4.11 | loss 0.3925 | lr 5.92e-04 | elapsed 5.70h | ETA 8.19h
+{'loss': '0.3925', 'grad_norm': '1.276', 'learning_rate': '0.0005916', 'epoch': '4.106'}
+[progress] step 11350/27520 | epoch 4.12 | loss 0.3842 | lr 5.90e-04 | elapsed 5.72h | ETA 8.15h
+{'loss': '0.3842', 'grad_norm': '0.9447', 'learning_rate': '0.0005898', 'epoch': '4.124'}
+[progress] step 11400/27520 | epoch 4.14 | loss 0.3816 | lr 5.88e-04 | elapsed 5.74h | ETA 8.12h
+{'loss': '0.3816', 'grad_norm': '1.218', 'learning_rate': '0.0005879', 'epoch': '4.142'}
+[progress] step 11450/27520 | epoch 4.16 | loss 0.3779 | lr 5.86e-04 | elapsed 5.77h | ETA 8.09h
+{'loss': '0.3779', 'grad_norm': '1.051', 'learning_rate': '0.0005861', 'epoch': '4.161'}
+[progress] step 11500/27520 | epoch 4.18 | loss 0.4020 | lr 5.84e-04 | elapsed 5.79h | ETA 8.06h
+{'loss': '0.402', 'grad_norm': '1.138', 'learning_rate': '0.0005843', 'epoch': '4.179'}
+[progress] step 11550/27520 | epoch 4.20 | loss 0.4051 | lr 5.82e-04 | elapsed 5.81h | ETA 8.03h
+{'loss': '0.4051', 'grad_norm': '1.12', 'learning_rate': '0.0005825', 'epoch': '4.197'}
+[progress] step 11600/27520 | epoch 4.22 | loss 0.3977 | lr 5.81e-04 | elapsed 5.83h | ETA 8.00h
+{'loss': '0.3977', 'grad_norm': '1.059', 'learning_rate': '0.0005806', 'epoch': '4.215'}
+[progress] step 11650/27520 | epoch 4.23 | loss 0.4043 | lr 5.79e-04 | elapsed 5.85h | ETA 7.97h
+{'loss': '0.4043', 'grad_norm': '1.243', 'learning_rate': '0.0005788', 'epoch': '4.233'}
+[progress] step 11700/27520 | epoch 4.25 | loss 0.3885 | lr 5.77e-04 | elapsed 5.87h | ETA 7.94h
+{'loss': '0.3885', 'grad_norm': '1.025', 'learning_rate': '0.000577', 'epoch': '4.251'}
+[progress] step 11750/27520 | epoch 4.27 | loss 0.4018 | lr 5.75e-04 | elapsed 5.89h | ETA 7.91h
+{'loss': '0.4018', 'grad_norm': '1.031', 'learning_rate': '0.0005752', 'epoch': '4.27'}
+[progress] step 11800/27520 | epoch 4.29 | loss 0.4043 | lr 5.73e-04 | elapsed 5.91h | ETA 7.87h
+{'loss': '0.4043', 'grad_norm': '1.279', 'learning_rate': '0.0005733', 'epoch': '4.288'}
+[progress] step 11850/27520 | epoch 4.31 | loss 0.3962 | lr 5.72e-04 | elapsed 5.93h | ETA 7.84h
+{'loss': '0.3962', 'grad_norm': '0.9942', 'learning_rate': '0.0005715', 'epoch': '4.306'}
+[progress] step 11900/27520 | epoch 4.32 | loss 0.4072 | lr 5.70e-04 | elapsed 5.95h | ETA 7.81h
+{'loss': '0.4072', 'grad_norm': '1.014', 'learning_rate': '0.0005697', 'epoch': '4.324'}
+[progress] step 11950/27520 | epoch 4.34 | loss 0.4083 | lr 5.68e-04 | elapsed 5.97h | ETA 7.78h
+{'loss': '0.4083', 'grad_norm': '1.348', 'learning_rate': '0.0005679', 'epoch': '4.342'}
+[progress] step 12000/27520 | epoch 4.36 | loss 0.4189 | lr 5.66e-04 | elapsed 5.99h | ETA 7.75h
+{'loss': '0.4189', 'grad_norm': '1.083', 'learning_rate': '0.000566', 'epoch': '4.361'}
+[progress] step 12050/27520 | epoch 4.38 | loss 0.4143 | lr 5.64e-04 | elapsed 6.02h | ETA 7.72h
+{'loss': '0.4143', 'grad_norm': '1.126', 'learning_rate': '0.0005642', 'epoch': '4.379'}
+[progress] step 12100/27520 | epoch 4.40 | loss 0.4003 | lr 5.62e-04 | elapsed 6.04h | ETA 7.69h
+{'loss': '0.4003', 'grad_norm': '1.24', 'learning_rate': '0.0005624', 'epoch': '4.397'}
+[progress] step 12150/27520 | epoch 4.42 | loss 0.3859 | lr 5.61e-04 | elapsed 6.06h | ETA 7.66h
+{'loss': '0.3859', 'grad_norm': '1.022', 'learning_rate': '0.0005606', 'epoch': '4.415'}
+[progress] step 12200/27520 | epoch 4.43 | loss 0.4012 | lr 5.59e-04 | elapsed 6.08h | ETA 7.63h
+{'loss': '0.4012', 'grad_norm': '1.098', 'learning_rate': '0.0005588', 'epoch': '4.433'}
+[progress] step 12250/27520 | epoch 4.45 | loss 0.4056 | lr 5.57e-04 | elapsed 6.10h | ETA 7.60h
+{'loss': '0.4056', 'grad_norm': '1.395', 'learning_rate': '0.0005569', 'epoch': '4.451'}
+[progress] step 12300/27520 | epoch 4.47 | loss 0.4060 | lr 5.55e-04 | elapsed 6.12h | ETA 7.57h
+{'loss': '0.406', 'grad_norm': '1.502', 'learning_rate': '0.0005551', 'epoch': '4.47'}
+[progress] step 12350/27520 | epoch 4.49 | loss 0.4037 | lr 5.53e-04 | elapsed 6.14h | ETA 7.54h
+{'loss': '0.4037', 'grad_norm': '1.032', 'learning_rate': '0.0005533', 'epoch': '4.488'}
+{'eval_loss': '0.2579', 'eval_wer': '46.25', 'eval_cer': '14.74', 'eval_runtime': '306.9', 'eval_samples_per_second': '1.955', 'eval_steps_per_second': '0.124', 'epoch': '4.5'}
+[eval] step 12384 epoch 4.50 | WER 46.25 | CER 14.74 | loss 0.2579
+[progress] step 12400/27520 | epoch 4.51 | loss 0.3974 | lr 5.51e-04 | elapsed 6.25h | ETA 7.62h
+{'loss': '0.3974', 'grad_norm': '1.224', 'learning_rate': '0.0005515', 'epoch': '4.506'}
+[progress] step 12450/27520 | epoch 4.52 | loss 0.3990 | lr 5.50e-04 | elapsed 6.27h | ETA 7.59h
+{'loss': '0.399', 'grad_norm': '1.193', 'learning_rate': '0.0005496', 'epoch': '4.524'}
+[progress] step 12500/27520 | epoch 4.54 | loss 0.4014 | lr 5.48e-04 | elapsed 6.29h | ETA 7.56h
+{'loss': '0.4014', 'grad_norm': '1.022', 'learning_rate': '0.0005478', 'epoch': '4.542'}
+[progress] step 12550/27520 | epoch 4.56 | loss 0.3979 | lr 5.46e-04 | elapsed 6.31h | ETA 7.53h
+{'loss': '0.3979', 'grad_norm': '1.186', 'learning_rate': '0.000546', 'epoch': '4.56'}
+[progress] step 12600/27520 | epoch 4.58 | loss 0.4103 | lr 5.44e-04 | elapsed 6.33h | ETA 7.50h
+{'loss': '0.4103', 'grad_norm': '1.077', 'learning_rate': '0.0005442', 'epoch': '4.579'}
+[progress] step 12650/27520 | epoch 4.60 | loss 0.4048 | lr 5.42e-04 | elapsed 6.35h | ETA 7.47h
+{'loss': '0.4048', 'grad_norm': '1.133', 'learning_rate': '0.0005423', 'epoch': '4.597'}
+[progress] step 12700/27520 | epoch 4.61 | loss 0.4109 | lr 5.41e-04 | elapsed 6.37h | ETA 7.44h
+{'loss': '0.4109', 'grad_norm': '1.158', 'learning_rate': '0.0005405', 'epoch': '4.615'}
+[progress] step 12750/27520 | epoch 4.63 | loss 0.3885 | lr 5.39e-04 | elapsed 6.39h | ETA 7.41h
+{'loss': '0.3885', 'grad_norm': '0.9049', 'learning_rate': '0.0005387', 'epoch': '4.633'}
+[progress] step 12800/27520 | epoch 4.65 | loss 0.4361 | lr 5.37e-04 | elapsed 6.41h | ETA 7.38h
+{'loss': '0.4361', 'grad_norm': '1.113', 'learning_rate': '0.0005369', 'epoch': '4.651'}
+[progress] step 12850/27520 | epoch 4.67 | loss 0.3986 | lr 5.35e-04 | elapsed 6.43h | ETA 7.35h
+{'loss': '0.3986', 'grad_norm': '1.167', 'learning_rate': '0.000535', 'epoch': '4.669'}
+[progress] step 12900/27520 | epoch 4.69 | loss 0.3970 | lr 5.33e-04 | elapsed 6.45h | ETA 7.32h
+{'loss': '0.397', 'grad_norm': '1.213', 'learning_rate': '0.0005332', 'epoch': '4.688'}
+[progress] step 12950/27520 | epoch 4.71 | loss 0.4117 | lr 5.31e-04 | elapsed 6.48h | ETA 7.29h
+{'loss': '0.4117', 'grad_norm': '1.308', 'learning_rate': '0.0005314', 'epoch': '4.706'}
+[progress] step 13000/27520 | epoch 4.72 | loss 0.3916 | lr 5.30e-04 | elapsed 6.50h | ETA 7.26h
+{'loss': '0.3916', 'grad_norm': '1.101', 'learning_rate': '0.0005296', 'epoch': '4.724'}
+[progress] step 13050/27520 | epoch 4.74 | loss 0.4076 | lr 5.28e-04 | elapsed 6.52h | ETA 7.23h
+{'loss': '0.4076', 'grad_norm': '1.14', 'learning_rate': '0.0005278', 'epoch': '4.742'}
+[progress] step 13100/27520 | epoch 4.76 | loss 0.3979 | lr 5.26e-04 | elapsed 6.54h | ETA 7.20h
+{'loss': '0.3979', 'grad_norm': '1.093', 'learning_rate': '0.0005259', 'epoch': '4.76'}
+[progress] step 13150/27520 | epoch 4.78 | loss 0.4174 | lr 5.24e-04 | elapsed 6.56h | ETA 7.17h
+{'loss': '0.4174', 'grad_norm': '1.215', 'learning_rate': '0.0005241', 'epoch': '4.778'}
+[progress] step 13200/27520 | epoch 4.80 | loss 0.3995 | lr 5.22e-04 | elapsed 6.58h | ETA 7.14h
+{'loss': '0.3995', 'grad_norm': '1.258', 'learning_rate': '0.0005223', 'epoch': '4.797'}
+[progress] step 13250/27520 | epoch 4.81 | loss 0.4057 | lr 5.20e-04 | elapsed 6.60h | ETA 7.11h
+{'loss': '0.4057', 'grad_norm': '0.8595', 'learning_rate': '0.0005205', 'epoch': '4.815'}
+[progress] step 13300/27520 | epoch 4.83 | loss 0.4196 | lr 5.19e-04 | elapsed 6.62h | ETA 7.08h
+{'loss': '0.4196', 'grad_norm': '1.155', 'learning_rate': '0.0005186', 'epoch': '4.833'}
+[progress] step 13350/27520 | epoch 4.85 | loss 0.4063 | lr 5.17e-04 | elapsed 6.64h | ETA 7.05h
+{'loss': '0.4063', 'grad_norm': '1.065', 'learning_rate': '0.0005168', 'epoch': '4.851'}
+[progress] step 13400/27520 | epoch 4.87 | loss 0.3944 | lr 5.15e-04 | elapsed 6.66h | ETA 7.02h
+{'loss': '0.3944', 'grad_norm': '1.005', 'learning_rate': '0.000515', 'epoch': '4.869'}
+[progress] step 13450/27520 | epoch 4.89 | loss 0.4039 | lr 5.13e-04 | elapsed 6.68h | ETA 6.99h
+{'loss': '0.4039', 'grad_norm': '0.9967', 'learning_rate': '0.0005132', 'epoch': '4.888'}
+[progress] step 13500/27520 | epoch 4.91 | loss 0.4048 | lr 5.11e-04 | elapsed 6.70h | ETA 6.96h
+{'loss': '0.4048', 'grad_norm': '1.097', 'learning_rate': '0.0005113', 'epoch': '4.906'}
+[progress] step 13550/27520 | epoch 4.92 | loss 0.3986 | lr 5.10e-04 | elapsed 6.72h | ETA 6.93h
+{'loss': '0.3986', 'grad_norm': '0.9986', 'learning_rate': '0.0005095', 'epoch': '4.924'}
+[progress] step 13600/27520 | epoch 4.94 | loss 0.4061 | lr 5.08e-04 | elapsed 6.75h | ETA 6.90h
+{'loss': '0.4061', 'grad_norm': '1.473', 'learning_rate': '0.0005077', 'epoch': '4.942'}
+[progress] step 13650/27520 | epoch 4.96 | loss 0.4086 | lr 5.06e-04 | elapsed 6.77h | ETA 6.88h
+{'loss': '0.4086', 'grad_norm': '1.201', 'learning_rate': '0.0005059', 'epoch': '4.96'}
+[progress] step 13700/27520 | epoch 4.98 | loss 0.3965 | lr 5.04e-04 | elapsed 6.79h | ETA 6.85h
+{'loss': '0.3965', 'grad_norm': '1.157', 'learning_rate': '0.000504', 'epoch': '4.978'}
+[progress] step 13750/27520 | epoch 5.00 | loss 0.3871 | lr 5.02e-04 | elapsed 6.81h | ETA 6.82h
+{'loss': '0.3871', 'grad_norm': '1.064', 'learning_rate': '0.0005022', 'epoch': '4.997'}
+{'eval_loss': '0.2492', 'eval_wer': '44.95', 'eval_cer': '14.79', 'eval_runtime': '307', 'eval_samples_per_second': '1.954', 'eval_steps_per_second': '0.124', 'epoch': '5'}
+[eval] step 13760 epoch 5.00 | WER 44.95 | CER 14.79 | loss 0.2492
+[2026-09-22 19:18:34] Saved epoch adapter -> runs\whisper-small_lora_r32\adapters\epoch_05
+[progress] step 13800/27520 | epoch 5.01 | loss 0.3521 | lr 5.00e-04 | elapsed 6.91h | ETA 6.87h
+{'loss': '0.3521', 'grad_norm': '1.004', 'learning_rate': '0.0005004', 'epoch': '5.015'}
+[progress] step 13850/27520 | epoch 5.03 | loss 0.3534 | lr 4.99e-04 | elapsed 6.94h | ETA 6.85h
+{'loss': '0.3534', 'grad_norm': '0.8985', 'learning_rate': '0.0004986', 'epoch': '5.033'}
+[progress] step 13900/27520 | epoch 5.05 | loss 0.3441 | lr 4.97e-04 | elapsed 6.96h | ETA 6.82h
+{'loss': '0.3441', 'grad_norm': '0.8817', 'learning_rate': '0.0004968', 'epoch': '5.051'}
+[progress] step 13950/27520 | epoch 5.07 | loss 0.3429 | lr 4.95e-04 | elapsed 6.98h | ETA 6.79h
+{'loss': '0.3429', 'grad_norm': '0.9983', 'learning_rate': '0.0004949', 'epoch': '5.069'}
+[progress] step 14000/27520 | epoch 5.09 | loss 0.3522 | lr 4.93e-04 | elapsed 7.00h | ETA 6.76h
+{'loss': '0.3522', 'grad_norm': '0.9015', 'learning_rate': '0.0004931', 'epoch': '5.087'}
+[progress] step 14050/27520 | epoch 5.11 | loss 0.3394 | lr 4.91e-04 | elapsed 7.02h | ETA 6.73h
+{'loss': '0.3394', 'grad_norm': '1.083', 'learning_rate': '0.0004913', 'epoch': '5.105'}
+[progress] step 14100/27520 | epoch 5.12 | loss 0.3516 | lr 4.89e-04 | elapsed 7.04h | ETA 6.70h
+{'loss': '0.3516', 'grad_norm': '1.207', 'learning_rate': '0.0004895', 'epoch': '5.124'}
+[progress] step 14150/27520 | epoch 5.14 | loss 0.3548 | lr 4.88e-04 | elapsed 7.06h | ETA 6.67h
+{'loss': '0.3548', 'grad_norm': '1.221', 'learning_rate': '0.0004876', 'epoch': '5.142'}
+[progress] step 14200/27520 | epoch 5.16 | loss 0.3414 | lr 4.86e-04 | elapsed 7.08h | ETA 6.64h
+{'loss': '0.3414', 'grad_norm': '0.9573', 'learning_rate': '0.0004858', 'epoch': '5.16'}
+[progress] step 14250/27520 | epoch 5.18 | loss 0.3586 | lr 4.84e-04 | elapsed 7.10h | ETA 6.61h
+{'loss': '0.3586', 'grad_norm': '1.134', 'learning_rate': '0.000484', 'epoch': '5.178'}
+[progress] step 14300/27520 | epoch 5.20 | loss 0.3614 | lr 4.82e-04 | elapsed 7.12h | ETA 6.58h
+{'loss': '0.3614', 'grad_norm': '1.265', 'learning_rate': '0.0004822', 'epoch': '5.196'}
+[progress] step 14350/27520 | epoch 5.21 | loss 0.3443 | lr 4.80e-04 | elapsed 7.14h | ETA 6.56h
+{'loss': '0.3443', 'grad_norm': '1.164', 'learning_rate': '0.0004803', 'epoch': '5.214'}
+[progress] step 14400/27520 | epoch 5.23 | loss 0.3514 | lr 4.79e-04 | elapsed 7.16h | ETA 6.53h
+{'loss': '0.3514', 'grad_norm': '1.09', 'learning_rate': '0.0004785', 'epoch': '5.233'}
+[progress] step 14450/27520 | epoch 5.25 | loss 0.3724 | lr 4.77e-04 | elapsed 7.18h | ETA 6.50h
+{'loss': '0.3724', 'grad_norm': '1.052', 'learning_rate': '0.0004767', 'epoch': '5.251'}
+[progress] step 14500/27520 | epoch 5.27 | loss 0.3532 | lr 4.75e-04 | elapsed 7.21h | ETA 6.47h
+{'loss': '0.3532', 'grad_norm': '1.097', 'learning_rate': '0.0004749', 'epoch': '5.269'}
+[progress] step 14550/27520 | epoch 5.29 | loss 0.3625 | lr 4.73e-04 | elapsed 7.23h | ETA 6.44h
+{'loss': '0.3625', 'grad_norm': '0.9764', 'learning_rate': '0.000473', 'epoch': '5.287'}
+[progress] step 14600/27520 | epoch 5.31 | loss 0.3540 | lr 4.71e-04 | elapsed 7.25h | ETA 6.41h
+{'loss': '0.354', 'grad_norm': '1.045', 'learning_rate': '0.0004712', 'epoch': '5.305'}
+[progress] step 14650/27520 | epoch 5.32 | loss 0.3586 | lr 4.69e-04 | elapsed 7.27h | ETA 6.38h
+{'loss': '0.3586', 'grad_norm': '0.8835', 'learning_rate': '0.0004694', 'epoch': '5.323'}
+[progress] step 14700/27520 | epoch 5.34 | loss 0.3595 | lr 4.68e-04 | elapsed 7.29h | ETA 6.36h
+{'loss': '0.3595', 'grad_norm': '1.075', 'learning_rate': '0.0004676', 'epoch': '5.342'}
+[progress] step 14750/27520 | epoch 5.36 | loss 0.3566 | lr 4.66e-04 | elapsed 7.31h | ETA 6.33h
+{'loss': '0.3566', 'grad_norm': '1.193', 'learning_rate': '0.0004658', 'epoch': '5.36'}
+[progress] step 14800/27520 | epoch 5.38 | loss 0.3604 | lr 4.64e-04 | elapsed 7.33h | ETA 6.30h
+{'loss': '0.3604', 'grad_norm': '0.9593', 'learning_rate': '0.0004639', 'epoch': '5.378'}
+[progress] step 14850/27520 | epoch 5.40 | loss 0.3618 | lr 4.62e-04 | elapsed 7.35h | ETA 6.27h
+{'loss': '0.3618', 'grad_norm': '1.067', 'learning_rate': '0.0004621', 'epoch': '5.396'}
+[progress] step 14900/27520 | epoch 5.41 | loss 0.3581 | lr 4.60e-04 | elapsed 7.37h | ETA 6.24h
+{'loss': '0.3581', 'grad_norm': '1.354', 'learning_rate': '0.0004603', 'epoch': '5.414'}
+[progress] step 14950/27520 | epoch 5.43 | loss 0.3570 | lr 4.58e-04 | elapsed 7.39h | ETA 6.22h
+{'loss': '0.357', 'grad_norm': '1.041', 'learning_rate': '0.0004585', 'epoch': '5.432'}
+[progress] step 15000/27520 | epoch 5.45 | loss 0.3533 | lr 4.57e-04 | elapsed 7.41h | ETA 6.19h
+{'loss': '0.3533', 'grad_norm': '1.183', 'learning_rate': '0.0004566', 'epoch': '5.451'}
+[progress] step 15050/27520 | epoch 5.47 | loss 0.3738 | lr 4.55e-04 | elapsed 7.43h | ETA 6.16h
+{'loss': '0.3738', 'grad_norm': '1.062', 'learning_rate': '0.0004548', 'epoch': '5.469'}
+[progress] step 15100/27520 | epoch 5.49 | loss 0.3636 | lr 4.53e-04 | elapsed 7.45h | ETA 6.13h
+{'loss': '0.3636', 'grad_norm': '1.169', 'learning_rate': '0.000453', 'epoch': '5.487'}
+{'eval_loss': '0.248', 'eval_wer': '44.72', 'eval_cer': '14.15', 'eval_runtime': '303', 'eval_samples_per_second': '1.98', 'eval_steps_per_second': '0.125', 'epoch': '5.5'}
+[eval] step 15136 epoch 5.50 | WER 44.72 | CER 14.15 | loss 0.2480
+[progress] step 15150/27520 | epoch 5.51 | loss 0.3575 | lr 4.51e-04 | elapsed 7.56h | ETA 6.17h
+{'loss': '0.3575', 'grad_norm': '0.9225', 'learning_rate': '0.0004512', 'epoch': '5.505'}
+[progress] step 15200/27520 | epoch 5.52 | loss 0.3667 | lr 4.49e-04 | elapsed 7.58h | ETA 6.14h
+{'loss': '0.3667', 'grad_norm': '1.146', 'learning_rate': '0.0004493', 'epoch': '5.523'}
+[progress] step 15250/27520 | epoch 5.54 | loss 0.3583 | lr 4.48e-04 | elapsed 7.60h | ETA 6.12h
+{'loss': '0.3583', 'grad_norm': '0.8694', 'learning_rate': '0.0004475', 'epoch': '5.542'}
+[progress] step 15300/27520 | epoch 5.56 | loss 0.3687 | lr 4.46e-04 | elapsed 7.62h | ETA 6.09h
+{'loss': '0.3687', 'grad_norm': '1.166', 'learning_rate': '0.0004457', 'epoch': '5.56'}
+[progress] step 15350/27520 | epoch 5.58 | loss 0.3643 | lr 4.44e-04 | elapsed 7.64h | ETA 6.06h
+{'loss': '0.3643', 'grad_norm': '0.9351', 'learning_rate': '0.0004439', 'epoch': '5.578'}
+[progress] step 15400/27520 | epoch 5.60 | loss 0.3603 | lr 4.42e-04 | elapsed 7.66h | ETA 6.03h
+{'loss': '0.3603', 'grad_norm': '0.9918', 'learning_rate': '0.000442', 'epoch': '5.596'}
+[progress] step 15450/27520 | epoch 5.61 | loss 0.3587 | lr 4.40e-04 | elapsed 7.68h | ETA 6.00h
+{'loss': '0.3587', 'grad_norm': '0.9231', 'learning_rate': '0.0004402', 'epoch': '5.614'}
+[progress] step 15500/27520 | epoch 5.63 | loss 0.3579 | lr 4.38e-04 | elapsed 7.71h | ETA 5.98h
+{'loss': '0.3579', 'grad_norm': '1.116', 'learning_rate': '0.0004384', 'epoch': '5.632'}
+[progress] step 15550/27520 | epoch 5.65 | loss 0.3601 | lr 4.37e-04 | elapsed 7.73h | ETA 5.95h
+{'loss': '0.3601', 'grad_norm': '1.05', 'learning_rate': '0.0004366', 'epoch': '5.651'}
+[progress] step 15600/27520 | epoch 5.67 | loss 0.3754 | lr 4.35e-04 | elapsed 7.75h | ETA 5.92h
+{'loss': '0.3754', 'grad_norm': '0.9695', 'learning_rate': '0.0004348', 'epoch': '5.669'}
+[progress] step 15650/27520 | epoch 5.69 | loss 0.3651 | lr 4.33e-04 | elapsed 7.77h | ETA 5.89h
+{'loss': '0.3651', 'grad_norm': '1.159', 'learning_rate': '0.0004329', 'epoch': '5.687'}
+[progress] step 15700/27520 | epoch 5.71 | loss 0.3719 | lr 4.31e-04 | elapsed 7.79h | ETA 5.86h
+{'loss': '0.3719', 'grad_norm': '1.261', 'learning_rate': '0.0004311', 'epoch': '5.705'}
+[progress] step 15750/27520 | epoch 5.72 | loss 0.3503 | lr 4.29e-04 | elapsed 7.81h | ETA 5.84h
+{'loss': '0.3503', 'grad_norm': '1.227', 'learning_rate': '0.0004293', 'epoch': '5.723'}
+[progress] step 15800/27520 | epoch 5.74 | loss 0.3675 | lr 4.27e-04 | elapsed 7.83h | ETA 5.81h
+{'loss': '0.3675', 'grad_norm': '1.264', 'learning_rate': '0.0004275', 'epoch': '5.741'}
+[progress] step 15850/27520 | epoch 5.76 | loss 0.3474 | lr 4.26e-04 | elapsed 7.85h | ETA 5.78h
+{'loss': '0.3474', 'grad_norm': '1.258', 'learning_rate': '0.0004256', 'epoch': '5.76'}
+[progress] step 15900/27520 | epoch 5.78 | loss 0.3567 | lr 4.24e-04 | elapsed 7.87h | ETA 5.75h
+{'loss': '0.3567', 'grad_norm': '1.008', 'learning_rate': '0.0004238', 'epoch': '5.778'}
+[progress] step 15950/27520 | epoch 5.80 | loss 0.3679 | lr 4.22e-04 | elapsed 7.89h | ETA 5.73h
+{'loss': '0.3679', 'grad_norm': '1.048', 'learning_rate': '0.000422', 'epoch': '5.796'}
+[progress] step 16000/27520 | epoch 5.81 | loss 0.3612 | lr 4.20e-04 | elapsed 7.91h | ETA 5.70h
+{'loss': '0.3612', 'grad_norm': '1.156', 'learning_rate': '0.0004202', 'epoch': '5.814'}
+[progress] step 16050/27520 | epoch 5.83 | loss 0.3445 | lr 4.18e-04 | elapsed 7.93h | ETA 5.67h
+{'loss': '0.3445', 'grad_norm': '1.324', 'learning_rate': '0.0004183', 'epoch': '5.832'}
+[progress] step 16100/27520 | epoch 5.85 | loss 0.3769 | lr 4.17e-04 | elapsed 7.96h | ETA 5.64h
+{'loss': '0.3769', 'grad_norm': '1.301', 'learning_rate': '0.0004165', 'epoch': '5.85'}
+[progress] step 16150/27520 | epoch 5.87 | loss 0.3554 | lr 4.15e-04 | elapsed 7.98h | ETA 5.62h
+{'loss': '0.3554', 'grad_norm': '1.101', 'learning_rate': '0.0004147', 'epoch': '5.869'}
+[progress] step 16200/27520 | epoch 5.89 | loss 0.3579 | lr 4.13e-04 | elapsed 8.00h | ETA 5.59h
+{'loss': '0.3579', 'grad_norm': '1.075', 'learning_rate': '0.0004129', 'epoch': '5.887'}
+[progress] step 16250/27520 | epoch 5.90 | loss 0.3583 | lr 4.11e-04 | elapsed 8.02h | ETA 5.56h
+{'loss': '0.3583', 'grad_norm': '1.061', 'learning_rate': '0.0004111', 'epoch': '5.905'}
+[progress] step 16300/27520 | epoch 5.92 | loss 0.3806 | lr 4.09e-04 | elapsed 8.04h | ETA 5.53h
+{'loss': '0.3806', 'grad_norm': '1.007', 'learning_rate': '0.0004092', 'epoch': '5.923'}
+[progress] step 16350/27520 | epoch 5.94 | loss 0.3707 | lr 4.07e-04 | elapsed 8.06h | ETA 5.51h
+{'loss': '0.3707', 'grad_norm': '1.058', 'learning_rate': '0.0004074', 'epoch': '5.941'}
+[progress] step 16400/27520 | epoch 5.96 | loss 0.3645 | lr 4.06e-04 | elapsed 8.08h | ETA 5.48h
+{'loss': '0.3645', 'grad_norm': '1.148', 'learning_rate': '0.0004056', 'epoch': '5.959'}
+[progress] step 16450/27520 | epoch 5.98 | loss 0.3644 | lr 4.04e-04 | elapsed 8.10h | ETA 5.45h
+{'loss': '0.3644', 'grad_norm': '1.109', 'learning_rate': '0.0004038', 'epoch': '5.978'}
+[progress] step 16500/27520 | epoch 6.00 | loss 0.3539 | lr 4.02e-04 | elapsed 8.12h | ETA 5.42h
+{'loss': '0.3539', 'grad_norm': '0.9002', 'learning_rate': '0.0004019', 'epoch': '5.996'}
+{'eval_loss': '0.2382', 'eval_wer': '44.34', 'eval_cer': '14.19', 'eval_runtime': '304.8', 'eval_samples_per_second': '1.968', 'eval_steps_per_second': '0.125', 'epoch': '6'}
+[eval] step 16512 epoch 6.00 | WER 44.34 | CER 14.19 | loss 0.2382
+[2026-09-22 20:37:24] Saved epoch adapter -> runs\whisper-small_lora_r32\adapters\epoch_06
+[progress] step 16550/27520 | epoch 6.01 | loss 0.3160 | lr 4.00e-04 | elapsed 8.23h | ETA 5.45h
+{'loss': '0.316', 'grad_norm': '0.847', 'learning_rate': '0.0004001', 'epoch': '6.014'}
+[progress] step 16600/27520 | epoch 6.03 | loss 0.3021 | lr 3.98e-04 | elapsed 8.25h | ETA 5.43h
+{'loss': '0.3021', 'grad_norm': '1.178', 'learning_rate': '0.0003983', 'epoch': '6.032'}
+[progress] step 16650/27520 | epoch 6.05 | loss 0.3022 | lr 3.96e-04 | elapsed 8.27h | ETA 5.40h
+{'loss': '0.3022', 'grad_norm': '1.112', 'learning_rate': '0.0003965', 'epoch': '6.05'}
+[progress] step 16700/27520 | epoch 6.07 | loss 0.2940 | lr 3.95e-04 | elapsed 8.29h | ETA 5.37h
+{'loss': '0.294', 'grad_norm': '0.9833', 'learning_rate': '0.0003946', 'epoch': '6.068'}
+[progress] step 16750/27520 | epoch 6.09 | loss 0.3108 | lr 3.93e-04 | elapsed 8.31h | ETA 5.34h
+{'loss': '0.3108', 'grad_norm': '0.9345', 'learning_rate': '0.0003928', 'epoch': '6.086'}
+[progress] step 16800/27520 | epoch 6.10 | loss 0.3113 | lr 3.91e-04 | elapsed 8.33h | ETA 5.32h
+{'loss': '0.3113', 'grad_norm': '1.113', 'learning_rate': '0.000391', 'epoch': '6.105'}
+[progress] step 16850/27520 | epoch 6.12 | loss 0.3013 | lr 3.89e-04 | elapsed 8.35h | ETA 5.29h
+{'loss': '0.3013', 'grad_norm': '0.9759', 'learning_rate': '0.0003892', 'epoch': '6.123'}
+[progress] step 16900/27520 | epoch 6.14 | loss 0.3175 | lr 3.87e-04 | elapsed 8.37h | ETA 5.26h
+{'loss': '0.3175', 'grad_norm': '1.305', 'learning_rate': '0.0003873', 'epoch': '6.141'}
+[progress] step 16950/27520 | epoch 6.16 | loss 0.3023 | lr 3.86e-04 | elapsed 8.39h | ETA 5.23h
+{'loss': '0.3023', 'grad_norm': '1.19', 'learning_rate': '0.0003855', 'epoch': '6.159'}
+[progress] step 17000/27520 | epoch 6.18 | loss 0.2959 | lr 3.84e-04 | elapsed 8.42h | ETA 5.21h
+{'loss': '0.2959', 'grad_norm': '0.8657', 'learning_rate': '0.0003837', 'epoch': '6.177'}
+[progress] step 17050/27520 | epoch 6.20 | loss 0.3172 | lr 3.82e-04 | elapsed 8.44h | ETA 5.18h
+{'loss': '0.3172', 'grad_norm': '1.018', 'learning_rate': '0.0003819', 'epoch': '6.196'}
+[progress] step 17100/27520 | epoch 6.21 | loss 0.3111 | lr 3.80e-04 | elapsed 8.46h | ETA 5.15h
+{'loss': '0.3111', 'grad_norm': '0.9307', 'learning_rate': '0.0003801', 'epoch': '6.214'}
+[progress] step 17150/27520 | epoch 6.23 | loss 0.3192 | lr 3.78e-04 | elapsed 8.48h | ETA 5.13h
+{'loss': '0.3192', 'grad_norm': '0.931', 'learning_rate': '0.0003782', 'epoch': '6.232'}
+[progress] step 17200/27520 | epoch 6.25 | loss 0.3209 | lr 3.76e-04 | elapsed 8.50h | ETA 5.10h
+{'loss': '0.3209', 'grad_norm': '1.053', 'learning_rate': '0.0003764', 'epoch': '6.25'}
+[progress] step 17250/27520 | epoch 6.27 | loss 0.3109 | lr 3.75e-04 | elapsed 8.52h | ETA 5.07h
+{'loss': '0.3109', 'grad_norm': '0.9972', 'learning_rate': '0.0003746', 'epoch': '6.268'}
+[progress] step 17300/27520 | epoch 6.29 | loss 0.3254 | lr 3.73e-04 | elapsed 8.54h | ETA 5.04h
+{'loss': '0.3254', 'grad_norm': '1.093', 'learning_rate': '0.0003728', 'epoch': '6.286'}
+[progress] step 17350/27520 | epoch 6.30 | loss 0.3191 | lr 3.71e-04 | elapsed 8.56h | ETA 5.02h
+{'loss': '0.3191', 'grad_norm': '1.493', 'learning_rate': '0.0003709', 'epoch': '6.305'}
+[progress] step 17400/27520 | epoch 6.32 | loss 0.3255 | lr 3.69e-04 | elapsed 8.58h | ETA 4.99h
+{'loss': '0.3255', 'grad_norm': '1.1', 'learning_rate': '0.0003691', 'epoch': '6.323'}
+[progress] step 17450/27520 | epoch 6.34 | loss 0.3187 | lr 3.67e-04 | elapsed 8.60h | ETA 4.96h
+{'loss': '0.3187', 'grad_norm': '0.9949', 'learning_rate': '0.0003673', 'epoch': '6.341'}
+[progress] step 17500/27520 | epoch 6.36 | loss 0.3231 | lr 3.65e-04 | elapsed 8.62h | ETA 4.94h
+{'loss': '0.3231', 'grad_norm': '1.288', 'learning_rate': '0.0003655', 'epoch': '6.359'}
+[progress] step 17550/27520 | epoch 6.38 | loss 0.3299 | lr 3.64e-04 | elapsed 8.64h | ETA 4.91h
+{'loss': '0.3299', 'grad_norm': '1.537', 'learning_rate': '0.0003636', 'epoch': '6.377'}
+[progress] step 17600/27520 | epoch 6.40 | loss 0.3101 | lr 3.62e-04 | elapsed 8.66h | ETA 4.88h
+{'loss': '0.3101', 'grad_norm': '1.129', 'learning_rate': '0.0003618', 'epoch': '6.395'}
+[progress] step 17650/27520 | epoch 6.41 | loss 0.3192 | lr 3.60e-04 | elapsed 8.69h | ETA 4.86h
+{'loss': '0.3192', 'grad_norm': '1.013', 'learning_rate': '0.00036', 'epoch': '6.414'}
+[progress] step 17700/27520 | epoch 6.43 | loss 0.3214 | lr 3.58e-04 | elapsed 8.71h | ETA 4.83h
+{'loss': '0.3214', 'grad_norm': '1.369', 'learning_rate': '0.0003582', 'epoch': '6.432'}
+[progress] step 17750/27520 | epoch 6.45 | loss 0.3110 | lr 3.56e-04 | elapsed 8.73h | ETA 4.80h
+{'loss': '0.311', 'grad_norm': '1.399', 'learning_rate': '0.0003563', 'epoch': '6.45'}
+[progress] step 17800/27520 | epoch 6.47 | loss 0.3277 | lr 3.55e-04 | elapsed 8.75h | ETA 4.78h
+{'loss': '0.3277', 'grad_norm': '1.139', 'learning_rate': '0.0003545', 'epoch': '6.468'}
+[progress] step 17850/27520 | epoch 6.49 | loss 0.3087 | lr 3.53e-04 | elapsed 8.77h | ETA 4.75h
+{'loss': '0.3087', 'grad_norm': '0.9895', 'learning_rate': '0.0003527', 'epoch': '6.486'}
+{'eval_loss': '0.2399', 'eval_wer': '43.51', 'eval_cer': '13.94', 'eval_runtime': '304.4', 'eval_samples_per_second': '1.971', 'eval_steps_per_second': '0.125', 'epoch': '6.5'}
+[eval] step 17888 epoch 6.50 | WER 43.51 | CER 13.94 | loss 0.2399
+[progress] step 17900/27520 | epoch 6.50 | loss 0.3328 | lr 3.51e-04 | elapsed 8.87h | ETA 4.77h
+{'loss': '0.3328', 'grad_norm': '1.201', 'learning_rate': '0.0003509', 'epoch': '6.504'}
+[progress] step 17950/27520 | epoch 6.52 | loss 0.3201 | lr 3.49e-04 | elapsed 8.89h | ETA 4.74h
+{'loss': '0.3201', 'grad_norm': '1.024', 'learning_rate': '0.0003491', 'epoch': '6.523'}
+[progress] step 18000/27520 | epoch 6.54 | loss 0.3246 | lr 3.47e-04 | elapsed 8.92h | ETA 4.72h
+{'loss': '0.3246', 'grad_norm': '1.204', 'learning_rate': '0.0003472', 'epoch': '6.541'}
+[progress] step 18050/27520 | epoch 6.56 | loss 0.3226 | lr 3.45e-04 | elapsed 8.94h | ETA 4.69h
+{'loss': '0.3226', 'grad_norm': '1.261', 'learning_rate': '0.0003454', 'epoch': '6.559'}
+[progress] step 18100/27520 | epoch 6.58 | loss 0.3162 | lr 3.44e-04 | elapsed 8.96h | ETA 4.66h
+{'loss': '0.3162', 'grad_norm': '1.366', 'learning_rate': '0.0003436', 'epoch': '6.577'}
+[progress] step 18150/27520 | epoch 6.60 | loss 0.3219 | lr 3.42e-04 | elapsed 8.98h | ETA 4.63h
+{'loss': '0.3219', 'grad_norm': '1.05', 'learning_rate': '0.0003418', 'epoch': '6.595'}
+[progress] step 18200/27520 | epoch 6.61 | loss 0.3152 | lr 3.40e-04 | elapsed 9.00h | ETA 4.61h
+{'loss': '0.3152', 'grad_norm': '0.9881', 'learning_rate': '0.0003399', 'epoch': '6.613'}
+[progress] step 18250/27520 | epoch 6.63 | loss 0.3165 | lr 3.38e-04 | elapsed 9.02h | ETA 4.58h
+{'loss': '0.3165', 'grad_norm': '1.079', 'learning_rate': '0.0003381', 'epoch': '6.632'}
+[progress] step 18300/27520 | epoch 6.65 | loss 0.3161 | lr 3.36e-04 | elapsed 9.04h | ETA 4.55h
+{'loss': '0.3161', 'grad_norm': '1.022', 'learning_rate': '0.0003363', 'epoch': '6.65'}
+[progress] step 18350/27520 | epoch 6.67 | loss 0.3087 | lr 3.34e-04 | elapsed 9.06h | ETA 4.53h
+{'loss': '0.3087', 'grad_norm': '1.163', 'learning_rate': '0.0003345', 'epoch': '6.668'}
+[progress] step 18400/27520 | epoch 6.69 | loss 0.3333 | lr 3.33e-04 | elapsed 9.08h | ETA 4.50h
+{'loss': '0.3333', 'grad_norm': '1.236', 'learning_rate': '0.0003326', 'epoch': '6.686'}
+[progress] step 18450/27520 | epoch 6.70 | loss 0.3284 | lr 3.31e-04 | elapsed 9.10h | ETA 4.47h
+{'loss': '0.3284', 'grad_norm': '1.092', 'learning_rate': '0.0003308', 'epoch': '6.704'}
+[progress] step 18500/27520 | epoch 6.72 | loss 0.3169 | lr 3.29e-04 | elapsed 9.12h | ETA 4.45h
+{'loss': '0.3169', 'grad_norm': '1.272', 'learning_rate': '0.000329', 'epoch': '6.723'}
+[progress] step 18550/27520 | epoch 6.74 | loss 0.3204 | lr 3.27e-04 | elapsed 9.14h | ETA 4.42h
+{'loss': '0.3204', 'grad_norm': '1.062', 'learning_rate': '0.0003272', 'epoch': '6.741'}
+[progress] step 18600/27520 | epoch 6.76 | loss 0.3261 | lr 3.25e-04 | elapsed 9.17h | ETA 4.40h
+{'loss': '0.3261', 'grad_norm': '1.263', 'learning_rate': '0.0003253', 'epoch': '6.759'}
+[progress] step 18650/27520 | epoch 6.78 | loss 0.3126 | lr 3.24e-04 | elapsed 9.19h | ETA 4.37h
+{'loss': '0.3126', 'grad_norm': '0.8443', 'learning_rate': '0.0003235', 'epoch': '6.777'}
+[progress] step 18700/27520 | epoch 6.80 | loss 0.3206 | lr 3.22e-04 | elapsed 9.21h | ETA 4.34h
+{'loss': '0.3206', 'grad_norm': '0.8391', 'learning_rate': '0.0003217', 'epoch': '6.795'}
+[progress] step 18750/27520 | epoch 6.81 | loss 0.3154 | lr 3.20e-04 | elapsed 9.23h | ETA 4.32h
+{'loss': '0.3154', 'grad_norm': '1.04', 'learning_rate': '0.0003199', 'epoch': '6.813'}
+[progress] step 18800/27520 | epoch 6.83 | loss 0.3200 | lr 3.18e-04 | elapsed 9.25h | ETA 4.29h
+{'loss': '0.32', 'grad_norm': '1.199', 'learning_rate': '0.0003181', 'epoch': '6.832'}
+[progress] step 18850/27520 | epoch 6.85 | loss 0.3205 | lr 3.16e-04 | elapsed 9.27h | ETA 4.26h
+{'loss': '0.3205', 'grad_norm': '1.23', 'learning_rate': '0.0003162', 'epoch': '6.85'}
+[progress] step 18900/27520 | epoch 6.87 | loss 0.3155 | lr 3.14e-04 | elapsed 9.29h | ETA 4.24h
+{'loss': '0.3155', 'grad_norm': '1.094', 'learning_rate': '0.0003144', 'epoch': '6.868'}
+[progress] step 18950/27520 | epoch 6.89 | loss 0.3152 | lr 3.13e-04 | elapsed 9.31h | ETA 4.21h
+{'loss': '0.3152', 'grad_norm': '1.302', 'learning_rate': '0.0003126', 'epoch': '6.886'}
+[progress] step 19000/27520 | epoch 6.90 | loss 0.3247 | lr 3.11e-04 | elapsed 9.33h | ETA 4.18h
+{'loss': '0.3247', 'grad_norm': '1.004', 'learning_rate': '0.0003108', 'epoch': '6.904'}
+[progress] step 19050/27520 | epoch 6.92 | loss 0.3156 | lr 3.09e-04 | elapsed 9.35h | ETA 4.16h
+{'loss': '0.3156', 'grad_norm': '1.344', 'learning_rate': '0.0003089', 'epoch': '6.922'}
+[progress] step 19100/27520 | epoch 6.94 | loss 0.3152 | lr 3.07e-04 | elapsed 9.37h | ETA 4.13h
+{'loss': '0.3152', 'grad_norm': '0.8706', 'learning_rate': '0.0003071', 'epoch': '6.941'}
+[progress] step 19150/27520 | epoch 6.96 | loss 0.3216 | lr 3.05e-04 | elapsed 9.39h | ETA 4.11h
+{'loss': '0.3216', 'grad_norm': '0.9915', 'learning_rate': '0.0003053', 'epoch': '6.959'}
+[progress] step 19200/27520 | epoch 6.98 | loss 0.3292 | lr 3.03e-04 | elapsed 9.41h | ETA 4.08h
+{'loss': '0.3292', 'grad_norm': '0.8411', 'learning_rate': '0.0003035', 'epoch': '6.977'}
+[progress] step 19250/27520 | epoch 7.00 | loss 0.3220 | lr 3.02e-04 | elapsed 9.44h | ETA 4.05h
+{'loss': '0.322', 'grad_norm': '1.005', 'learning_rate': '0.0003016', 'epoch': '6.995'}
+{'eval_loss': '0.2333', 'eval_wer': '43.43', 'eval_cer': '14.05', 'eval_runtime': '308.5', 'eval_samples_per_second': '1.945', 'eval_steps_per_second': '0.123', 'epoch': '7'}
+[eval] step 19264 epoch 7.00 | WER 43.43 | CER 14.05 | loss 0.2333
+[2026-09-22 21:56:18] Saved epoch adapter -> runs\whisper-small_lora_r32\adapters\epoch_07
+[progress] step 19300/27520 | epoch 7.01 | loss 0.2805 | lr 3.00e-04 | elapsed 9.54h | ETA 4.06h
+{'loss': '0.2805', 'grad_norm': '0.8528', 'learning_rate': '0.0002998', 'epoch': '7.013'}
+[progress] step 19350/27520 | epoch 7.03 | loss 0.2622 | lr 2.98e-04 | elapsed 9.56h | ETA 4.04h
+{'loss': '0.2622', 'grad_norm': '0.9678', 'learning_rate': '0.000298', 'epoch': '7.031'}
+[progress] step 19400/27520 | epoch 7.05 | loss 0.2573 | lr 2.96e-04 | elapsed 9.58h | ETA 4.01h
+{'loss': '0.2573', 'grad_norm': '1.693', 'learning_rate': '0.0002962', 'epoch': '7.049'}
+[progress] step 19450/27520 | epoch 7.07 | loss 0.2648 | lr 2.94e-04 | elapsed 9.60h | ETA 3.98h
+{'loss': '0.2648', 'grad_norm': '0.7312', 'learning_rate': '0.0002943', 'epoch': '7.068'}
+[progress] step 19500/27520 | epoch 7.09 | loss 0.2617 | lr 2.93e-04 | elapsed 9.62h | ETA 3.96h
+{'loss': '0.2617', 'grad_norm': '1.131', 'learning_rate': '0.0002925', 'epoch': '7.086'}
+[progress] step 19550/27520 | epoch 7.10 | loss 0.2660 | lr 2.91e-04 | elapsed 9.65h | ETA 3.93h
+{'loss': '0.266', 'grad_norm': '0.9843', 'learning_rate': '0.0002907', 'epoch': '7.104'}
+[progress] step 19600/27520 | epoch 7.12 | loss 0.2706 | lr 2.89e-04 | elapsed 9.67h | ETA 3.91h
+{'loss': '0.2706', 'grad_norm': '0.8879', 'learning_rate': '0.0002889', 'epoch': '7.122'}
+[progress] step 19650/27520 | epoch 7.14 | loss 0.2618 | lr 2.87e-04 | elapsed 9.69h | ETA 3.88h
+{'loss': '0.2618', 'grad_norm': '0.8389', 'learning_rate': '0.0002871', 'epoch': '7.14'}
+[progress] step 19700/27520 | epoch 7.16 | loss 0.2652 | lr 2.85e-04 | elapsed 9.71h | ETA 3.85h
+{'loss': '0.2652', 'grad_norm': '1.212', 'learning_rate': '0.0002852', 'epoch': '7.158'}
+[progress] step 19750/27520 | epoch 7.18 | loss 0.2632 | lr 2.83e-04 | elapsed 9.73h | ETA 3.83h
+{'loss': '0.2632', 'grad_norm': '0.8488', 'learning_rate': '0.0002834', 'epoch': '7.177'}
+[progress] step 19800/27520 | epoch 7.19 | loss 0.2734 | lr 2.82e-04 | elapsed 9.75h | ETA 3.80h
+{'loss': '0.2734', 'grad_norm': '0.9426', 'learning_rate': '0.0002816', 'epoch': '7.195'}
+[progress] step 19850/27520 | epoch 7.21 | loss 0.2677 | lr 2.80e-04 | elapsed 9.77h | ETA 3.78h
+{'loss': '0.2677', 'grad_norm': '0.8845', 'learning_rate': '0.0002798', 'epoch': '7.213'}
+[progress] step 19900/27520 | epoch 7.23 | loss 0.2658 | lr 2.78e-04 | elapsed 9.79h | ETA 3.75h
+{'loss': '0.2658', 'grad_norm': '0.9774', 'learning_rate': '0.0002779', 'epoch': '7.231'}
+[progress] step 19950/27520 | epoch 7.25 | loss 0.2739 | lr 2.76e-04 | elapsed 9.81h | ETA 3.72h
+{'loss': '0.2739', 'grad_norm': '0.9639', 'learning_rate': '0.0002761', 'epoch': '7.249'}
+[progress] step 20000/27520 | epoch 7.27 | loss 0.2707 | lr 2.74e-04 | elapsed 9.83h | ETA 3.70h
+{'loss': '0.2707', 'grad_norm': '1.046', 'learning_rate': '0.0002743', 'epoch': '7.267'}
+[progress] step 20050/27520 | epoch 7.29 | loss 0.2766 | lr 2.72e-04 | elapsed 9.85h | ETA 3.67h
+{'loss': '0.2766', 'grad_norm': '1.228', 'learning_rate': '0.0002725', 'epoch': '7.286'}
+[progress] step 20100/27520 | epoch 7.30 | loss 0.2654 | lr 2.71e-04 | elapsed 9.87h | ETA 3.65h
+{'loss': '0.2654', 'grad_norm': '0.9656', 'learning_rate': '0.0002706', 'epoch': '7.304'}
+[progress] step 20150/27520 | epoch 7.32 | loss 0.2668 | lr 2.69e-04 | elapsed 9.90h | ETA 3.62h
+{'loss': '0.2668', 'grad_norm': '1.043', 'learning_rate': '0.0002688', 'epoch': '7.322'}
+[progress] step 20200/27520 | epoch 7.34 | loss 0.2715 | lr 2.67e-04 | elapsed 9.92h | ETA 3.59h
+{'loss': '0.2715', 'grad_norm': '1.021', 'learning_rate': '0.000267', 'epoch': '7.34'}
+[progress] step 20250/27520 | epoch 7.36 | loss 0.2765 | lr 2.65e-04 | elapsed 9.94h | ETA 3.57h
+{'loss': '0.2765', 'grad_norm': '1.092', 'learning_rate': '0.0002652', 'epoch': '7.358'}
+[progress] step 20300/27520 | epoch 7.38 | loss 0.2820 | lr 2.63e-04 | elapsed 9.96h | ETA 3.54h
+{'loss': '0.282', 'grad_norm': '1.092', 'learning_rate': '0.0002633', 'epoch': '7.377'}
+[progress] step 20350/27520 | epoch 7.39 | loss 0.2639 | lr 2.62e-04 | elapsed 9.98h | ETA 3.52h
+{'loss': '0.2639', 'grad_norm': '0.9999', 'learning_rate': '0.0002615', 'epoch': '7.395'}
+[progress] step 20400/27520 | epoch 7.41 | loss 0.2808 | lr 2.60e-04 | elapsed 10.00h | ETA 3.49h
+{'loss': '0.2808', 'grad_norm': '0.992', 'learning_rate': '0.0002597', 'epoch': '7.413'}
+[progress] step 20450/27520 | epoch 7.43 | loss 0.2787 | lr 2.58e-04 | elapsed 10.02h | ETA 3.46h
+{'loss': '0.2787', 'grad_norm': '0.9903', 'learning_rate': '0.0002579', 'epoch': '7.431'}
+[progress] step 20500/27520 | epoch 7.45 | loss 0.2743 | lr 2.56e-04 | elapsed 10.04h | ETA 3.44h
+{'loss': '0.2743', 'grad_norm': '1.052', 'learning_rate': '0.0002561', 'epoch': '7.449'}
+[progress] step 20550/27520 | epoch 7.47 | loss 0.2874 | lr 2.54e-04 | elapsed 10.06h | ETA 3.41h
+{'loss': '0.2874', 'grad_norm': '0.9652', 'learning_rate': '0.0002542', 'epoch': '7.467'}
+[progress] step 20600/27520 | epoch 7.49 | loss 0.2747 | lr 2.52e-04 | elapsed 10.08h | ETA 3.39h
+{'loss': '0.2747', 'grad_norm': '1.005', 'learning_rate': '0.0002524', 'epoch': '7.486'}
+{'eval_loss': '0.2351', 'eval_wer': '43.26', 'eval_cer': '13.71', 'eval_runtime': '307', 'eval_samples_per_second': '1.955', 'eval_steps_per_second': '0.124', 'epoch': '7.5'}
+[eval] step 20640 epoch 7.50 | WER 43.26 | CER 13.71 | loss 0.2351
+[progress] step 20650/27520 | epoch 7.50 | loss 0.2861 | lr 2.51e-04 | elapsed 10.19h | ETA 3.39h
+{'loss': '0.2861', 'grad_norm': '1.242', 'learning_rate': '0.0002506', 'epoch': '7.504'}
+[progress] step 20700/27520 | epoch 7.52 | loss 0.2756 | lr 2.49e-04 | elapsed 10.21h | ETA 3.36h
+{'loss': '0.2756', 'grad_norm': '1.009', 'learning_rate': '0.0002488', 'epoch': '7.522'}
+[progress] step 20750/27520 | epoch 7.54 | loss 0.2795 | lr 2.47e-04 | elapsed 10.23h | ETA 3.34h
+{'loss': '0.2795', 'grad_norm': '0.9211', 'learning_rate': '0.0002469', 'epoch': '7.54'}
+[progress] step 20800/27520 | epoch 7.56 | loss 0.2715 | lr 2.45e-04 | elapsed 10.25h | ETA 3.31h
+{'loss': '0.2715', 'grad_norm': '1.076', 'learning_rate': '0.0002451', 'epoch': '7.558'}
+[progress] step 20850/27520 | epoch 7.58 | loss 0.2749 | lr 2.43e-04 | elapsed 10.27h | ETA 3.29h
+{'loss': '0.2749', 'grad_norm': '1.042', 'learning_rate': '0.0002433', 'epoch': '7.576'}
+[progress] step 20900/27520 | epoch 7.59 | loss 0.2825 | lr 2.41e-04 | elapsed 10.29h | ETA 3.26h
+{'loss': '0.2825', 'grad_norm': '0.9885', 'learning_rate': '0.0002415', 'epoch': '7.595'}
+[progress] step 20950/27520 | epoch 7.61 | loss 0.2716 | lr 2.40e-04 | elapsed 10.31h | ETA 3.23h
+{'loss': '0.2716', 'grad_norm': '1.046', 'learning_rate': '0.0002396', 'epoch': '7.613'}
+[progress] step 21000/27520 | epoch 7.63 | loss 0.2765 | lr 2.38e-04 | elapsed 10.33h | ETA 3.21h
+{'loss': '0.2765', 'grad_norm': '1.053', 'learning_rate': '0.0002378', 'epoch': '7.631'}
+[progress] step 21050/27520 | epoch 7.65 | loss 0.2724 | lr 2.36e-04 | elapsed 10.36h | ETA 3.18h
+{'loss': '0.2724', 'grad_norm': '1.097', 'learning_rate': '0.000236', 'epoch': '7.649'}
+[progress] step 21100/27520 | epoch 7.67 | loss 0.2746 | lr 2.34e-04 | elapsed 10.38h | ETA 3.16h
+{'loss': '0.2746', 'grad_norm': '1.08', 'learning_rate': '0.0002342', 'epoch': '7.667'}
+[progress] step 21150/27520 | epoch 7.69 | loss 0.2847 | lr 2.32e-04 | elapsed 10.40h | ETA 3.13h
+{'loss': '0.2847', 'grad_norm': '1.312', 'learning_rate': '0.0002323', 'epoch': '7.685'}
+[progress] step 21200/27520 | epoch 7.70 | loss 0.2751 | lr 2.31e-04 | elapsed 10.42h | ETA 3.11h
+{'loss': '0.2751', 'grad_norm': '1.164', 'learning_rate': '0.0002305', 'epoch': '7.704'}
+[progress] step 21250/27520 | epoch 7.72 | loss 0.2695 | lr 2.29e-04 | elapsed 10.44h | ETA 3.08h
+{'loss': '0.2695', 'grad_norm': '1.131', 'learning_rate': '0.0002287', 'epoch': '7.722'}
+[progress] step 21300/27520 | epoch 7.74 | loss 0.2642 | lr 2.27e-04 | elapsed 10.46h | ETA 3.05h
+{'loss': '0.2642', 'grad_norm': '0.9873', 'learning_rate': '0.0002269', 'epoch': '7.74'}
+[progress] step 21350/27520 | epoch 7.76 | loss 0.2753 | lr 2.25e-04 | elapsed 10.48h | ETA 3.03h
+{'loss': '0.2753', 'grad_norm': '1.123', 'learning_rate': '0.0002251', 'epoch': '7.758'}
+[progress] step 21400/27520 | epoch 7.78 | loss 0.2860 | lr 2.23e-04 | elapsed 10.50h | ETA 3.00h
+{'loss': '0.286', 'grad_norm': '0.8349', 'learning_rate': '0.0002232', 'epoch': '7.776'}
+[progress] step 21450/27520 | epoch 7.79 | loss 0.2747 | lr 2.21e-04 | elapsed 10.52h | ETA 2.98h
+{'loss': '0.2747', 'grad_norm': '1.045', 'learning_rate': '0.0002214', 'epoch': '7.794'}
+[progress] step 21500/27520 | epoch 7.81 | loss 0.2758 | lr 2.20e-04 | elapsed 10.54h | ETA 2.95h
+{'loss': '0.2758', 'grad_norm': '1.024', 'learning_rate': '0.0002196', 'epoch': '7.813'}
+[progress] step 21550/27520 | epoch 7.83 | loss 0.2697 | lr 2.18e-04 | elapsed 10.56h | ETA 2.93h
+{'loss': '0.2697', 'grad_norm': '0.9354', 'learning_rate': '0.0002178', 'epoch': '7.831'}
+[progress] step 21600/27520 | epoch 7.85 | loss 0.2591 | lr 2.16e-04 | elapsed 10.58h | ETA 2.90h
+{'loss': '0.2591', 'grad_norm': '0.8308', 'learning_rate': '0.0002159', 'epoch': '7.849'}
+[progress] step 21650/27520 | epoch 7.87 | loss 0.2699 | lr 2.14e-04 | elapsed 10.60h | ETA 2.88h
+{'loss': '0.2699', 'grad_norm': '1.072', 'learning_rate': '0.0002141', 'epoch': '7.867'}
+[progress] step 21700/27520 | epoch 7.89 | loss 0.2890 | lr 2.12e-04 | elapsed 10.63h | ETA 2.85h
+{'loss': '0.289', 'grad_norm': '1.018', 'learning_rate': '0.0002123', 'epoch': '7.885'}
+[progress] step 21750/27520 | epoch 7.90 | loss 0.2689 | lr 2.10e-04 | elapsed 10.65h | ETA 2.82h
+{'loss': '0.2689', 'grad_norm': '1.195', 'learning_rate': '0.0002105', 'epoch': '7.904'}
+[progress] step 21800/27520 | epoch 7.92 | loss 0.2759 | lr 2.09e-04 | elapsed 10.67h | ETA 2.80h
+{'loss': '0.2759', 'grad_norm': '1.067', 'learning_rate': '0.0002086', 'epoch': '7.922'}
+[progress] step 21850/27520 | epoch 7.94 | loss 0.2709 | lr 2.07e-04 | elapsed 10.69h | ETA 2.77h
+{'loss': '0.2709', 'grad_norm': '0.9258', 'learning_rate': '0.0002068', 'epoch': '7.94'}
+[progress] step 21900/27520 | epoch 7.96 | loss 0.2701 | lr 2.05e-04 | elapsed 10.71h | ETA 2.75h
+{'loss': '0.2701', 'grad_norm': '1.182', 'learning_rate': '0.000205', 'epoch': '7.958'}
+[progress] step 21950/27520 | epoch 7.98 | loss 0.2722 | lr 2.03e-04 | elapsed 10.73h | ETA 2.72h
+{'loss': '0.2722', 'grad_norm': '1.73', 'learning_rate': '0.0002032', 'epoch': '7.976'}
+[progress] step 22000/27520 | epoch 7.99 | loss 0.2729 | lr 2.01e-04 | elapsed 10.75h | ETA 2.70h
+{'loss': '0.2729', 'grad_norm': '1.114', 'learning_rate': '0.0002013', 'epoch': '7.994'}
+{'eval_loss': '0.231', 'eval_wer': '43.36', 'eval_cer': '13.93', 'eval_runtime': '308.3', 'eval_samples_per_second': '1.946', 'eval_steps_per_second': '0.123', 'epoch': '8'}
+[eval] step 22016 epoch 8.00 | WER 43.36 | CER 13.93 | loss 0.2310
+[2026-09-22 23:15:14] Saved epoch adapter -> runs\whisper-small_lora_r32\adapters\epoch_08
+[progress] step 22050/27520 | epoch 8.01 | loss 0.2346 | lr 2.00e-04 | elapsed 10.86h | ETA 2.69h
+{'loss': '0.2346', 'grad_norm': '0.997', 'learning_rate': '0.0001995', 'epoch': '8.012'}
+[progress] step 22100/27520 | epoch 8.03 | loss 0.2300 | lr 1.98e-04 | elapsed 10.88h | ETA 2.67h
+{'loss': '0.23', 'grad_norm': '1.027', 'learning_rate': '0.0001977', 'epoch': '8.031'}
+[progress] step 22150/27520 | epoch 8.05 | loss 0.2222 | lr 1.96e-04 | elapsed 10.90h | ETA 2.64h
+{'loss': '0.2222', 'grad_norm': '0.9341', 'learning_rate': '0.0001959', 'epoch': '8.049'}
+[progress] step 22200/27520 | epoch 8.07 | loss 0.2316 | lr 1.94e-04 | elapsed 10.92h | ETA 2.62h
+{'loss': '0.2316', 'grad_norm': '0.8385', 'learning_rate': '0.0001941', 'epoch': '8.067'}
+[progress] step 22250/27520 | epoch 8.09 | loss 0.2276 | lr 1.92e-04 | elapsed 10.94h | ETA 2.59h
+{'loss': '0.2276', 'grad_norm': '1.053', 'learning_rate': '0.0001922', 'epoch': '8.085'}
+[progress] step 22300/27520 | epoch 8.10 | loss 0.2241 | lr 1.90e-04 | elapsed 10.96h | ETA 2.57h
+{'loss': '0.2241', 'grad_norm': '1.047', 'learning_rate': '0.0001904', 'epoch': '8.103'}
+[progress] step 22350/27520 | epoch 8.12 | loss 0.2293 | lr 1.89e-04 | elapsed 10.98h | ETA 2.54h
+{'loss': '0.2293', 'grad_norm': '1.04', 'learning_rate': '0.0001886', 'epoch': '8.121'}
+[progress] step 22400/27520 | epoch 8.14 | loss 0.2203 | lr 1.87e-04 | elapsed 11.00h | ETA 2.51h
+{'loss': '0.2203', 'grad_norm': '0.9665', 'learning_rate': '0.0001868', 'epoch': '8.14'}
+[progress] step 22450/27520 | epoch 8.16 | loss 0.2203 | lr 1.85e-04 | elapsed 11.02h | ETA 2.49h
+{'loss': '0.2203', 'grad_norm': '0.7559', 'learning_rate': '0.0001849', 'epoch': '8.158'}
+[progress] step 22500/27520 | epoch 8.18 | loss 0.2248 | lr 1.83e-04 | elapsed 11.04h | ETA 2.46h
+{'loss': '0.2248', 'grad_norm': '0.9253', 'learning_rate': '0.0001831', 'epoch': '8.176'}
+[progress] step 22550/27520 | epoch 8.19 | loss 0.2295 | lr 1.81e-04 | elapsed 11.06h | ETA 2.44h
+{'loss': '0.2295', 'grad_norm': '0.8148', 'learning_rate': '0.0001813', 'epoch': '8.194'}
+[progress] step 22600/27520 | epoch 8.21 | loss 0.2241 | lr 1.79e-04 | elapsed 11.09h | ETA 2.41h
+{'loss': '0.2241', 'grad_norm': '1.04', 'learning_rate': '0.0001795', 'epoch': '8.212'}
+[progress] step 22650/27520 | epoch 8.23 | loss 0.2261 | lr 1.78e-04 | elapsed 11.11h | ETA 2.39h
+{'loss': '0.2261', 'grad_norm': '0.9324', 'learning_rate': '0.0001776', 'epoch': '8.23'}
+[progress] step 22700/27520 | epoch 8.25 | loss 0.2282 | lr 1.76e-04 | elapsed 11.13h | ETA 2.36h
+{'loss': '0.2282', 'grad_norm': '1.208', 'learning_rate': '0.0001758', 'epoch': '8.249'}
+[progress] step 22750/27520 | epoch 8.27 | loss 0.2186 | lr 1.74e-04 | elapsed 11.15h | ETA 2.34h
+{'loss': '0.2186', 'grad_norm': '0.932', 'learning_rate': '0.000174', 'epoch': '8.267'}
+[progress] step 22800/27520 | epoch 8.28 | loss 0.2289 | lr 1.72e-04 | elapsed 11.17h | ETA 2.31h
+{'loss': '0.2289', 'grad_norm': '0.9195', 'learning_rate': '0.0001722', 'epoch': '8.285'}
+[progress] step 22850/27520 | epoch 8.30 | loss 0.2380 | lr 1.70e-04 | elapsed 11.19h | ETA 2.29h
+{'loss': '0.238', 'grad_norm': '0.9987', 'learning_rate': '0.0001704', 'epoch': '8.303'}
+[progress] step 22900/27520 | epoch 8.32 | loss 0.2275 | lr 1.69e-04 | elapsed 11.21h | ETA 2.26h
+{'loss': '0.2275', 'grad_norm': '1.13', 'learning_rate': '0.0001685', 'epoch': '8.321'}
+[progress] step 22950/27520 | epoch 8.34 | loss 0.2244 | lr 1.67e-04 | elapsed 11.23h | ETA 2.24h
+{'loss': '0.2244', 'grad_norm': '0.9669', 'learning_rate': '0.0001667', 'epoch': '8.339'}
+[progress] step 23000/27520 | epoch 8.36 | loss 0.2334 | lr 1.65e-04 | elapsed 11.25h | ETA 2.21h
+{'loss': '0.2334', 'grad_norm': '0.91', 'learning_rate': '0.0001649', 'epoch': '8.358'}
+[progress] step 23050/27520 | epoch 8.38 | loss 0.2251 | lr 1.63e-04 | elapsed 11.27h | ETA 2.19h
+{'loss': '0.2251', 'grad_norm': '0.9207', 'learning_rate': '0.0001631', 'epoch': '8.376'}
+[progress] step 23100/27520 | epoch 8.39 | loss 0.2289 | lr 1.61e-04 | elapsed 11.29h | ETA 2.16h
+{'loss': '0.2289', 'grad_norm': '0.9287', 'learning_rate': '0.0001612', 'epoch': '8.394'}
+[progress] step 23150/27520 | epoch 8.41 | loss 0.2226 | lr 1.59e-04 | elapsed 11.31h | ETA 2.14h
+{'loss': '0.2226', 'grad_norm': '1.126', 'learning_rate': '0.0001594', 'epoch': '8.412'}
+[progress] step 23200/27520 | epoch 8.43 | loss 0.2289 | lr 1.58e-04 | elapsed 11.33h | ETA 2.11h
+{'loss': '0.2289', 'grad_norm': '1.298', 'learning_rate': '0.0001576', 'epoch': '8.43'}
+[progress] step 23250/27520 | epoch 8.45 | loss 0.2285 | lr 1.56e-04 | elapsed 11.36h | ETA 2.09h
+{'loss': '0.2285', 'grad_norm': '0.9085', 'learning_rate': '0.0001558', 'epoch': '8.448'}
+[progress] step 23300/27520 | epoch 8.47 | loss 0.2236 | lr 1.54e-04 | elapsed 11.38h | ETA 2.06h
+{'loss': '0.2236', 'grad_norm': '0.9621', 'learning_rate': '0.0001539', 'epoch': '8.467'}
+[progress] step 23350/27520 | epoch 8.48 | loss 0.2280 | lr 1.52e-04 | elapsed 11.40h | ETA 2.04h
+{'loss': '0.228', 'grad_norm': '0.8109', 'learning_rate': '0.0001521', 'epoch': '8.485'}
+{'eval_loss': '0.2365', 'eval_wer': '43.16', 'eval_cer': '13.49', 'eval_runtime': '306.7', 'eval_samples_per_second': '1.956', 'eval_steps_per_second': '0.124', 'epoch': '8.5'}
+[eval] step 23392 epoch 8.50 | WER 43.16 | CER 13.49 | loss 0.2365
+[progress] step 23400/27520 | epoch 8.50 | loss 0.2292 | lr 1.50e-04 | elapsed 11.50h | ETA 2.03h
+{'loss': '0.2292', 'grad_norm': '0.9835', 'learning_rate': '0.0001503', 'epoch': '8.503'}
+[progress] step 23450/27520 | epoch 8.52 | loss 0.2240 | lr 1.48e-04 | elapsed 11.52h | ETA 2.00h
+{'loss': '0.224', 'grad_norm': '1.054', 'learning_rate': '0.0001485', 'epoch': '8.521'}
+[progress] step 23500/27520 | epoch 8.54 | loss 0.2253 | lr 1.47e-04 | elapsed 11.54h | ETA 1.97h
+{'loss': '0.2253', 'grad_norm': '0.9941', 'learning_rate': '0.0001466', 'epoch': '8.539'}
+[progress] step 23550/27520 | epoch 8.56 | loss 0.2211 | lr 1.45e-04 | elapsed 11.57h | ETA 1.95h
+{'loss': '0.2211', 'grad_norm': '0.8515', 'learning_rate': '0.0001448', 'epoch': '8.558'}
+[progress] step 23600/27520 | epoch 8.58 | loss 0.2288 | lr 1.43e-04 | elapsed 11.59h | ETA 1.92h
+{'loss': '0.2288', 'grad_norm': '1.128', 'learning_rate': '0.000143', 'epoch': '8.576'}
+[progress] step 23650/27520 | epoch 8.59 | loss 0.2334 | lr 1.41e-04 | elapsed 11.61h | ETA 1.90h
+{'loss': '0.2334', 'grad_norm': '0.7733', 'learning_rate': '0.0001412', 'epoch': '8.594'}
+[progress] step 23700/27520 | epoch 8.61 | loss 0.2252 | lr 1.39e-04 | elapsed 11.63h | ETA 1.87h
+{'loss': '0.2252', 'grad_norm': '1.146', 'learning_rate': '0.0001394', 'epoch': '8.612'}
+[progress] step 23750/27520 | epoch 8.63 | loss 0.2303 | lr 1.38e-04 | elapsed 11.65h | ETA 1.85h
+{'loss': '0.2303', 'grad_norm': '1.088', 'learning_rate': '0.0001375', 'epoch': '8.63'}
+[progress] step 23800/27520 | epoch 8.65 | loss 0.2316 | lr 1.36e-04 | elapsed 11.67h | ETA 1.82h
+{'loss': '0.2316', 'grad_norm': '1.082', 'learning_rate': '0.0001357', 'epoch': '8.648'}
+[progress] step 23850/27520 | epoch 8.67 | loss 0.2314 | lr 1.34e-04 | elapsed 11.69h | ETA 1.80h
+{'loss': '0.2314', 'grad_norm': '0.836', 'learning_rate': '0.0001339', 'epoch': '8.667'}
+[progress] step 23900/27520 | epoch 8.68 | loss 0.2292 | lr 1.32e-04 | elapsed 11.71h | ETA 1.77h
+{'loss': '0.2292', 'grad_norm': '1.052', 'learning_rate': '0.0001321', 'epoch': '8.685'}
+[progress] step 23950/27520 | epoch 8.70 | loss 0.2381 | lr 1.30e-04 | elapsed 11.73h | ETA 1.75h
+{'loss': '0.2381', 'grad_norm': '1.012', 'learning_rate': '0.0001302', 'epoch': '8.703'}
+[progress] step 24000/27520 | epoch 8.72 | loss 0.2227 | lr 1.28e-04 | elapsed 11.75h | ETA 1.72h
+{'loss': '0.2227', 'grad_norm': '1.04', 'learning_rate': '0.0001284', 'epoch': '8.721'}
+[progress] step 24050/27520 | epoch 8.74 | loss 0.2241 | lr 1.27e-04 | elapsed 11.77h | ETA 1.70h
+{'loss': '0.2241', 'grad_norm': '1.018', 'learning_rate': '0.0001266', 'epoch': '8.739'}
+[progress] step 24100/27520 | epoch 8.76 | loss 0.2342 | lr 1.25e-04 | elapsed 11.79h | ETA 1.67h
+{'loss': '0.2342', 'grad_norm': '1.084', 'learning_rate': '0.0001248', 'epoch': '8.757'}
+[progress] step 24150/27520 | epoch 8.78 | loss 0.2275 | lr 1.23e-04 | elapsed 11.82h | ETA 1.65h
+{'loss': '0.2275', 'grad_norm': '1.209', 'learning_rate': '0.0001229', 'epoch': '8.776'}
+[progress] step 24200/27520 | epoch 8.79 | loss 0.2290 | lr 1.21e-04 | elapsed 11.84h | ETA 1.62h
+{'loss': '0.229', 'grad_norm': '0.8292', 'learning_rate': '0.0001211', 'epoch': '8.794'}
+[progress] step 24250/27520 | epoch 8.81 | loss 0.2266 | lr 1.19e-04 | elapsed 11.86h | ETA 1.60h
+{'loss': '0.2266', 'grad_norm': '0.9611', 'learning_rate': '0.0001193', 'epoch': '8.812'}
+[progress] step 24300/27520 | epoch 8.83 | loss 0.2312 | lr 1.17e-04 | elapsed 11.88h | ETA 1.57h
+{'loss': '0.2312', 'grad_norm': '1.117', 'learning_rate': '0.0001175', 'epoch': '8.83'}
+[progress] step 24350/27520 | epoch 8.85 | loss 0.2331 | lr 1.16e-04 | elapsed 11.90h | ETA 1.55h
+{'loss': '0.2331', 'grad_norm': '1.029', 'learning_rate': '0.0001156', 'epoch': '8.848'}
+[progress] step 24400/27520 | epoch 8.87 | loss 0.2217 | lr 1.14e-04 | elapsed 11.92h | ETA 1.52h
+{'loss': '0.2217', 'grad_norm': '1.08', 'learning_rate': '0.0001138', 'epoch': '8.866'}
+[progress] step 24450/27520 | epoch 8.88 | loss 0.2311 | lr 1.12e-04 | elapsed 11.94h | ETA 1.50h
+{'loss': '0.2311', 'grad_norm': '0.8908', 'learning_rate': '0.000112', 'epoch': '8.885'}
+[progress] step 24500/27520 | epoch 8.90 | loss 0.2240 | lr 1.10e-04 | elapsed 11.96h | ETA 1.47h
+{'loss': '0.224', 'grad_norm': '0.9017', 'learning_rate': '0.0001102', 'epoch': '8.903'}
+[progress] step 24550/27520 | epoch 8.92 | loss 0.2276 | lr 1.08e-04 | elapsed 11.98h | ETA 1.45h
+{'loss': '0.2276', 'grad_norm': '0.951', 'learning_rate': '0.0001084', 'epoch': '8.921'}
+[progress] step 24600/27520 | epoch 8.94 | loss 0.2226 | lr 1.07e-04 | elapsed 12.00h | ETA 1.42h
+{'loss': '0.2226', 'grad_norm': '1.347', 'learning_rate': '0.0001065', 'epoch': '8.939'}
+[progress] step 24650/27520 | epoch 8.96 | loss 0.2208 | lr 1.05e-04 | elapsed 12.02h | ETA 1.40h
+{'loss': '0.2208', 'grad_norm': '1.082', 'learning_rate': '0.0001047', 'epoch': '8.957'}
+[progress] step 24700/27520 | epoch 8.98 | loss 0.2224 | lr 1.03e-04 | elapsed 12.04h | ETA 1.38h
+{'loss': '0.2224', 'grad_norm': '0.9438', 'learning_rate': '0.0001029', 'epoch': '8.975'}
+[progress] step 24750/27520 | epoch 8.99 | loss 0.2250 | lr 1.01e-04 | elapsed 12.06h | ETA 1.35h
+{'loss': '0.225', 'grad_norm': '0.9282', 'learning_rate': '0.0001011', 'epoch': '8.994'}
+{'eval_loss': '0.2342', 'eval_wer': '42.36', 'eval_cer': '13.23', 'eval_runtime': '304.7', 'eval_samples_per_second': '1.969', 'eval_steps_per_second': '0.125', 'epoch': '9'}
+[eval] step 24768 epoch 9.00 | WER 42.36 | CER 13.23 | loss 0.2342
+[2026-09-23 00:34:08] Saved epoch adapter -> runs\whisper-small_lora_r32\adapters\epoch_09
+[progress] step 24800/27520 | epoch 9.01 | loss 0.1953 | lr 9.92e-05 | elapsed 12.17h | ETA 1.33h
+{'loss': '0.1953', 'grad_norm': '1.041', 'learning_rate': '9.923e-05', 'epoch': '9.012'}
+[progress] step 24850/27520 | epoch 9.03 | loss 0.1782 | lr 9.74e-05 | elapsed 12.19h | ETA 1.31h
+{'loss': '0.1782', 'grad_norm': '1.148', 'learning_rate': '9.741e-05', 'epoch': '9.03'}
+[progress] step 24900/27520 | epoch 9.05 | loss 0.1805 | lr 9.56e-05 | elapsed 12.21h | ETA 1.28h
+{'loss': '0.1805', 'grad_norm': '0.8994', 'learning_rate': '9.559e-05', 'epoch': '9.048'}
+[progress] step 24950/27520 | epoch 9.07 | loss 0.1875 | lr 9.38e-05 | elapsed 12.23h | ETA 1.26h
+{'loss': '0.1875', 'grad_norm': '0.9386', 'learning_rate': '9.376e-05', 'epoch': '9.066'}
+[progress] step 25000/27520 | epoch 9.08 | loss 0.1893 | lr 9.19e-05 | elapsed 12.25h | ETA 1.24h
+{'loss': '0.1893', 'grad_norm': '0.9247', 'learning_rate': '9.194e-05', 'epoch': '9.084'}
+[progress] step 25050/27520 | epoch 9.10 | loss 0.1801 | lr 9.01e-05 | elapsed 12.27h | ETA 1.21h
+{'loss': '0.1801', 'grad_norm': '1.304', 'learning_rate': '9.012e-05', 'epoch': '9.102'}
+[progress] step 25100/27520 | epoch 9.12 | loss 0.1851 | lr 8.83e-05 | elapsed 12.30h | ETA 1.19h
+{'loss': '0.1851', 'grad_norm': '1.051', 'learning_rate': '8.829e-05', 'epoch': '9.121'}
+[progress] step 25150/27520 | epoch 9.14 | loss 0.1752 | lr 8.65e-05 | elapsed 12.32h | ETA 1.16h
+{'loss': '0.1752', 'grad_norm': '0.9633', 'learning_rate': '8.647e-05', 'epoch': '9.139'}
+[progress] step 25200/27520 | epoch 9.16 | loss 0.1840 | lr 8.46e-05 | elapsed 12.34h | ETA 1.14h
+{'loss': '0.184', 'grad_norm': '1.124', 'learning_rate': '8.465e-05', 'epoch': '9.157'}
+[progress] step 25250/27520 | epoch 9.18 | loss 0.1913 | lr 8.28e-05 | elapsed 12.36h | ETA 1.11h
+{'loss': '0.1913', 'grad_norm': '0.9582', 'learning_rate': '8.282e-05', 'epoch': '9.175'}
+[progress] step 25300/27520 | epoch 9.19 | loss 0.1903 | lr 8.10e-05 | elapsed 12.38h | ETA 1.09h
+{'loss': '0.1903', 'grad_norm': '1.13', 'learning_rate': '8.1e-05', 'epoch': '9.193'}
+[progress] step 25350/27520 | epoch 9.21 | loss 0.1849 | lr 7.92e-05 | elapsed 12.40h | ETA 1.06h
+{'loss': '0.1849', 'grad_norm': '0.943', 'learning_rate': '7.918e-05', 'epoch': '9.212'}
+[progress] step 25400/27520 | epoch 9.23 | loss 0.1798 | lr 7.74e-05 | elapsed 12.42h | ETA 1.04h
+{'loss': '0.1798', 'grad_norm': '1.124', 'learning_rate': '7.735e-05', 'epoch': '9.23'}
+[progress] step 25450/27520 | epoch 9.25 | loss 0.1874 | lr 7.55e-05 | elapsed 12.44h | ETA 1.01h
+{'loss': '0.1874', 'grad_norm': '0.8455', 'learning_rate': '7.553e-05', 'epoch': '9.248'}
+[progress] step 25500/27520 | epoch 9.27 | loss 0.1785 | lr 7.37e-05 | elapsed 12.46h | ETA 0.99h
+{'loss': '0.1785', 'grad_norm': '0.9723', 'learning_rate': '7.371e-05', 'epoch': '9.266'}
+[progress] step 25550/27520 | epoch 9.28 | loss 0.1850 | lr 7.19e-05 | elapsed 12.48h | ETA 0.96h
+{'loss': '0.185', 'grad_norm': '0.9343', 'learning_rate': '7.188e-05', 'epoch': '9.284'}
+[progress] step 25600/27520 | epoch 9.30 | loss 0.1802 | lr 7.01e-05 | elapsed 12.50h | ETA 0.94h
+{'loss': '0.1802', 'grad_norm': '1.097', 'learning_rate': '7.006e-05', 'epoch': '9.302'}
+[progress] step 25650/27520 | epoch 9.32 | loss 0.1925 | lr 6.82e-05 | elapsed 12.52h | ETA 0.91h
+{'loss': '0.1925', 'grad_norm': '0.9562', 'learning_rate': '6.823e-05', 'epoch': '9.321'}
+[progress] step 25700/27520 | epoch 9.34 | loss 0.1853 | lr 6.64e-05 | elapsed 12.54h | ETA 0.89h
+{'loss': '0.1853', 'grad_norm': '1.018', 'learning_rate': '6.641e-05', 'epoch': '9.339'}
+[progress] step 25750/27520 | epoch 9.36 | loss 0.1899 | lr 6.46e-05 | elapsed 12.57h | ETA 0.86h
+{'loss': '0.1899', 'grad_norm': '0.9435', 'learning_rate': '6.459e-05', 'epoch': '9.357'}
+[progress] step 25800/27520 | epoch 9.38 | loss 0.1846 | lr 6.28e-05 | elapsed 12.59h | ETA 0.84h
+{'loss': '0.1846', 'grad_norm': '1.026', 'learning_rate': '6.276e-05', 'epoch': '9.375'}
+[progress] step 25850/27520 | epoch 9.39 | loss 0.1840 | lr 6.09e-05 | elapsed 12.61h | ETA 0.81h
+{'loss': '0.184', 'grad_norm': '1.111', 'learning_rate': '6.094e-05', 'epoch': '9.393'}
+[progress] step 25900/27520 | epoch 9.41 | loss 0.1849 | lr 5.91e-05 | elapsed 12.63h | ETA 0.79h
+{'loss': '0.1849', 'grad_norm': '0.9088', 'learning_rate': '5.912e-05', 'epoch': '9.411'}
+[progress] step 25950/27520 | epoch 9.43 | loss 0.1873 | lr 5.73e-05 | elapsed 12.65h | ETA 0.77h
+{'loss': '0.1873', 'grad_norm': '0.8817', 'learning_rate': '5.729e-05', 'epoch': '9.43'}
+[progress] step 26000/27520 | epoch 9.45 | loss 0.1813 | lr 5.55e-05 | elapsed 12.67h | ETA 0.74h
+{'loss': '0.1813', 'grad_norm': '0.9051', 'learning_rate': '5.547e-05', 'epoch': '9.448'}
+[progress] step 26050/27520 | epoch 9.47 | loss 0.1854 | lr 5.36e-05 | elapsed 12.69h | ETA 0.72h
+{'loss': '0.1854', 'grad_norm': '0.8114', 'learning_rate': '5.365e-05', 'epoch': '9.466'}
+[progress] step 26100/27520 | epoch 9.48 | loss 0.1899 | lr 5.18e-05 | elapsed 12.71h | ETA 0.69h
+{'loss': '0.1899', 'grad_norm': '0.9707', 'learning_rate': '5.182e-05', 'epoch': '9.484'}
+{'eval_loss': '0.2418', 'eval_wer': '42.22', 'eval_cer': '13.18', 'eval_runtime': '305.5', 'eval_samples_per_second': '1.964', 'eval_steps_per_second': '0.124', 'epoch': '9.5'}
+[eval] step 26144 epoch 9.50 | WER 42.22 | CER 13.18 | loss 0.2418
+[progress] step 26150/27520 | epoch 9.50 | loss 0.1852 | lr 5.00e-05 | elapsed 12.82h | ETA 0.67h
+{'loss': '0.1852', 'grad_norm': '0.9078', 'learning_rate': '5e-05', 'epoch': '9.502'}
+[progress] step 26200/27520 | epoch 9.52 | loss 0.1843 | lr 4.82e-05 | elapsed 12.84h | ETA 0.65h
+{'loss': '0.1843', 'grad_norm': '0.972', 'learning_rate': '4.818e-05', 'epoch': '9.52'}
+[progress] step 26250/27520 | epoch 9.54 | loss 0.1872 | lr 4.64e-05 | elapsed 12.86h | ETA 0.62h
+{'loss': '0.1872', 'grad_norm': '0.9386', 'learning_rate': '4.635e-05', 'epoch': '9.539'}
+[progress] step 26300/27520 | epoch 9.56 | loss 0.1869 | lr 4.45e-05 | elapsed 12.88h | ETA 0.60h
+{'loss': '0.1869', 'grad_norm': '1.214', 'learning_rate': '4.453e-05', 'epoch': '9.557'}
+[progress] step 26350/27520 | epoch 9.57 | loss 0.1847 | lr 4.27e-05 | elapsed 12.90h | ETA 0.57h
+{'loss': '0.1847', 'grad_norm': '0.7395', 'learning_rate': '4.271e-05', 'epoch': '9.575'}
+[progress] step 26400/27520 | epoch 9.59 | loss 0.1787 | lr 4.09e-05 | elapsed 12.92h | ETA 0.55h
+{'loss': '0.1787', 'grad_norm': '0.8711', 'learning_rate': '4.088e-05', 'epoch': '9.593'}
+[progress] step 26450/27520 | epoch 9.61 | loss 0.1844 | lr 3.91e-05 | elapsed 12.94h | ETA 0.52h
+{'loss': '0.1844', 'grad_norm': '0.7386', 'learning_rate': '3.906e-05', 'epoch': '9.611'}
+[progress] step 26500/27520 | epoch 9.63 | loss 0.1831 | lr 3.72e-05 | elapsed 12.96h | ETA 0.50h
+{'loss': '0.1831', 'grad_norm': '0.9098', 'learning_rate': '3.724e-05', 'epoch': '9.629'}
+[progress] step 26550/27520 | epoch 9.65 | loss 0.1843 | lr 3.54e-05 | elapsed 12.98h | ETA 0.47h
+{'loss': '0.1843', 'grad_norm': '0.701', 'learning_rate': '3.541e-05', 'epoch': '9.648'}
+[progress] step 26600/27520 | epoch 9.67 | loss 0.1778 | lr 3.36e-05 | elapsed 13.00h | ETA 0.45h
+{'loss': '0.1778', 'grad_norm': '1.017', 'learning_rate': '3.359e-05', 'epoch': '9.666'}
+[progress] step 26650/27520 | epoch 9.68 | loss 0.1806 | lr 3.18e-05 | elapsed 13.02h | ETA 0.43h
+{'loss': '0.1806', 'grad_norm': '0.8963', 'learning_rate': '3.177e-05', 'epoch': '9.684'}
+[progress] step 26700/27520 | epoch 9.70 | loss 0.1844 | lr 2.99e-05 | elapsed 13.04h | ETA 0.40h
+{'loss': '0.1844', 'grad_norm': '1.021', 'learning_rate': '2.994e-05', 'epoch': '9.702'}
+[progress] step 26750/27520 | epoch 9.72 | loss 0.1848 | lr 2.81e-05 | elapsed 13.07h | ETA 0.38h
+{'loss': '0.1848', 'grad_norm': '0.9878', 'learning_rate': '2.812e-05', 'epoch': '9.72'}
+[progress] step 26800/27520 | epoch 9.74 | loss 0.1905 | lr 2.63e-05 | elapsed 13.09h | ETA 0.35h
+{'loss': '0.1905', 'grad_norm': '0.8484', 'learning_rate': '2.629e-05', 'epoch': '9.739'}
+[progress] step 26850/27520 | epoch 9.76 | loss 0.1867 | lr 2.45e-05 | elapsed 13.11h | ETA 0.33h
+{'loss': '0.1867', 'grad_norm': '0.9958', 'learning_rate': '2.447e-05', 'epoch': '9.757'}
+[progress] step 26900/27520 | epoch 9.77 | loss 0.1826 | lr 2.26e-05 | elapsed 13.13h | ETA 0.30h
+{'loss': '0.1826', 'grad_norm': '0.7853', 'learning_rate': '2.265e-05', 'epoch': '9.775'}
+[progress] step 26950/27520 | epoch 9.79 | loss 0.1822 | lr 2.08e-05 | elapsed 13.15h | ETA 0.28h
+{'loss': '0.1822', 'grad_norm': '0.7984', 'learning_rate': '2.082e-05', 'epoch': '9.793'}
+[progress] step 27000/27520 | epoch 9.81 | loss 0.1821 | lr 1.90e-05 | elapsed 13.17h | ETA 0.25h
+{'loss': '0.1821', 'grad_norm': '1.057', 'learning_rate': '1.9e-05', 'epoch': '9.811'}
+[progress] step 27050/27520 | epoch 9.83 | loss 0.1803 | lr 1.72e-05 | elapsed 13.19h | ETA 0.23h
+{'loss': '0.1803', 'grad_norm': '1.003', 'learning_rate': '1.718e-05', 'epoch': '9.829'}
+[progress] step 27100/27520 | epoch 9.85 | loss 0.1836 | lr 1.54e-05 | elapsed 13.21h | ETA 0.20h
+{'loss': '0.1836', 'grad_norm': '0.9556', 'learning_rate': '1.535e-05', 'epoch': '9.848'}
+[progress] step 27150/27520 | epoch 9.87 | loss 0.1814 | lr 1.35e-05 | elapsed 13.23h | ETA 0.18h
+{'loss': '0.1814', 'grad_norm': '0.9323', 'learning_rate': '1.353e-05', 'epoch': '9.866'}
+[progress] step 27200/27520 | epoch 9.88 | loss 0.1822 | lr 1.17e-05 | elapsed 13.25h | ETA 0.16h
+{'loss': '0.1822', 'grad_norm': '0.6926', 'learning_rate': '1.171e-05', 'epoch': '9.884'}
+[progress] step 27250/27520 | epoch 9.90 | loss 0.1812 | lr 9.88e-06 | elapsed 13.27h | ETA 0.13h
+{'loss': '0.1812', 'grad_norm': '0.9257', 'learning_rate': '9.883e-06', 'epoch': '9.902'}
+[progress] step 27300/27520 | epoch 9.92 | loss 0.1874 | lr 8.06e-06 | elapsed 13.29h | ETA 0.11h
+{'loss': '0.1874', 'grad_norm': '1.031', 'learning_rate': '8.06e-06', 'epoch': '9.92'}
+[progress] step 27350/27520 | epoch 9.94 | loss 0.1856 | lr 6.24e-06 | elapsed 13.32h | ETA 0.08h
+{'loss': '0.1856', 'grad_norm': '1.028', 'learning_rate': '6.236e-06', 'epoch': '9.938'}
+[progress] step 27400/27520 | epoch 9.96 | loss 0.1821 | lr 4.41e-06 | elapsed 13.34h | ETA 0.06h
+{'loss': '0.1821', 'grad_norm': '0.9669', 'learning_rate': '4.413e-06', 'epoch': '9.957'}
+[progress] step 27450/27520 | epoch 9.97 | loss 0.1788 | lr 2.59e-06 | elapsed 13.36h | ETA 0.03h
+{'loss': '0.1788', 'grad_norm': '0.9292', 'learning_rate': '2.589e-06', 'epoch': '9.975'}
+[progress] step 27500/27520 | epoch 9.99 | loss 0.1848 | lr 7.66e-07 | elapsed 13.38h | ETA 0.01h
+{'loss': '0.1848', 'grad_norm': '1.134', 'learning_rate': '7.659e-07', 'epoch': '9.993'}
+{'eval_loss': '0.2407', 'eval_wer': '41.58', 'eval_cer': '13.18', 'eval_runtime': '307.9', 'eval_samples_per_second': '1.949', 'eval_steps_per_second': '0.123', 'epoch': '10'}
+[eval] step 27520 epoch 10.00 | WER 41.58 | CER 13.18 | loss 0.2407
+[2026-09-23 01:53:02] Saved epoch adapter -> runs\whisper-small_lora_r32\adapters\epoch_10
+{'train_runtime': '4.85e+04', 'train_samples_per_second': '9.076', 'train_steps_per_second': '0.567', 'train_loss': '0.3929', 'epoch': '10'}
+[2026-09-23 01:53:03] Training finished in 808.3 min. Adapter saved -> runs\whisper-small_lora_r32\final_adapter
+[2026-09-23 01:53:08] === FULL EVALUATION with adapter runs\whisper-small_lora_r32\final_adapter ===
+Loading weights:   0%|                                                                                                                                                    | 0/479 [00:00<?, ?it/s]Loading weights:   6%|████████                                                                                                                                  | 28/479 [00:00<00:01, 266.15it/s]Loading weights:  11%|███████████████▊                                                                                                                          | 55/479 [00:00<00:01, 264.78it/s]Loading weights:  18%|█████████████████████████                                                                                                                 | 87/479 [00:00<00:01, 286.35it/s]Loading weights:  24%|█████████████████████████████████▍                                                                                                       | 117/479 [00:00<00:01, 287.75it/s]Loading weights:  30%|█████████████████████████████████████████▊                                                                                               | 146/479 [00:00<00:01, 260.63it/s]Loading weights: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 479/479 [00:00<00:00, 866.45it/s]
+[2026-09-23 01:53:11] Transcribing valid: 8862 utterances (21.15 h audio)
+[2026-09-23 01:53:57]   [valid] 16/8862 utterances
+[2026-09-23 01:57:49]   [valid] 816/8862 utterances
+[2026-09-23 02:01:45]   [valid] 1616/8862 utterances
+[2026-09-23 02:05:53]   [valid] 2416/8862 utterances
+[2026-09-23 02:09:42]   [valid] 3216/8862 utterances
+[2026-09-23 02:13:44]   [valid] 4016/8862 utterances
+[2026-09-23 02:18:01]   [valid] 4816/8862 utterances
+[2026-09-23 02:22:20]   [valid] 5616/8862 utterances
+[2026-09-23 02:26:20]   [valid] 6416/8862 utterances
+[2026-09-23 02:30:50]   [valid] 7216/8862 utterances
+[2026-09-23 02:35:13]   [valid] 8016/8862 utterances
+[2026-09-23 02:39:06]   [valid] 8816/8862 utterances
+[2026-09-23 02:39:21] Transcribing test: 9969 utterances (24.08 h audio)
+[2026-09-23 02:39:52]   [test] 16/9969 utterances
+[2026-09-23 02:43:50]   [test] 816/9969 utterances
+[2026-09-23 02:47:44]   [test] 1616/9969 utterances
+[2026-09-23 02:51:52]   [test] 2416/9969 utterances
+[2026-09-23 02:56:07]   [test] 3216/9969 utterances
+[2026-09-23 03:00:08]   [test] 4016/9969 utterances
+[2026-09-23 03:04:30]   [test] 4816/9969 utterances
+[2026-09-23 03:08:50]   [test] 5616/9969 utterances
+[2026-09-23 03:13:08]   [test] 6416/9969 utterances
+[2026-09-23 03:17:37]   [test] 7216/9969 utterances
+[2026-09-23 03:22:06]   [test] 8016/9969 utterances
+[2026-09-23 03:26:26]   [test] 8816/9969 utterances
+[2026-09-23 03:30:36]   [test] 9616/9969 utterances
+[2026-09-23 03:32:27] Zero-shot baseline (adapter disabled) on 1000 valid utterances
+[2026-09-23 03:33:00]   [zero_shot] 16/1000 utterances
+[2026-09-23 03:37:38]   [zero_shot] 816/1000 utterances
+[2026-09-23 03:38:45] Drawing graphs...
+
+================ FINAL RESULTS ================
+       n_utts  hours    WER    CER  sub_pct  del_pct  ins_pct  exact_match_pct  hit_length_cap_pct
+valid  8862.0  21.15  41.33  12.96    34.07     3.61     3.65             4.92                6.30
+test   9969.0  24.08  39.45  12.19    32.49     3.48     3.47             5.02                6.36
+  zero_shot: WER 98.16 | CER 58.50  (same 1000 valid utterances)
+ fine_tuned: WER 41.55 | CER 13.09  (same 1000 valid utterances)
+Everything is in: runs\whisper-small_lora_r32
+===============================================
+
+[2026-09-23 03:38:46] ===== ALL DONE =====

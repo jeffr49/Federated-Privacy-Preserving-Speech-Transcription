@@ -1,0 +1,15 @@
+# Install PyTorch separately using the CUDA wheel appropriate for your driver/GPU:
+# https://pytorch.org/get-started/locally/
+# Example for CUDA 12.4:
+# pip install torch --index-url https://download.pytorch.org/whl/cu124
+
+transformers>=5.17,<6
+peft>=0.21
+accelerate>=1.15
+librosa>=0.11
+soundfile>=0.14
+numpy>=1.26
+pandas>=3.0
+pyarrow>=25
+rapidfuzz>=3.14
+matplotlib>=3.11
