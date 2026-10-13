@@ -1,0 +1,20 @@
+# Auto-detect text vs binary
+* text=auto
+
+# Shell scripts always get LF on checkout (even on Windows)
+*.sh text eol=lf
+
+# Windows scripts keep CRLF on Windows checkout
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+
+# Python source always LF
+*.py text eol=lf
+
+# Binary
+*.safetensors binary
+*.bin binary
+*.pt binary
+*.png binary
+*.wav binary
+*.mp3 binary
