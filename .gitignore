@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+fl_cache/
+local_store/
+promote_out/
+demo_run*/
+fl_runs/
+!sample_audio/*.wav

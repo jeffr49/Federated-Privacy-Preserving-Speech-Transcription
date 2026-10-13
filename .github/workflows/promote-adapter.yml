@@ -1,0 +1,65 @@
+name: promote-adapter
+
+# Triggered by the aggregation server (repository_dispatch) whenever a new candidate adapter lands
+# on the Hub `candidate` branch. Can also be run by hand: Actions -> promote-adapter -> Run workflow.
+on:
+  repository_dispatch:
+    types: [candidate-adapter-ready]
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: "Candidate commit SHA (leave empty to use the 'candidate' branch head)"
+        required: false
+        default: ""
+      dry_run:
+        description: "Evaluate only; do not promote/reject on the Hub"
+        type: boolean
+        default: false
+
+# Never evaluate/promote two candidates at once.
+concurrency:
+  group: promote-adapter
+  cancel-in-progress: false
+
+jobs:
+  evaluate-and-promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      ADAPTER_REPO: ${{ vars.ADAPTER_REPO }}
+      EVAL_REPO: ${{ vars.EVAL_REPO }}
+      BASE_MODEL: ${{ vars.BASE_MODEL || 'openai/whisper-small' }}
+      EVAL_MAX_UTTERANCES: ${{ vars.EVAL_MAX_UTTERANCES || '100' }}
+      PROMOTE_TOLERANCE_WER: ${{ vars.PROMOTE_TOLERANCE_WER || '0.5' }}
+      REQUIRE_IMPROVEMENT: ${{ vars.REQUIRE_IMPROVEMENT || '0' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: ci/requirements.txt
+
+      - name: Install CPU PyTorch + CI dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r ci/requirements.txt
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg libsndfile1
+
+      - name: Cache Hugging Face downloads (base model)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-${{ vars.BASE_MODEL || 'openai/whisper-small' }}
+
+      - name: Unit tests (no model needed)
+        run: cd ci && python -m pytest -q
+
+      - name: Evaluate candidate vs current, then promote or reject
+        run: |
+          REV="${{ github.event.client_payload.revision || inputs.revision }}"
+          DRY="${{ inputs.dry_run && '--dry-run' || '' }}"
+          python ci/evaluate_and_promote.py --revision "$REV" $DRY
