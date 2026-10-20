@@ -54,6 +54,11 @@ if str(ROOT_DIR / "server") not in sys.path:
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
+# Ensure local virtualenv packages (torch, transformers, peft, soundfile, librosa) are discovered
+_venv_site = ROOT_DIR / ".venv" / "Lib" / "site-packages"
+if _venv_site.exists() and str(_venv_site) not in sys.path:
+    sys.path.insert(0, str(_venv_site))
+
 TARGET_SR = 16000
 LANGUAGE_NAME = "tamil"
 TASK = "transcribe"
@@ -148,20 +153,56 @@ def calculate_wer(reference: str, hypothesis: str) -> float:
 def decode_audio_bytes(raw_bytes: bytes) -> np.ndarray:
     if not HAVE_TORCH:
         return np.zeros(TARGET_SR * 2, dtype=np.float32)
-    audio, sr = sf.read(io.BytesIO(raw_bytes), dtype="float32", always_2d=False)
-    if audio.ndim > 1: audio = audio.mean(axis=1)
-    if sr != TARGET_SR: audio = librosa.resample(audio, orig_sr=sr, target_sr=TARGET_SR)
+    try:
+        audio, sr = sf.read(io.BytesIO(raw_bytes), dtype="float32", always_2d=False)
+    except Exception:
+        # Robust fallback using Python's built-in wave module for raw PCM WAV data
+        try:
+            import wave
+            with wave.open(io.BytesIO(raw_bytes), "rb") as wf:
+                sr = wf.getframerate()
+                n_ch = wf.getnchannels()
+                sw = wf.getsampwidth()
+                frames = wf.readframes(wf.getnframes())
+                if sw == 2:
+                    audio = np.frombuffer(frames, dtype=np.int16).astype(np.float32) / 32768.0
+                elif sw == 4:
+                    audio = np.frombuffer(frames, dtype=np.float32)
+                else:
+                    audio = np.frombuffer(frames, dtype=np.uint8).astype(np.float32) / 128.0 - 1.0
+                if n_ch > 1:
+                    audio = audio.reshape(-1, n_ch).mean(axis=1)
+        except Exception as e2:
+            raise ValueError(f"Unable to decode audio payload: {e2}")
+
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
+    if sr != TARGET_SR:
+        audio = librosa.resample(audio, orig_sr=sr, target_sr=TARGET_SR)
     return np.ascontiguousarray(audio, dtype=np.float32)
 
 @torch.no_grad() if HAVE_TORCH else lambda f: f
 def run_transcription(model, processor, audio: np.ndarray) -> str:
     if model is None or processor is None:
-        return "வணக்கம், நீதிமன்ற விசாரணை தொடங்குகிறது (Simulated transcription)."
+        return "[Model not initialized. Please configure and initialize Whisper-LoRA above.]"
     model.eval()
     feats = processor.feature_extractor(audio, sampling_rate=TARGET_SR).input_features
     feats = torch.tensor(feats).to(DEVICE)
-    gen = model.generate(input_features=feats, max_new_tokens=128, num_beams=1)
-    return processor.tokenizer.batch_decode(gen, skip_special_tokens=True)[0].strip()
+    try:
+        # Multilingual auto-detection generation (works for user speech in English or Tamil)
+        gen = model.generate(input_features=feats, max_new_tokens=128, num_beams=1)
+        out = processor.tokenizer.batch_decode(gen, skip_special_tokens=True)[0].strip()
+        if out:
+            return out
+    except Exception as e:
+        print(f"[backend] Auto generation error: {e}")
+
+    try:
+        prompt_ids = processor.get_decoder_prompt_ids(language=LANGUAGE_NAME, task=TASK)
+        gen = model.generate(input_features=feats, max_new_tokens=128, num_beams=1, forced_decoder_ids=prompt_ids)
+        return processor.tokenizer.batch_decode(gen, skip_special_tokens=True)[0].strip()
+    except Exception as e:
+        return f"[Transcription error: {e}]"
 
 def apply_clerk_correction_update(model, processor, audio: np.ndarray, corrected_text: str, reward: float, lr: float):
     if model is None or processor is None:
@@ -321,6 +362,14 @@ def api_init(req: InitRequest):
     SESSION["dp_clip_norm"] = req.dp_clip_norm
 
     adapter_path = Path(req.adapter_dir)
+    if not adapter_path.is_absolute():
+        adapter_path = (ROOT_DIR / req.adapter_dir).resolve()
+    if not adapter_path.exists():
+        default_p = Path(DEFAULT_ADAPTER_PATH)
+        if default_p.exists():
+            adapter_path = default_p
+
+    print(f"[backend] api_init: adapter_path={adapter_path} (exists={adapter_path.exists()}), HAVE_TORCH={HAVE_TORCH}")
 
     try:
         if HAVE_TORCH and adapter_path.exists():

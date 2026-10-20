@@ -5,6 +5,40 @@ import { api } from '../lib/api';
 import FLPipelineCanvas from '../components/FLPipeline';
 import CourtAnimation from '../components/CourtAnimation';
 
+// Lightweight pure-JS 16kHz mono WAV encoder for uncompressed audio transmission
+function encodeWavPcm16(samples, sampleRate = 16000) {
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
+
+  const writeString = (offset, string) => {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  };
+
+  writeString(0, 'RIFF');
+  view.setUint32(4, 36 + samples.length * 2, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM format
+  view.setUint16(22, 1, true); // Mono
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true); // Byte rate
+  view.setUint16(32, 2, true); // Block align
+  view.setUint16(34, 16, true); // 16 bits
+  writeString(36, 'data');
+  view.setUint32(40, samples.length * 2, true);
+
+  let offset = 44;
+  for (let i = 0; i < samples.length; i++, offset += 2) {
+    const s = Math.max(-1, Math.min(1, samples[i]));
+    view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+  }
+
+  return new Blob([buffer], { type: 'audio/wav' });
+}
+
 export default function Home() {
   // Session & Status
   const [status, setStatus] = useState(null);
@@ -41,6 +75,10 @@ export default function Home() {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const timerRef = useRef(null);
+  const audioCtxRef = useRef(null);
+  const micStreamRef = useRef(null);
+  const audioProcessorRef = useRef(null);
+  const pcmSamplesRef = useRef([]);
 
   // Tab 2: Visual Pipeline
   const [isSteppingPipeline, setIsSteppingPipeline] = useState(false);
@@ -160,37 +198,49 @@ export default function Home() {
     }
   };
 
-  // Handle Microphone Recording
+  // Handle Microphone Recording via Web Audio API (true 16kHz PCM WAV)
   const startRecording = async () => {
-    audioChunksRef.current = [];
+    pcmSamplesRef.current = [];
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          channelCount: 1,
+          sampleRate: 16000,
+          echoCancellation: true,
+          noiseSuppression: true,
+        },
+      });
+      micStreamRef.current = stream;
 
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContextClass();
+      audioCtxRef.current = ctx;
+
+      const source = ctx.createMediaStreamSource(stream);
+      // Buffer size 4096, 1 input channel, 1 output channel
+      const processor = ctx.createScriptProcessor(4096, 1, 1);
+      audioProcessorRef.current = processor;
+
+      processor.onaudioprocess = (e) => {
+        const input = e.inputBuffer.getChannelData(0);
+        if (ctx.sampleRate === 16000) {
+          for (let i = 0; i < input.length; i++) {
+            pcmSamplesRef.current.push(input[i]);
+          }
+        } else {
+          // Downsample / resample linearly to 16000Hz for Whisper
+          const ratio = ctx.sampleRate / 16000;
+          const newLength = Math.round(input.length / ratio);
+          for (let i = 0; i < newLength; i++) {
+            const index = Math.min(input.length - 1, Math.floor(i * ratio));
+            pcmSamplesRef.current.push(input[index]);
+          }
         }
       };
 
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-        const file = new File([audioBlob], `mic_utterance_${Date.now()}.wav`, { type: 'audio/wav' });
-        try {
-          await api.uploadAudio(file);
-          setAudioUrl(URL.createObjectURL(audioBlob));
-          setDraftText('');
-          setClerkCorrection('');
-          showToast('Microphone audio captured and stored locally in memory.', 'success');
-          await refreshStatus();
-        } catch (err) {
-          showToast(`Mic upload error: ${err.message}`, 'error');
-        }
-        stream.getTracks().forEach((track) => track.stop());
-      };
+      source.connect(processor);
+      processor.connect(ctx.destination);
 
-      mediaRecorder.start();
       setIsRecording(true);
       setRecordDuration(0);
       timerRef.current = setInterval(() => {
@@ -201,11 +251,41 @@ export default function Home() {
     }
   };
 
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      clearInterval(timerRef.current);
+  const stopRecording = async () => {
+    setIsRecording(false);
+    clearInterval(timerRef.current);
+
+    if (audioProcessorRef.current) {
+      audioProcessorRef.current.disconnect();
+      audioProcessorRef.current = null;
+    }
+    if (micStreamRef.current) {
+      micStreamRef.current.getTracks().forEach((track) => track.stop());
+      micStreamRef.current = null;
+    }
+    if (audioCtxRef.current) {
+      try { audioCtxRef.current.close(); } catch (_) {}
+      audioCtxRef.current = null;
+    }
+
+    const rawSamples = new Float32Array(pcmSamplesRef.current);
+    if (rawSamples.length < 1600) {
+      showToast('Recording too short (please speak for at least 1 second).', 'error');
+      return;
+    }
+
+    const wavBlob = encodeWavPcm16(rawSamples, 16000);
+    const file = new File([wavBlob], `mic_utterance_${Date.now()}.wav`, { type: 'audio/wav' });
+
+    try {
+      await api.uploadAudio(file);
+      setAudioUrl(URL.createObjectURL(wavBlob));
+      setDraftText('');
+      setClerkCorrection('');
+      showToast(`Audio (${(rawSamples.length / 16000).toFixed(1)}s) captured in 16kHz WAV format & ready for transcription!`, 'success');
+      await refreshStatus();
+    } catch (err) {
+      showToast(`Mic upload error: ${err.message}`, 'error');
     }
   };
 
@@ -395,7 +475,7 @@ export default function Home() {
                 </p>
                 <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <span className="badge badge-neutral">SFT Learning Rate: 0.0005</span>
-                  <span className="badge badge-neutral">L2 Bound: 1.0</span>
+                  <span className="badge badge-neutral">L₂ Bound: 1.0</span>
                   <span className="badge badge-neutral">Peers: 3 courts</span>
                 </div>
               </div>
@@ -416,7 +496,7 @@ export default function Home() {
                   Key Mathematical Parameters & System Behavior
                 </h4>
                 <ul style={{ paddingLeft: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.825rem' }}>
-                  <li><strong>Differential Privacy L2 Bound (<code>dp_clip_norm = 1.0</code>):</strong> Mathematically limits the Euclidean length of the parameter shift. Ensures sensitive witness vocal qualities cannot be reconstructed via gradient inversion.</li>
+                  <li><strong>Differential Privacy L₂ Bound (<code>dp_clip_norm = 1.0</code>):</strong> Mathematically limits the Euclidean length of the parameter shift. Ensures sensitive witness vocal qualities cannot be reconstructed via gradient inversion.</li>
                   <li><strong>Clerk SFT Learning Rate (<code>local_lr = 0.0005</code>):</strong> Step size for on-device AdamW adaptation. Weighted by clerk edit distance to prevent catastrophic forgetting.</li>
                   <li><strong>Peer Delta Noise (<code>peer_noise = 0.005</code>):</strong> Injects Gaussian variance N(0, σ²) into virtual peers to represent Non-IID regional dialect variation across district courts.</li>
                 </ul>
@@ -577,7 +657,7 @@ export default function Home() {
                   <p style={{ fontSize: '0.975rem', color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: '1.35rem' }}>
                     Engineered specifically for Indian courtrooms and sessions benches. Witness testimony is transcribed locally
                     using <strong>Whisper-Small + LoRA</strong>. Supervised clerk corrections adapt the local model on-device.
-                    To satisfy the <em>Indian Evidence Act</em>, <strong>audio and transcripts are permanently destroyed</strong> upon session completion—only mathematically bounded $L_2$ weight deltas participate in regional federated learning.
+                    To satisfy the <em>Indian Evidence Act</em>, <strong>audio and transcripts are permanently destroyed</strong> upon session completion—only mathematically bounded L₂ weight deltas participate in regional federated learning.
                   </p>
 
                   {/* 3 Core Judicial Pillars */}
@@ -591,7 +671,7 @@ export default function Home() {
                     <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0.85rem' }}>
                       <div style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>🛡️</div>
                       <div style={{ fontWeight: 700, fontSize: '0.825rem', color: 'var(--violet-700)' }}>Differential Privacy</div>
-                      <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>$L_2 \le 1.0$ clipping against gradient attacks</div>
+                      <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>L₂ ≤ 1.0 clipping against gradient attacks</div>
                     </div>
 
                     <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0.85rem' }}>
@@ -744,7 +824,7 @@ export default function Home() {
                 <div className="grid-3">
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <label className="label">Differential Privacy $L_2$ Cap</label>
+                      <label className="label">Differential Privacy L₂ Cap</label>
                       <span className="badge badge-gold" style={{ fontSize: '0.65rem' }}>C = 1.0</span>
                     </div>
                     <input
@@ -850,7 +930,7 @@ export default function Home() {
               <span className="shield-icon">🛡️</span>
               <div>
                 <strong>Active Courtroom Privacy Standard:</strong> Audio statements and clerk transcripts are retained strictly in volatile RAM
-                and wiped upon session closure. Only clipped LoRA updates ($L_2 \le {status.dp_clip_norm}$) participate in federation.
+                and wiped upon session closure. Only clipped LoRA updates (L₂ ≤ {status.dp_clip_norm}) participate in federation.
               </div>
             </div>
 
@@ -875,7 +955,7 @@ export default function Home() {
                 <span className="stat-value text-gold">{status.fed_round_no}</span>
               </div>
               <div className="stat-chip">
-                <span className="stat-label">PRIVACY L2 CAP</span>
+                <span className="stat-label">PRIVACY L₂ CAP</span>
                 <span className="stat-value text-violet">≤ {status.dp_clip_norm}</span>
               </div>
             </div>
@@ -1209,7 +1289,7 @@ export default function Home() {
                   >
                     <span>🔒</span>
                     <span>
-                      "End Session" immediately zeroes out all witness audio buffers from memory, calculates parameter delta ΔW, and clips it by L2 norm cap.
+                      "End Session" immediately zeroes out all witness audio buffers from memory, calculates parameter delta ΔW, and clips it by L₂ norm cap.
                     </span>
                   </div>
                 </div>
@@ -1323,7 +1403,7 @@ export default function Home() {
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
                         <span style={{ color: 'var(--text-muted)' }}>Differential Privacy Bound:</span>
-                        <strong className="mono" style={{ color: 'var(--violet-700)' }}>L2 ≤ {status.dp_clip_norm}</strong>
+                        <strong className="mono" style={{ color: 'var(--violet-700)' }}>L₂ ≤ {status.dp_clip_norm}</strong>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
                         <span style={{ color: 'var(--text-muted)' }}>Continuous Integration Gate:</span>

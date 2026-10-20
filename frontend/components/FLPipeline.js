@@ -21,7 +21,7 @@ const STAGES = [
     id: 2,
     icon: '🛡️',
     title: 'Privacy Barrier',
-    subtitle: 'L2 Norm Clipping',
+    subtitle: 'L₂ Norm Clipping',
     detail: 'ΔW extracted, audio\n& transcripts destroyed',
     accent: '#9B5EF5',
   },
