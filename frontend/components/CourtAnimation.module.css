@@ -1,0 +1,230 @@
+/* ============================================================
+   CourtAnimation.module.css
+   Prestigious Judicial Scales of Justice Light-Mode Animation
+   ============================================================ */
+
+.animationContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: radial-gradient(circle at 50% 45%, #FFFFFF 0%, #F8FAFC 70%, #F1F5F9 100%);
+  border: 1px solid rgba(217, 119, 6, 0.22);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08), 0 0 20px rgba(217, 119, 6, 0.08);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.animationContainer:hover {
+  border-color: rgba(217, 119, 6, 0.45);
+  box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.12), 0 0 28px rgba(217, 119, 6, 0.16);
+  transform: translateY(-2px);
+}
+
+.courtSvg {
+  width: 100%;
+  height: auto;
+  max-height: 310px;
+  display: block;
+  filter: drop-shadow(0 4px 12px rgba(15, 23, 42, 0.06));
+}
+
+/* Ambient Radial Pulse */
+@keyframes ambientPulseAnim {
+  0%, 100% {
+    transform: scale(0.96);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 0.95;
+  }
+}
+
+.ambientPulse {
+  transform-origin: 260px 180px;
+  animation: ambientPulseAnim 6s ease-in-out infinite;
+}
+
+/* Rotating Celestial Judicial Orbit */
+@keyframes rotateRingAnim {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.rotatingRing {
+  transform-origin: 260px 180px;
+  animation: rotateRingAnim 38s linear infinite;
+}
+
+/* Dynamic Scales Assembly: Gentle Natural Tilt */
+@keyframes beamRockingAnim {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(2.4deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-2.4deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.scalesBeamAssembly {
+  transform-origin: 260px 98px;
+  animation: beamRockingAnim 7s ease-in-out infinite;
+  transition: transform 0.5s ease;
+}
+
+.animationContainer:hover .scalesBeamAssembly {
+  animation-duration: 4.5s;
+}
+
+/* Counter-rotation on suspended scale pans so they remain vertically gravity-aligned! */
+@keyframes counterSwayLeft {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-2.4deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(2.4deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes counterSwayRight {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-2.4deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(2.4deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.leftPanAssembly {
+  transform-origin: 131px 105px;
+  animation: counterSwayLeft 7s ease-in-out infinite;
+}
+
+.rightPanAssembly {
+  transform-origin: 389px 105px;
+  animation: counterSwayRight 7s ease-in-out infinite;
+}
+
+/* Floating icons inside scale pans */
+@keyframes floatOrbAnim {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.speechOrb {
+  animation: floatOrbAnim 3.5s ease-in-out infinite;
+}
+
+.privacyOrb {
+  animation: floatOrbAnim 3.5s ease-in-out infinite 0.75s;
+}
+
+/* Sound waves moving into center */
+@keyframes waveLeftFlow {
+  0% {
+    stroke-dashoffset: 24;
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+}
+
+@keyframes waveRightFlow {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    stroke-dashoffset: 24;
+    opacity: 0.3;
+  }
+}
+
+.waveLeft {
+  animation: waveLeftFlow 2.8s linear infinite;
+}
+
+.waveRight {
+  animation: waveRightFlow 2.8s linear infinite;
+}
+
+/* Caption Badge below the animation */
+.captionBadge {
+  margin-top: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(254, 243, 199, 0.7);
+  border: 1px solid rgba(217, 119, 6, 0.3);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: #92400E;
+  font-weight: 500;
+  text-align: center;
+}
+
+.badgeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #D97706;
+  box-shadow: 0 0 6px #F59E0B;
+  display: inline-block;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.3); opacity: 1; }
+}

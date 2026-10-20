@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { api } from '../lib/api';
 import FLPipelineCanvas from '../components/FLPipeline';
+import CourtAnimation from '../components/CourtAnimation';
 
 export default function Home() {
   // Session & Status
@@ -10,6 +11,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('live'); // 'live' | 'visual' | 'analytics'
   const [toast, setToast] = useState(null);
+  const [showGuideModal, setShowGuideModal] = useState(false);
 
   // Init form
   const [mode, setMode] = useState('simulation');
@@ -131,7 +133,7 @@ export default function Home() {
   // Handle Sample Load
   const handleLoadSample = async () => {
     try {
-      const res = await api.loadSample(selectedSample);
+      await api.loadSample(selectedSample);
       setAudioUrl(api.getAudioUrl());
       setDraftText('');
       setClerkCorrection('');
@@ -180,7 +182,7 @@ export default function Home() {
           setAudioUrl(URL.createObjectURL(audioBlob));
           setDraftText('');
           setClerkCorrection('');
-          showToast('Microphone audio captured and stored locally.', 'success');
+          showToast('Microphone audio captured and stored locally in memory.', 'success');
           await refreshStatus();
         } catch (err) {
           showToast(`Mic upload error: ${err.message}`, 'error');
@@ -247,16 +249,18 @@ export default function Home() {
 
   // Handle End Session
   const handleEndSession = async () => {
-    setIsEndingSession(false);
+    setIsEndingSession(true);
     try {
       const res = await api.endSession();
-      showToast(`Session committed! Delta clipped: ${res.norm_after_clip || 0}. Raw audio deleted from RAM.`, 'success');
+      showToast(`Session committed! Delta clipped: ${res.norm_after_clip || 0}. Raw witness audio wiped from RAM.`, 'success');
       setDraftText('');
       setClerkCorrection('');
       setAudioUrl('');
       await refreshStatus();
     } catch (err) {
       showToast(`End session error: ${err.message}`, 'error');
+    } finally {
+      setIsEndingSession(false);
     }
   };
 
@@ -301,7 +305,7 @@ export default function Home() {
     }
   };
 
-  // Simple Word Error Rate preview calculation
+  // Word Error Rate preview calculation
   const calculateWerPreview = (ref, hyp) => {
     if (!ref || !hyp) return 0;
     const rWords = ref.trim().split(/\s+/);
@@ -329,27 +333,109 @@ export default function Home() {
             zIndex: 9999,
             padding: '0.85rem 1.4rem',
             borderRadius: '10px',
-            background: toast.type === 'error' ? '#EF4444' : toast.type === 'success' ? '#10B981' : '#62B8E8',
-            color: '#060B18',
+            background: toast.type === 'error' ? '#B91C1C' : toast.type === 'success' ? '#15803D' : '#1D4ED8',
+            color: '#FFFFFF',
             fontWeight: 600,
-            boxShadow: '0 8px 30px rgba(0,0,0,0.5)',
+            boxShadow: '0 10px 25px -4px rgba(15, 23, 42, 0.25)',
             display: 'flex',
             alignItems: 'center',
             gap: '0.5rem',
             animation: 'slideUp 0.25s ease',
           }}
         >
-          <span>{toast.type === 'error' ? '⚠️' : toast.type === 'success' ? '✅' : 'ℹ️'}</span>
+          <span>{toast.type === 'error' ? '⚠️' : toast.type === 'success' ? '⚖️' : 'ℹ️'}</span>
           <span>{toast.message}</span>
         </div>
       )}
 
-      {/* Top Navigation Bar */}
+      {/* Review Panel Guide / Viva Modal */}
+      {showGuideModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(6px)',
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1.5rem',
+          }}
+          onClick={() => setShowGuideModal(false)}
+        >
+          <div
+            className="card"
+            style={{
+              maxWidth: '820px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              background: '#FFFFFF',
+              boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.25)',
+              border: '2px solid rgba(217, 119, 6, 0.4)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <div>
+                <span className="badge badge-gold" style={{ marginBottom: '0.3rem' }}>Review Panel Briefing</span>
+                <h3 className="court-heading" style={{ fontSize: '1.25rem', color: 'var(--navy-900)', margin: 0 }}>
+                  Deployment Modes & Parameter Reference Guide
+                </h3>
+              </div>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowGuideModal(false)}>✕ Close</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+              <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', padding: '1rem', borderRadius: '8px' }}>
+                <strong style={{ color: '#92400E' }}>🏛️ Interactive Multi-Court Simulation (Offline Mode)</strong>
+                <p style={{ marginTop: '0.35rem', color: '#78350F', fontSize: '0.825rem' }}>
+                  <strong>When to choose:</strong> Viva defense, professor evaluations, and offline demonstrations. Runs self-contained in local memory with virtual regional peer courts (Chennai, Madurai, Coimbatore).
+                </p>
+                <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span className="badge badge-neutral">SFT Learning Rate: 0.0005</span>
+                  <span className="badge badge-neutral">L2 Bound: 1.0</span>
+                  <span className="badge badge-neutral">Peers: 3 courts</span>
+                </div>
+              </div>
+
+              <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '1rem', borderRadius: '8px' }}>
+                <strong style={{ color: '#1E40AF' }}>🌐 Hosted Federation (Central Aggregator)</strong>
+                <p style={{ marginTop: '0.35rem', color: '#1E3A8A', fontSize: '0.825rem' }}>
+                  <strong>When to choose:</strong> Multi-laptop demonstrations or cloud deployments. Authenticates with a remote FastAPI aggregation server via API keys and synchronizes model versions.
+                </p>
+                <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span className="badge badge-neutral">Requires: Server URL & Client Key</span>
+                  <span className="badge badge-neutral">Rejects Stale Versions (vN)</span>
+                </div>
+              </div>
+
+              <div>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.5rem' }}>
+                  Key Mathematical Parameters & System Behavior
+                </h4>
+                <ul style={{ paddingLeft: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.825rem' }}>
+                  <li><strong>Differential Privacy L2 Bound (<code>dp_clip_norm = 1.0</code>):</strong> Mathematically limits the Euclidean length of the parameter shift. Ensures sensitive witness vocal qualities cannot be reconstructed via gradient inversion.</li>
+                  <li><strong>Clerk SFT Learning Rate (<code>local_lr = 0.0005</code>):</strong> Step size for on-device AdamW adaptation. Weighted by clerk edit distance to prevent catastrophic forgetting.</li>
+                  <li><strong>Peer Delta Noise (<code>peer_noise = 0.005</code>):</strong> Injects Gaussian variance N(0, σ²) into virtual peers to represent Non-IID regional dialect variation across district courts.</li>
+                </ul>
+              </div>
+
+              <div style={{ background: '#F1F5F9', padding: '0.75rem', borderRadius: '6px', fontSize: '0.8rem', color: '#475569' }}>
+                📁 Complete comprehensive explanation is permanently documented in <code>UI_Journey/home_page.md</code>.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Top Judicial Header Bar */}
       <header
         style={{
-          borderBottom: '1px solid var(--border-subtle)',
-          background: 'rgba(12, 21, 37, 0.85)',
-          backdropFilter: 'blur(12px)',
+          borderBottom: '2px solid rgba(217, 119, 6, 0.35)',
+          background: '#FFFFFF',
+          boxShadow: '0 2px 12px rgba(15, 23, 42, 0.05)',
           position: 'sticky',
           top: 0,
           zIndex: 1000,
@@ -359,7 +445,7 @@ export default function Home() {
           style={{
             maxWidth: '1380px',
             margin: '0 auto',
-            padding: '0.875rem 1.5rem',
+            padding: '0.85rem 1.5rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -367,40 +453,63 @@ export default function Home() {
             flexWrap: 'wrap',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <span style={{ fontSize: '1.6rem', filter: 'drop-shadow(0 2px 8px rgba(98,184,232,0.4))' }}>⚖️</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '8px',
+                background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+                border: '1px solid #D97706',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.5rem',
+                boxShadow: '0 2px 6px rgba(180, 83, 9, 0.15)',
+              }}
+            >
+              ⚖️
+            </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <h1 style={{ fontSize: '1.25rem', fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
-                  Federated Tamil Court ASR
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <h1 className="court-heading" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--navy-900)', margin: 0 }}>
+                  FEDERATED TAMIL COURT ASR
                 </h1>
-                <span className="badge badge-ice" style={{ fontSize: '0.7rem' }}>
+                <span className="badge badge-gold" style={{ fontSize: '0.7rem' }}>
                   {status?.mode === 'hosted' ? 'Hosted Federation' : 'Simulation Mode'}
                 </span>
                 {status?.have_torch && (
-                  <span className="badge badge-gold" style={{ fontSize: '0.7rem' }}>
+                  <span className="badge badge-blue" style={{ fontSize: '0.7rem' }}>
                     {status.device?.toUpperCase() || 'GPU'}
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Differential Privacy · Whisper-LoRA On-Device · Zero-Leakage SFT
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                High Court of Judicature · On-Device Whisper-LoRA · Differential Privacy Standard
               </div>
             </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+            <button
+              className="btn btn-secondary btn-sm"
+              onClick={() => setShowGuideModal(true)}
+              title="Open Review Panel & Parameter Guide"
+            >
+              📖 Panel Guide
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
               <span
                 style={{
                   width: '8px',
                   height: '8px',
                   borderRadius: '50%',
-                  background: status ? '#10B981' : '#EF4444',
-                  boxShadow: status ? '0 0 8px #10B981' : 'none',
+                  background: status ? '#15803D' : '#B91C1C',
+                  boxShadow: status ? '0 0 6px #15803D' : 'none',
                 }}
               />
-              <span>{status ? 'API Connected' : 'Connecting...'}</span>
+              <span style={{ fontWeight: 500 }}>{status ? 'Court Engine Active' : 'Connecting...'}</span>
             </div>
 
             {status?.loaded && (
@@ -410,137 +519,204 @@ export default function Home() {
                   try {
                     await api.resetPipeline();
                     await refreshStatus();
-                    showToast('State refreshed.', 'info');
+                    showToast('Court state synchronized.', 'info');
                   } catch (e) {
                     showToast(e.message, 'error');
                   }
                 }}
               >
-                🔄 Refresh
+                🔄 Sync State
               </button>
             )}
           </div>
         </div>
       </header>
 
-      {/* Main Content Container */}
+      {/* Main Judicial Chamber Content */}
       <main style={{ maxWidth: '1380px', margin: '0 auto', padding: '1.5rem', flex: 1, width: '100%' }}>
         {/* Loading State */}
         {loading && (
-          <div style={{ textAlign: 'center', padding: '5rem 0' }}>
-            <div className="spinner" style={{ width: '2.5rem', height: '2.5rem', borderWidth: '3px' }} />
-            <p style={{ marginTop: '1rem', color: 'var(--text-secondary)' }}>Connecting to Federated Court ASR Service...</p>
+          <div style={{ textAlign: 'center', padding: '6rem 0' }}>
+            <div className="spinner" style={{ width: '2.5rem', height: '2.5rem', borderWidth: '3px', color: 'var(--gold-500)' }} />
+            <p style={{ marginTop: '1rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+              Connecting to Judicial Court ASR Engine...
+            </p>
           </div>
         )}
 
-        {/* State 1: Model NOT Initialized Yet */}
+        {/* State 1: Model NOT Initialized Yet (The Rich Home Page Gateway) */}
         {!loading && status && !status.loaded && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-            {/* Welcome & Architecture Highlights Hero */}
-            <div className="card" style={{ background: 'linear-gradient(145deg, #0C1525, #111D35)', border: '1px solid var(--border-medium)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem' }}>
-                <div style={{ maxWidth: '780px' }}>
-                  <span className="badge badge-ice" style={{ marginBottom: '0.75rem' }}>
-                    🏛️ Official Court Transcription System
-                  </span>
-                  <h2 style={{ fontSize: '1.85rem', fontWeight: 700, marginBottom: '0.75rem', lineHeight: 1.25 }}>
-                    Federated Privacy-Preserving Tamil Speech Transcription
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {/* Judicial Hero Section with Animated Scales of Justice */}
+            <div className="card card-court-hero" style={{ padding: '2rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2rem', alignItems: 'center' }}>
+                {/* Left Side: Court Authority & Architecture Brief */}
+                <div>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.85rem' }}>
+                    <span className="badge badge-gold" style={{ fontSize: '0.78rem', textTransform: 'uppercase' }}>
+                      🏛️ Official Judicial Station Gateway
+                    </span>
+                    <span className="badge badge-blue" style={{ fontSize: '0.78rem' }}>
+                      Tamil Nadu High Court Standard
+                    </span>
+                  </div>
+
+                  <h2
+                    className="court-heading"
+                    style={{
+                      fontSize: 'clamp(1.75rem, 2.8vw, 2.4rem)',
+                      fontWeight: 800,
+                      color: 'var(--navy-950)',
+                      lineHeight: 1.2,
+                      marginBottom: '1rem',
+                    }}
+                  >
+                    Privacy-Preserving Speech Transcription
                   </h2>
-                  <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: '1.25rem' }}>
-                    Designed specifically for Indian judicial chambers and sessions courts. Audio testimony is transcribed locally
-                    with Whisper-Small + LoRA adapter. Clerk corrections trigger on-device supervised fine-tuning, strictly preserving witness privacy through L2 Differential Privacy bounds and zero-data retention.
+
+                  <p style={{ fontSize: '0.975rem', color: 'var(--text-secondary)', lineHeight: 1.65, marginBottom: '1.35rem' }}>
+                    Engineered specifically for Indian courtrooms and sessions benches. Witness testimony is transcribed locally
+                    using <strong>Whisper-Small + LoRA</strong>. Supervised clerk corrections adapt the local model on-device.
+                    To satisfy the <em>Indian Evidence Act</em>, <strong>audio and transcripts are permanently destroyed</strong> upon session completion—only mathematically bounded $L_2$ weight deltas participate in regional federated learning.
                   </p>
-                </div>
-                <div
-                  style={{
-                    background: 'rgba(98,184,232,0.06)',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '1.25rem',
-                    minWidth: '260px',
-                  }}
-                >
-                  <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--ice-400)', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
-                    System Specifications
+
+                  {/* 3 Core Judicial Pillars */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.85rem', marginBottom: '1.5rem' }}>
+                    <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0.85rem' }}>
+                      <div style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>🎙️</div>
+                      <div style={{ fontWeight: 700, fontSize: '0.825rem', color: 'var(--navy-900)' }}>Local Inference</div>
+                      <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>Zero audio transmitted outside court RAM</div>
+                    </div>
+
+                    <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0.85rem' }}>
+                      <div style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>🛡️</div>
+                      <div style={{ fontWeight: 700, fontSize: '0.825rem', color: 'var(--violet-700)' }}>Differential Privacy</div>
+                      <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>$L_2 \le 1.0$ clipping against gradient attacks</div>
+                    </div>
+
+                    <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0.85rem' }}>
+                      <div style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>⚡</div>
+                      <div style={{ fontWeight: 700, fontSize: '0.825rem', color: 'var(--gold-600)' }}>Regional FedAvg</div>
+                      <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>Chennai, Madurai, Coimbatore mesh</div>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.825rem', color: 'var(--text-secondary)' }}>
-                    <div>Model: <strong style={{ color: '#fff' }}>Whisper-Small (244M)</strong></div>
-                    <div>LoRA: <strong style={{ color: '#fff' }}>r=32, α=64 (q_proj, v_proj)</strong></div>
-                    <div>Sampling Rate: <strong style={{ color: '#fff' }}>16,000 Hz Mono</strong></div>
-                    <div>Target Language: <strong style={{ color: '#fff' }}>Tamil (தமிழ்)</strong></div>
-                    <div>Privacy Bound: <strong style={{ color: '#10B981' }}>Differential Privacy L2</strong></div>
+
+                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <button
+                      className="btn btn-gold"
+                      onClick={() => {
+                        const configElem = document.getElementById('init-configuration-panel');
+                        configElem?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                    >
+                      ⚙️ Configure & Mount Station
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => setShowGuideModal(true)}
+                    >
+                      📖 Review Panel Parameter Guide
+                    </button>
                   </div>
                 </div>
-              </div>
 
-              {/* Architecture highlights grid */}
-              <div className="grid-3" style={{ marginTop: '1.75rem' }}>
-                <div style={{ background: 'rgba(6,11,24,0.6)', padding: '1.2rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
-                  <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>🎙️ Local Inference</div>
-                  <h4 style={{ fontSize: '0.95rem', marginBottom: '0.35rem', color: 'var(--text-primary)' }}>Live On-Device ASR</h4>
-                  <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                    Transcribes spoken Tamil witness testimony instantly in courtroom RAM without transmitting voice packets over public networks.
-                  </p>
-                </div>
-
-                <div style={{ background: 'rgba(6,11,24,0.6)', padding: '1.2rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
-                  <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>🛡️ Zero Audio Leakage</div>
-                  <h4 style={{ fontSize: '0.95rem', marginBottom: '0.35rem', color: 'var(--violet-300)' }}>Differential Privacy</h4>
-                  <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                    Raw audio and transcripts are irreversibly wiped from RAM upon session closure. Only clipped weight deltas (ΔW) leave the court.
-                  </p>
-                </div>
-
-                <div style={{ background: 'rgba(6,11,24,0.6)', padding: '1.2rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
-                  <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>⚡ Regional FedAvg</div>
-                  <h4 style={{ fontSize: '0.95rem', marginBottom: '0.35rem', color: 'var(--gold-300)' }}>Secure Model Aggregation</h4>
-                  <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                    Aggregates parameter updates across Chennai, Madurai, and Coimbatore courts subject to continuous CI WER regression gates.
-                  </p>
+                {/* Right Side: Impressive Courtroom Scales of Justice Animation */}
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <CourtAnimation />
                 </div>
               </div>
             </div>
 
             {/* Initialization Configuration Panel */}
-            <div className="card" style={{ maxWidth: '850px', margin: '0 auto', width: '100%' }}>
-              <div className="section-header">
+            <div id="init-configuration-panel" className="card" style={{ maxWidth: '920px', margin: '0 auto', width: '100%', background: '#FFFFFF' }}>
+              <div className="section-header" style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
                 <div>
-                  <h3 style={{ fontSize: '1.2rem' }}>Deployment Configuration & Model Loading</h3>
-                  <p style={{ fontSize: '0.825rem' }}>Select operational mode and hyperparameters for local session execution.</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <h3 className="court-heading" style={{ fontSize: '1.2rem', color: 'var(--navy-900)', margin: 0 }}>
+                      Judicial Station Deployment & Model Initialization
+                    </h3>
+                  </div>
+                  <p style={{ fontSize: '0.825rem', marginTop: '0.25rem' }}>
+                    Choose the operational architecture and adjust differential privacy bounds for daily courtroom proceedings.
+                  </p>
                 </div>
-                <span className="badge badge-neutral">Ready to Initialize</span>
+                <span className="badge badge-gold">Pre-Flight Config</span>
               </div>
 
-              <form onSubmit={handleInit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <form onSubmit={handleInit} style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
+                {/* Mode Selector Cards */}
                 <div>
-                  <label className="label">Operational Environment Mode</label>
-                  <div className="radio-group">
-                    <label className={`radio-option ${mode === 'simulation' ? 'selected' : ''}`}>
+                  <label className="label" style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+                    Select Operational Environment Mode
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <label
+                      className="card"
+                      style={{
+                        padding: '1rem',
+                        cursor: 'pointer',
+                        border: mode === 'simulation' ? '2px solid #D97706' : '1px solid #E2E8F0',
+                        background: mode === 'simulation' ? '#FFFBEB' : '#FFFFFF',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
                       <input
                         type="radio"
                         name="mode"
                         value="simulation"
                         checked={mode === 'simulation'}
                         onChange={(e) => setMode(e.target.value)}
+                        style={{ display: 'none' }}
                       />
-                      <span>🏛️ Interactive Multi-Court Simulation (Offline & Review Panel Demo)</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                        <span style={{ fontSize: '1.2rem' }}>🏛️</span>
+                        <strong style={{ color: mode === 'simulation' ? '#92400E' : 'var(--navy-900)', fontSize: '0.9rem' }}>
+                          Interactive Multi-Court Simulation
+                        </strong>
+                      </div>
+                      <div style={{ fontSize: '0.78rem', color: mode === 'simulation' ? '#78350F' : 'var(--text-muted)', lineHeight: 1.45 }}>
+                        Self-contained offline execution with simulated peers (Chennai, Madurai, Coimbatore). <strong>Recommended for Review Panel & Viva.</strong>
+                      </div>
                     </label>
-                    <label className={`radio-option ${mode === 'hosted' ? 'selected' : ''}`}>
+
+                    <label
+                      className="card"
+                      style={{
+                        padding: '1rem',
+                        cursor: 'pointer',
+                        border: mode === 'hosted' ? '2px solid #1D4ED8' : '1px solid #E2E8F0',
+                        background: mode === 'hosted' ? '#EFF6FF' : '#FFFFFF',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
                       <input
                         type="radio"
                         name="mode"
                         value="hosted"
                         checked={mode === 'hosted'}
                         onChange={(e) => setMode(e.target.value)}
+                        style={{ display: 'none' }}
                       />
-                      <span>🌐 Hosted Federation (Connect to Central Aggregation Server)</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                        <span style={{ fontSize: '1.2rem' }}>🌐</span>
+                        <strong style={{ color: mode === 'hosted' ? '#1E40AF' : 'var(--navy-900)', fontSize: '0.9rem' }}>
+                          Hosted Federation
+                        </strong>
+                      </div>
+                      <div style={{ fontSize: '0.78rem', color: mode === 'hosted' ? '#1E3A8A' : 'var(--text-muted)', lineHeight: 1.45 }}>
+                        Connects over secure REST to a central FastAPI aggregation server. Recommended for multi-laptop cloud deployment.
+                      </div>
                     </label>
                   </div>
                 </div>
 
+                {/* Hyperparameters */}
                 <div className="grid-2">
                   <div>
-                    <label className="label">LoRA Adapter Directory / Path</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label className="label">LoRA Adapter Directory / Path</label>
+                      <span className="badge badge-neutral" style={{ fontSize: '0.65rem' }}>r=32, α=64</span>
+                    </div>
                     <input
                       type="text"
                       className="input input-mono"
@@ -550,7 +726,10 @@ export default function Home() {
                     />
                   </div>
                   <div>
-                    <label className="label">Clerk SFT Learning Rate (Local Nudge)</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label className="label">Clerk SFT Learning Rate (Local Nudge)</label>
+                      <span className="badge badge-neutral" style={{ fontSize: '0.65rem' }}>Recommended: 0.0005</span>
+                    </div>
                     <input
                       type="number"
                       step="0.0001"
@@ -564,7 +743,10 @@ export default function Home() {
 
                 <div className="grid-3">
                   <div>
-                    <label className="label">Differential Privacy L2 Bound</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label className="label">Differential Privacy $L_2$ Cap</label>
+                      <span className="badge badge-gold" style={{ fontSize: '0.65rem' }}>C = 1.0</span>
+                    </div>
                     <input
                       type="number"
                       step="0.1"
@@ -575,7 +757,10 @@ export default function Home() {
                     />
                   </div>
                   <div>
-                    <label className="label">Simulated Regional Peers</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label className="label">Simulated Regional Peers</label>
+                      <span className="badge badge-neutral" style={{ fontSize: '0.65rem' }}>Courts</span>
+                    </div>
                     <input
                       type="number"
                       min="1"
@@ -587,7 +772,10 @@ export default function Home() {
                     />
                   </div>
                   <div>
-                    <label className="label">Peer Delta Variance (Noise Std)</label>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label className="label">Peer Noise Variance</label>
+                      <span className="badge badge-neutral" style={{ fontSize: '0.65rem' }}>Non-IID</span>
+                    </div>
                     <input
                       type="number"
                       step="0.001"
@@ -599,10 +787,11 @@ export default function Home() {
                   </div>
                 </div>
 
+                {/* Hosted Credentials */}
                 {mode === 'hosted' && (
-                  <div className="grid-3 animate-fade-in" style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: 'var(--radius-sm)' }}>
+                  <div className="grid-3 animate-fade-in" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '1.1rem', borderRadius: 'var(--radius-md)' }}>
                     <div>
-                      <label className="label">Server Aggregation URL</label>
+                      <label className="label" style={{ color: '#1E40AF' }}>Server Aggregation URL</label>
                       <input
                         type="text"
                         className="input input-mono"
@@ -612,7 +801,7 @@ export default function Home() {
                       />
                     </div>
                     <div>
-                      <label className="label">Court Jurisdiction ID</label>
+                      <label className="label" style={{ color: '#1E40AF' }}>Court Jurisdiction ID</label>
                       <input
                         type="text"
                         className="input"
@@ -622,7 +811,7 @@ export default function Home() {
                       />
                     </div>
                     <div>
-                      <label className="label">Federation API Key</label>
+                      <label className="label" style={{ color: '#1E40AF' }}>Federation API Key</label>
                       <input
                         type="password"
                         className="input"
@@ -636,16 +825,16 @@ export default function Home() {
 
                 <button
                   type="submit"
-                  className="btn btn-primary btn-lg btn-full"
+                  className="btn btn-gold btn-lg btn-full"
                   disabled={initLoading}
-                  style={{ marginTop: '0.5rem' }}
+                  style={{ marginTop: '0.5rem', fontSize: '1rem', padding: '1rem' }}
                 >
                   {initLoading ? (
                     <>
-                      <span className="spinner" /> Loading Whisper Model & LoRA Adapter Weights...
+                      <span className="spinner" /> Loading Whisper Model & Mounting LoRA Adapter Weights...
                     </>
                   ) : (
-                    '🚀 Initialize & Spin Up Local Court Model'
+                    '🚀 Initialize & Mount Courtroom Transcription Engine'
                   )}
                 </button>
               </form>
@@ -653,15 +842,15 @@ export default function Home() {
           </div>
         )}
 
-        {/* State 2: Model IS Initialized */}
+        {/* State 2: Model IS Initialized (Active Judicial Session) */}
         {!loading && status && status.loaded && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
             {/* Privacy Guarantee Banner */}
             <div className="privacy-banner">
               <span className="shield-icon">🛡️</span>
               <div>
-                <strong>Courtroom Privacy Guarantee Active:</strong> Voice recordings and transcripts are processed strictly in volatile local memory
-                and immediately destroyed upon session closure. Only L2-clipped weight deltas ($L_2 \le {status.dp_clip_norm}$) participate in regional aggregation.
+                <strong>Active Courtroom Privacy Standard:</strong> Audio statements and clerk transcripts are retained strictly in volatile RAM
+                and wiped upon session closure. Only clipped LoRA updates ($L_2 \le {status.dp_clip_norm}$) participate in federation.
               </div>
             </div>
 
@@ -669,7 +858,7 @@ export default function Home() {
             <div className="grid-5">
               <div className="stat-chip">
                 <span className="stat-label">GLOBAL ADAPTER</span>
-                <span className="stat-value text-ice">v{status.adapter_version}</span>
+                <span className="stat-value text-blue">v{status.adapter_version}</span>
               </div>
               <div className="stat-chip">
                 <span className="stat-label">SESSION BUFFER</span>
@@ -719,8 +908,8 @@ export default function Home() {
                 {/* Left Column: Audio Source & Audio Player */}
                 <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   <div className="section-header" style={{ marginBottom: 0 }}>
-                    <h3 style={{ fontSize: '1.05rem' }}>1. Courtroom Witness Audio Source</h3>
-                    <span className="badge badge-neutral">Audio Input</span>
+                    <h3 style={{ fontSize: '1.05rem', color: 'var(--navy-900)' }}>1. Courtroom Witness Audio Source</h3>
+                    <span className="badge badge-neutral">Input Stream</span>
                   </div>
 
                   {/* Audio Source Options */}
@@ -777,15 +966,15 @@ export default function Home() {
                       {status.sample_utterances?.[selectedSample] && (
                         <div
                           style={{
-                            background: 'rgba(98,184,232,0.06)',
-                            border: '1px solid var(--border-subtle)',
+                            background: '#F8FAFC',
+                            border: '1px solid #E2E8F0',
                             borderRadius: 'var(--radius-sm)',
                             padding: '0.75rem',
                             fontSize: '0.8rem',
                           }}
                         >
                           <div>📍 <strong>Origin:</strong> {status.sample_utterances[selectedSample].court}</div>
-                          <div>⚖️ <strong>Context:</strong> {status.sample_utterances[selectedSample].description}</div>
+                          <div style={{ marginTop: '0.2rem' }}>⚖️ <strong>Context:</strong> {status.sample_utterances[selectedSample].description}</div>
                         </div>
                       )}
 
@@ -807,9 +996,9 @@ export default function Home() {
                         alignItems: 'center',
                         justifyContent: 'center',
                         padding: '1.5rem',
-                        background: 'rgba(255,255,255,0.02)',
+                        background: '#F8FAFC',
                         borderRadius: 'var(--radius-md)',
-                        border: '1px dashed var(--border-medium)',
+                        border: '1px dashed #CBD5E1',
                         gap: '1rem',
                       }}
                     >
@@ -818,8 +1007,8 @@ export default function Home() {
                           width: '64px',
                           height: '64px',
                           borderRadius: '50%',
-                          background: isRecording ? 'rgba(239, 68, 68, 0.2)' : 'rgba(98, 184, 232, 0.1)',
-                          border: isRecording ? '2px solid #EF4444' : '2px solid var(--ice-400)',
+                          background: isRecording ? '#FEE2E2' : '#EFF6FF',
+                          border: isRecording ? '2px solid #EF4444' : '2px solid var(--court-blue)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -830,7 +1019,7 @@ export default function Home() {
                         🎙️
                       </div>
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontWeight: 600, color: isRecording ? '#EF4444' : 'var(--text-primary)' }}>
+                        <div style={{ fontWeight: 600, color: isRecording ? '#B91C1C' : 'var(--text-primary)' }}>
                           {isRecording ? `Recording Witness Statement (${recordDuration}s)` : 'Microphone Ready'}
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -860,10 +1049,10 @@ export default function Home() {
                         style={{ display: 'none' }}
                       />
                       <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📁</div>
-                      <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>
+                      <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
                         Click or drag & drop courtroom audio file
                       </div>
-                      <div style={{ fontSize: '0.75rem', marginTop: '0.25rem' }}>
+                      <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: 'var(--text-muted)' }}>
                         WAV, MP3, FLAC (automatically resampled to 16kHz mono)
                       </div>
                     </label>
@@ -871,9 +1060,9 @@ export default function Home() {
 
                   {/* Audio Player */}
                   {audioUrl && (
-                    <div style={{ marginTop: '0.5rem' }}>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
-                        Loaded Audio Stream:
+                    <div style={{ marginTop: '0.5rem', background: '#F8FAFC', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.25rem' }}>
+                        Loaded Court Audio Stream:
                       </div>
                       <audio controls src={audioUrl} />
                     </div>
@@ -883,17 +1072,17 @@ export default function Home() {
                   {status.current_ref_text && (
                     <details
                       style={{
-                        background: 'rgba(255,255,255,0.02)',
-                        border: '1px solid var(--border-subtle)',
+                        background: '#FFFBEB',
+                        border: '1px solid #FDE68A',
                         borderRadius: 'var(--radius-sm)',
                         padding: '0.65rem 0.85rem',
                         fontSize: '0.8125rem',
                       }}
                     >
-                      <summary style={{ cursor: 'pointer', color: 'var(--ice-400)', fontWeight: 500 }}>
+                      <summary style={{ cursor: 'pointer', color: '#92400E', fontWeight: 600 }}>
                         📄 Ground Truth Reference Transcript (Court Record)
                       </summary>
-                      <p style={{ marginTop: '0.5rem', color: 'var(--text-primary)', fontStyle: 'italic' }}>
+                      <p style={{ marginTop: '0.5rem', color: '#78350F', fontStyle: 'italic' }}>
                         "{status.current_ref_text}"
                       </p>
                     </details>
@@ -925,7 +1114,7 @@ export default function Home() {
                 {/* Right Column: Model Draft & Clerk Verification */}
                 <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                   <div className="section-header" style={{ marginBottom: 0 }}>
-                    <h3 style={{ fontSize: '1.05rem' }}>2. Model Draft & Clerk Verification</h3>
+                    <h3 style={{ fontSize: '1.05rem', color: 'var(--navy-900)' }}>2. Model Draft & Clerk Verification</h3>
                     <span className="badge badge-gold">Human-in-the-Loop</span>
                   </div>
 
@@ -934,8 +1123,8 @@ export default function Home() {
                     <label className="label">Local Model Output (Whisper Inference)</label>
                     <div
                       style={{
-                        background: 'var(--surface-2)',
-                        border: '1px solid var(--border-subtle)',
+                        background: '#F8FAFC',
+                        border: '1px solid #E2E8F0',
                         borderRadius: 'var(--radius-sm)',
                         padding: '0.85rem 1rem',
                         minHeight: '85px',
@@ -1007,12 +1196,12 @@ export default function Home() {
                   {/* Privacy assurance pill inside card */}
                   <div
                     style={{
-                      background: 'rgba(124,58,237,0.06)',
-                      border: '1px solid rgba(124,58,237,0.15)',
+                      background: 'var(--violet-subtle)',
+                      border: '1px solid var(--violet-border)',
                       borderRadius: 'var(--radius-sm)',
                       padding: '0.65rem 0.85rem',
                       fontSize: '0.75rem',
-                      color: 'var(--violet-300)',
+                      color: 'var(--violet-700)',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.5rem',
@@ -1041,7 +1230,7 @@ export default function Home() {
                 <div className="card">
                   <div className="section-header">
                     <div>
-                      <h3 style={{ fontSize: '1.05rem' }}>⚡ Federated Training Cycle Controls</h3>
+                      <h3 style={{ fontSize: '1.05rem', color: 'var(--navy-900)' }}>⚡ Federated Training Cycle Controls</h3>
                       <p style={{ fontSize: '0.825rem' }}>Step through architectural stages or trigger multi-court FedAvg aggregation.</p>
                     </div>
                   </div>
@@ -1064,7 +1253,7 @@ export default function Home() {
                     </button>
 
                     <button
-                      className="btn btn-primary btn-full"
+                      className="btn btn-gold btn-full"
                       disabled={isRunningFL}
                       onClick={handleRunFLRound}
                     >
@@ -1084,8 +1273,8 @@ export default function Home() {
                   {/* Peer Courts Table */}
                   <div className="card">
                     <div className="section-header">
-                      <h3 style={{ fontSize: '1rem' }}>Participating Regional Courts in Round</h3>
-                      <span className="badge badge-ice">Regional Mesh</span>
+                      <h3 style={{ fontSize: '1rem', color: 'var(--navy-900)' }}>Participating Regional Courts in Round</h3>
+                      <span className="badge badge-blue">Regional Mesh</span>
                     </div>
 
                     <div style={{ overflowX: 'auto' }}>
@@ -1105,7 +1294,7 @@ export default function Home() {
                               <td><span className="mono">{peer.samples}</span></td>
                               <td><span className="mono">{peer.weight}</span></td>
                               <td>
-                                <span className={`badge ${i === 0 ? 'badge-ice' : 'badge-neutral'}`} style={{ fontSize: '0.7rem' }}>
+                                <span className={`badge ${i === 0 ? 'badge-blue' : 'badge-neutral'}`} style={{ fontSize: '0.7rem' }}>
                                   {peer.status}
                                 </span>
                               </td>
@@ -1119,14 +1308,14 @@ export default function Home() {
                   {/* Privacy & Gate Verification Summary */}
                   <div className="card">
                     <div className="section-header">
-                      <h3 style={{ fontSize: '1rem' }}>Privacy & Quality Gate Verification</h3>
+                      <h3 style={{ fontSize: '1rem', color: 'var(--navy-900)' }}>Privacy & Quality Gate Verification</h3>
                       <span className="badge badge-success">CI Verified</span>
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
                         <span style={{ color: 'var(--text-muted)' }}>LoRA Parameter Count:</span>
-                        <strong className="mono">3,538,944 float32 weights</strong>
+                        <strong className="mono" style={{ color: 'var(--navy-900)' }}>3,538,944 float32 weights</strong>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
                         <span style={{ color: 'var(--text-muted)' }}>Raw Audio Transmitted:</span>
@@ -1134,7 +1323,7 @@ export default function Home() {
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
                         <span style={{ color: 'var(--text-muted)' }}>Differential Privacy Bound:</span>
-                        <strong className="mono" style={{ color: 'var(--violet-300)' }}>L2 ≤ {status.dp_clip_norm}</strong>
+                        <strong className="mono" style={{ color: 'var(--violet-700)' }}>L2 ≤ {status.dp_clip_norm}</strong>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--border-subtle)' }}>
                         <span style={{ color: 'var(--text-muted)' }}>Continuous Integration Gate:</span>
@@ -1142,7 +1331,7 @@ export default function Home() {
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0' }}>
                         <span style={{ color: 'var(--text-muted)' }}>Promoted Global Adapter:</span>
-                        <strong className="mono text-ice">v{status.adapter_version}</strong>
+                        <strong className="mono text-blue">v{status.adapter_version}</strong>
                       </div>
                     </div>
                   </div>
@@ -1157,11 +1346,11 @@ export default function Home() {
                 <div className="card">
                   <div className="section-header">
                     <div>
-                      <h3 style={{ fontSize: '1.05rem' }}>Word Error Rate (WER) Progression Across Utterances</h3>
+                      <h3 style={{ fontSize: '1.05rem', color: 'var(--navy-900)' }}>Word Error Rate (WER) Progression Across Utterances</h3>
                       <p style={{ fontSize: '0.825rem' }}>Track adaptation accuracy improvements across courtroom clerk verification cycles.</p>
                     </div>
                     {history.length > 0 && (
-                      <span className="badge badge-ice">
+                      <span className="badge badge-blue">
                         Avg WER: {(history.reduce((acc, h) => acc + h.wer, 0) / history.length).toFixed(1)}%
                       </span>
                     )}
@@ -1183,7 +1372,7 @@ export default function Home() {
                             />
                           </div>
                           <span className="wer-bar-value">{h.wer}%</span>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', width: '120px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', width: '140px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {h.source}
                           </span>
                         </div>
@@ -1196,7 +1385,7 @@ export default function Home() {
                 <div className="card">
                   <div className="section-header">
                     <div>
-                      <h3 style={{ fontSize: '1.05rem' }}>Session Utterance Audit Log</h3>
+                      <h3 style={{ fontSize: '1.05rem', color: 'var(--navy-900)' }}>Session Utterance Audit Log</h3>
                       <p style={{ fontSize: '0.825rem' }}>Immutable record of draft outputs, clerk corrections, and error metrics.</p>
                     </div>
                     <span className="badge badge-neutral">{history.length} records</span>
@@ -1225,7 +1414,7 @@ export default function Home() {
                               <td><span className="mono">#{item.utterance}</span></td>
                               <td><span style={{ fontSize: '0.8rem' }}>{item.source}</span></td>
                               <td style={{ maxWidth: '280px', whiteSpace: 'normal', fontSize: '0.825rem' }}>{item.draft}</td>
-                              <td style={{ maxWidth: '280px', whiteSpace: 'normal', color: 'var(--ice-300)', fontSize: '0.825rem' }}>{item.correction}</td>
+                              <td style={{ maxWidth: '280px', whiteSpace: 'normal', color: 'var(--court-blue)', fontWeight: 500, fontSize: '0.825rem' }}>{item.correction}</td>
                               <td>
                                 <span className={`badge ${item.wer <= 10 ? 'badge-success' : item.wer <= 20 ? 'badge-gold' : 'badge-danger'}`}>
                                   {item.wer}%
@@ -1245,15 +1434,15 @@ export default function Home() {
         )}
       </main>
 
-      {/* Footer */}
+      {/* Judicial Chamber Footer */}
       <footer
         style={{
-          borderTop: '1px solid var(--border-subtle)',
+          borderTop: '1px solid #E2E8F0',
           padding: '1.25rem 1.5rem',
           textAlign: 'center',
           fontSize: '0.8rem',
           color: 'var(--text-muted)',
-          background: 'var(--navy-950)',
+          background: '#FFFFFF',
           marginTop: 'auto',
         }}
       >
