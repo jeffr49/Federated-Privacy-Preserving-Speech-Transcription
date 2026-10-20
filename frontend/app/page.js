@@ -61,7 +61,7 @@ export default function Home() {
 
   // Tab 1: Live Transcription & Audio
   const [audioSource, setAudioSource] = useState('sample'); // 'sample' | 'mic' | 'upload'
-  const [selectedSample, setSelectedSample] = useState('Witness Testimony (சாட்சியம் 1)');
+  const [selectedSample, setSelectedSample] = useState('Temple Visit Narrative (கோயில் சாட்சியம்)');
   const [audioUrl, setAudioUrl] = useState('');
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [draftText, setDraftText] = useState('');
@@ -1029,7 +1029,7 @@ export default function Home() {
                   {/* Source Sub-Interface: Built-in Samples */}
                   {audioSource === 'sample' && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-                      <label className="label">Select Pre-Bundled Tamil Court Utterance</label>
+                      <label className="label">Select Pre-Bundled Tamil Speech Utterance</label>
                       <select
                         className="input"
                         value={selectedSample}

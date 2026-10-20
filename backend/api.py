@@ -91,22 +91,22 @@ except Exception:
 # Pre-bundled Tamil Court Audio Samples
 # ---------------------------------------------------------------------------
 SAMPLE_UTTERANCES = {
-    "Witness Testimony (சாட்சியம் 1)": {
-        "file": "sample_audio/court_witness_testimony_1.wav",
-        "reference": "சாட்சியம்: சம்பவத்தன்று மாலை ஆறு மணிக்கு நான் கடைத்தெருவில் இருந்தேன்.",
-        "description": "Witness testimony regarding presence at the scene of incident.",
+    "Temple Visit Narrative (கோயில் சாட்சியம்)": {
+        "file": "sample_audio/S4256641700339657_42498.flac",
+        "reference": "அதற்கப்பரம் நைட்டு வந்து ஒரு கோயில் ஃபங்குன் தானே எல்லா ஃபங்குன்லையும் இப்போ வந்து சாமி மூவி எல்லாம் போடுவாங்கல்ல அந்த மாதிரி இங்கையும் அம்மன் அப்படிங்கிற சாமி மூவி போட்டுருந்தாங்க அதை வந்து எல்லாரும் பார்த்து ரசிச்சிகிட்டு இருந்தோம்.",
+        "description": "Witness narrates a night visit to a temple festival where a devotional deity film was screened and enjoyed by all attendees.",
         "court": "Chennai Principal City Court",
     },
-    "Magistrate Examination (நீதிமன்ற உத்தரவு)": {
-        "file": "sample_audio/court_magistrate_order_2.wav",
-        "reference": "வழக்கு எண் 412/2026: குற்றம் சாட்டப்பட்டவருக்கு ஜாமீன் மனு மீதான விசாரணை தொடங்குகிறது.",
-        "description": "Magistrate order commencing hearing on bail application.",
+    "Tamil Language Testimony (தமிழ் மொழி சாட்சியம்)": {
+        "file": "sample_audio/S4256658300339050_39156.flac",
+        "reference": "தமிழ் வந்து என்னோடய தாய்மொழி தமிழ் தமிழ்னு சொன்னாலே ஒரு ஒருவிதமான ஒரு மாதிரியான ஒரு ஒரு வளர்ச்சி ஒரு சிறப்பு இலக்கிய நூல்கள் ரொம்ப அதிகமாக இருக்குது அதோட அதோட ப்ரொனொன்சியேஷன் அதோட ப்ரொனொன்சியேஷன் தமிழ்மொழி யாராக இருந்தாலும் ஈசியாக கற்றுக்க முடியும் தமிழ்னாலே ஒரு தனி சிறப்பு இருக்குது.",
+        "description": "Witness testifies about Tamil being their mother tongue, praising its rich literary heritage, unique pronunciation, and ease of learning for anyone.",
         "court": "Madurai High Court Bench",
     },
-    "Police Statement (காவல்துறை அறிக்கை)": {
-        "file": "sample_audio/court_police_statement_3.wav",
-        "reference": "முதற்கட்ட விசாரணை அறிக்கை மற்றும் சான்றாவணங்கள் நீதிமன்றத்தில் சமர்ப்பிக்கப்பட்டுள்ளன.",
-        "description": "Police filing of preliminary investigation report and exhibits.",
+    "Climate Statement (காலநிலை வாக்குமூலம்)": {
+        "file": "sample_audio/S4256605300334472_35085.flac",
+        "reference": "ரொம்ப எப்போயுமே க்ளைமட் வந்து குறையே சொல்ல முடியாது அந்த அளவு எனக்கு வந்து க்ளைமட் ரொம்ப பிடிக்கும் க்ளைமட் எனக்கும் செட் ஆயிடும் கூட.",
+        "description": "Witness states that they can never find fault with the local climate, expressing how much they love it and how well it suits them.",
         "court": "Coimbatore Sessions Court",
     },
 }
