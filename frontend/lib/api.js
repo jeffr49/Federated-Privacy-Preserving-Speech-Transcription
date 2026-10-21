@@ -34,6 +34,12 @@ export const api = {
     return request('POST', '/api/upload-audio', fd, true);
   },
   transcribe: () => request('POST', '/api/transcribe'),
+  transcribeChunk: (file) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    return request('POST', '/api/transcribe-chunk', fd, true);
+  },
+  setDraft: (draft) => request('POST', '/api/set-draft', { draft }),
   confirm: (correction, localLr) => request('POST', '/api/confirm', { correction, local_lr: localLr }),
   endSession: () => request('POST', '/api/end-session'),
   runFLRound: () => request('POST', '/api/run-fl-round'),
@@ -41,5 +47,6 @@ export const api = {
   peers: () => request('GET', '/api/peers'),
   stepPipeline: () => request('POST', '/api/step-pipeline'),
   resetPipeline: () => request('POST', '/api/reset-pipeline'),
+  resetSession: () => request('POST', '/api/reset-session'),
   getAudioUrl: () => `${BASE}/api/audio?t=${Date.now()}`,
 };

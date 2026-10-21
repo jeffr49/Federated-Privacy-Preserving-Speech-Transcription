@@ -48,15 +48,12 @@ export default function Home() {
   const [showGuideModal, setShowGuideModal] = useState(false);
 
   // Init form
-  const [mode, setMode] = useState('simulation');
+  const [mode] = useState('simulation');
   const [adapterDir, setAdapterDir] = useState('./runs/whisper-small_lora_r32/final_adapter');
   const [localLr, setLocalLr] = useState(0.0005);
   const [dpClipNorm, setDpClipNorm] = useState(1.0);
   const [nPeers, setNPeers] = useState(3);
   const [peerNoise, setPeerNoise] = useState(0.005);
-  const [serverUrl, setServerUrl] = useState('http://localhost:8000');
-  const [clientId, setClientId] = useState('court-chennai-01');
-  const [apiKey, setApiKey] = useState('');
   const [initLoading, setInitLoading] = useState(false);
 
   // Tab 1: Live Transcription & Audio
@@ -70,7 +67,9 @@ export default function Home() {
   const [isEndingSession, setIsEndingSession] = useState(false);
 
   // Mic recording
+  const [micMode, setMicMode] = useState('batch'); // 'batch' | 'realtime'
   const [isRecording, setIsRecording] = useState(false);
+  const [isLiveTranscribing, setIsLiveTranscribing] = useState(false);
   const [recordDuration, setRecordDuration] = useState(0);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -79,6 +78,12 @@ export default function Home() {
   const micStreamRef = useRef(null);
   const audioProcessorRef = useRef(null);
   const pcmSamplesRef = useRef([]);
+  const liveChunkTimerRef = useRef(null);
+  const lastSentSampleIndexRef = useRef(0);
+  const transcribeInFlightRef = useRef(false);
+  const liveTranscriptRef = useRef('');
+  const clerkEditedRef = useRef(false);
+  const hydratedDraftRef = useRef(false);
 
   // Tab 2: Visual Pipeline
   const [isSteppingPipeline, setIsSteppingPipeline] = useState(false);
@@ -100,9 +105,12 @@ export default function Home() {
     try {
       const data = await api.status();
       setStatus(data);
-      if (data.draft) {
+      // Hydrate draft once on first load only. Polling must not overwrite
+      // clerk edits — a stale closure previously reset the correction textarea.
+      if (!hydratedDraftRef.current && data.draft) {
+        hydratedDraftRef.current = true;
         setDraftText(data.draft);
-        if (!clerkCorrection) setClerkCorrection(data.draft);
+        setClerkCorrection((prev) => prev || data.draft);
       }
       return data;
     } catch (err) {
@@ -133,7 +141,11 @@ export default function Home() {
   useEffect(() => {
     refreshStatus();
     const interval = setInterval(refreshStatus, 6000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (liveChunkTimerRef.current) clearInterval(liveChunkTimerRef.current);
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -149,15 +161,12 @@ export default function Home() {
     setInitLoading(true);
     try {
       const res = await api.init({
-        mode,
+        mode: 'simulation',
         adapter_dir: adapterDir,
         local_lr: parseFloat(localLr),
         dp_clip_norm: parseFloat(dpClipNorm),
         n_peers: parseInt(nPeers, 10),
         peer_noise: parseFloat(peerNoise),
-        server_url: serverUrl,
-        client_id: clientId,
-        api_key: apiKey,
       });
       showToast(`Model successfully initialized on ${res.device?.toUpperCase() || 'CPU'}!`, 'success');
       await refreshStatus();
@@ -168,12 +177,28 @@ export default function Home() {
     }
   };
 
+  // Return to Setup Gateway
+  const handleBackToHome = async () => {
+    try {
+      await api.resetSession();
+      setDraftText('');
+      setClerkCorrection('');
+      setAudioUrl('');
+      hydratedDraftRef.current = false;
+      await refreshStatus();
+      showToast('Returned to Court Setup Gateway.', 'info');
+    } catch (err) {
+      showToast(`Error returning to setup: ${err.message}`, 'error');
+    }
+  };
+
   // Handle Sample Load
   const handleLoadSample = async () => {
     try {
       await api.loadSample(selectedSample);
       setAudioUrl(api.getAudioUrl());
       setDraftText('');
+      clerkEditedRef.current = false;
       setClerkCorrection('');
       showToast(`Sample loaded: "${selectedSample}"`, 'success');
       await refreshStatus();
@@ -190,6 +215,7 @@ export default function Home() {
       await api.uploadAudio(file);
       setAudioUrl(api.getAudioUrl());
       setDraftText('');
+      clerkEditedRef.current = false;
       setClerkCorrection('');
       showToast(`Uploaded: ${file.name}`, 'success');
       await refreshStatus();
@@ -198,9 +224,50 @@ export default function Home() {
     }
   };
 
+  const applyLiveText = (text) => {
+    liveTranscriptRef.current = text;
+    setDraftText(text);
+    if (!clerkEditedRef.current) {
+      setClerkCorrection(text);
+    }
+  };
+
+  const flushLiveChunk = async (finalize = false) => {
+    if (transcribeInFlightRef.current && !finalize) return;
+    while (transcribeInFlightRef.current) {
+      await new Promise((resolve) => setTimeout(resolve, 120));
+    }
+
+    const start = lastSentSampleIndexRef.current;
+    const chunk = pcmSamplesRef.current.slice(start);
+    const minSamples = finalize ? 8000 : 16000; // 0.5s leftover vs 1s live slice
+    if (chunk.length < minSamples) return;
+
+    lastSentSampleIndexRef.current = pcmSamplesRef.current.length;
+    transcribeInFlightRef.current = true;
+    setIsLiveTranscribing(true);
+    try {
+      const wavBlob = encodeWavPcm16(new Float32Array(chunk), 16000);
+      const file = new File([wavBlob], `live_chunk_${Date.now()}.wav`, { type: 'audio/wav' });
+      const res = await api.transcribeChunk(file);
+      const piece = (res.text || '').trim();
+      if (piece) {
+        applyLiveText([liveTranscriptRef.current, piece].filter(Boolean).join(' '));
+      }
+    } catch (err) {
+      showToast(`Live transcription error: ${err.message}`, 'error');
+    } finally {
+      transcribeInFlightRef.current = false;
+      setIsLiveTranscribing(false);
+    }
+  };
+
   // Handle Microphone Recording via Web Audio API (true 16kHz PCM WAV)
   const startRecording = async () => {
     pcmSamplesRef.current = [];
+    lastSentSampleIndexRef.current = 0;
+    liveTranscriptRef.current = '';
+    clerkEditedRef.current = false;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
@@ -241,6 +308,14 @@ export default function Home() {
       source.connect(processor);
       processor.connect(ctx.destination);
 
+      if (micMode === 'realtime') {
+        setDraftText('');
+        setClerkCorrection('');
+        liveChunkTimerRef.current = setInterval(() => {
+          flushLiveChunk(false);
+        }, 2200);
+      }
+
       setIsRecording(true);
       setRecordDuration(0);
       timerRef.current = setInterval(() => {
@@ -251,10 +326,13 @@ export default function Home() {
     }
   };
 
-  const stopRecording = async () => {
+  const stopMicCapture = () => {
     setIsRecording(false);
     clearInterval(timerRef.current);
-
+    if (liveChunkTimerRef.current) {
+      clearInterval(liveChunkTimerRef.current);
+      liveChunkTimerRef.current = null;
+    }
     if (audioProcessorRef.current) {
       audioProcessorRef.current.disconnect();
       audioProcessorRef.current = null;
@@ -267,6 +345,11 @@ export default function Home() {
       try { audioCtxRef.current.close(); } catch (_) {}
       audioCtxRef.current = null;
     }
+  };
+
+  const stopRecording = async () => {
+    const mode = micMode;
+    stopMicCapture();
 
     const rawSamples = new Float32Array(pcmSamplesRef.current);
     if (rawSamples.length < 1600) {
@@ -278,9 +361,22 @@ export default function Home() {
     const file = new File([wavBlob], `mic_utterance_${Date.now()}.wav`, { type: 'audio/wav' });
 
     try {
+      if (mode === 'realtime') {
+        await flushLiveChunk(true);
+        await api.uploadAudio(file);
+        if (liveTranscriptRef.current) {
+          await api.setDraft(liveTranscriptRef.current);
+        }
+        setAudioUrl(URL.createObjectURL(wavBlob));
+        showToast(`Live transcript ready (${(rawSamples.length / 16000).toFixed(1)}s). You can edit the clerk correction.`, 'success');
+        await refreshStatus();
+        return;
+      }
+
       await api.uploadAudio(file);
       setAudioUrl(URL.createObjectURL(wavBlob));
       setDraftText('');
+      clerkEditedRef.current = false;
       setClerkCorrection('');
       showToast(`Audio (${(rawSamples.length / 16000).toFixed(1)}s) captured in 16kHz WAV format & ready for transcription!`, 'success');
       await refreshStatus();
@@ -294,6 +390,7 @@ export default function Home() {
     setIsTranscribing(true);
     try {
       const res = await api.transcribe();
+      clerkEditedRef.current = false;
       setDraftText(res.draft);
       setClerkCorrection(res.draft);
       showToast(`Transcribed in ${res.elapsed_sec}s!`, 'success');
@@ -314,10 +411,12 @@ export default function Home() {
     setIsConfirming(true);
     try {
       const res = await api.confirm(clerkCorrection, localLr);
-      showToast(`Confirmed! WER: ${res.wer}% · Reward: ${res.reward}${res.loss !== null ? ` · Loss: ${res.loss.toFixed(4)}` : ''}`, 'success');
+      showToast(`Confirmed! WER: ${res.wer}% · CER: ${res.cer !== undefined ? `${res.cer}%` : `${liveCerEstimate}%`} · Reward: ${res.reward}${res.loss !== null ? ` · Loss: ${res.loss.toFixed(4)}` : ''}`, 'success');
       setDraftText('');
+      clerkEditedRef.current = false;
       setClerkCorrection('');
       setAudioUrl('');
+      hydratedDraftRef.current = true;
       await refreshStatus();
       await refreshHistory();
     } catch (err) {
@@ -334,6 +433,7 @@ export default function Home() {
       const res = await api.endSession();
       showToast(`Session committed! Delta clipped: ${res.norm_after_clip || 0}. Raw witness audio wiped from RAM.`, 'success');
       setDraftText('');
+      clerkEditedRef.current = false;
       setClerkCorrection('');
       setAudioUrl('');
       await refreshStatus();
@@ -399,7 +499,31 @@ export default function Home() {
     return Math.min(100, Math.round((diff / rWords.length) * 100));
   };
 
+  // Character Error Rate preview calculation
+  const calculateCerPreview = (ref, hyp) => {
+    if (!ref || !hyp) return 0;
+    const rChars = Array.from(ref.trim());
+    const hChars = Array.from(hyp.trim());
+    if (!rChars.length) return hChars.length ? 100 : 0;
+    const n = rChars.length;
+    const m = hChars.length;
+    const dp = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+    for (let i = 0; i <= n; i++) dp[i][0] = i;
+    for (let j = 0; j <= m; j++) dp[0][j] = j;
+    for (let i = 1; i <= n; i++) {
+      for (let j = 1; j <= m; j++) {
+        if (rChars[i - 1] === hChars[j - 1]) {
+          dp[i][j] = dp[i - 1][j - 1];
+        } else {
+          dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+        }
+      }
+    }
+    return Math.min(100, Math.round((dp[n][m] / n) * 100));
+  };
+
   const liveWerEstimate = draftText && clerkCorrection ? calculateWerPreview(clerkCorrection, draftText) : 0;
+  const liveCerEstimate = draftText && clerkCorrection ? calculateCerPreview(clerkCorrection, draftText) : 0;
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -480,17 +604,6 @@ export default function Home() {
                 </div>
               </div>
 
-              <div style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '1rem', borderRadius: '8px' }}>
-                <strong style={{ color: '#1E40AF' }}>🌐 Hosted Federation (Central Aggregator)</strong>
-                <p style={{ marginTop: '0.35rem', color: '#1E3A8A', fontSize: '0.825rem' }}>
-                  <strong>When to choose:</strong> Multi-laptop demonstrations or cloud deployments. Authenticates with a remote FastAPI aggregation server via API keys and synchronizes model versions.
-                </p>
-                <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <span className="badge badge-neutral">Requires: Server URL & Client Key</span>
-                  <span className="badge badge-neutral">Rejects Stale Versions (vN)</span>
-                </div>
-              </div>
-
               <div>
                 <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0F172A', marginBottom: '0.5rem' }}>
                   Key Mathematical Parameters & System Behavior
@@ -556,7 +669,7 @@ export default function Home() {
                   FEDERATED TAMIL COURT ASR
                 </h1>
                 <span className="badge badge-gold" style={{ fontSize: '0.7rem' }}>
-                  {status?.mode === 'hosted' ? 'Hosted Federation' : 'Simulation Mode'}
+                  Multi-Court Simulation
                 </span>
                 {status?.have_torch && (
                   <span className="badge badge-blue" style={{ fontSize: '0.7rem' }}>
@@ -571,6 +684,25 @@ export default function Home() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            {status?.loaded && (
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={handleBackToHome}
+                title="Return to Setup / Pre-Flight Configuration"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  borderColor: '#D97706',
+                  color: '#92400E',
+                  background: '#FEF3C7',
+                  fontWeight: 600,
+                }}
+              >
+                ← Back to Home
+              </button>
+            )}
+
             <button
               className="btn btn-secondary btn-sm"
               onClick={() => setShowGuideModal(true)}
@@ -724,69 +856,39 @@ export default function Home() {
               </div>
 
               <form onSubmit={handleInit} style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
-                {/* Mode Selector Cards */}
+                {/* Operational Environment Architecture */}
                 <div>
                   <label className="label" style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-                    Select Operational Environment Mode
+                    Operational Architecture
                   </label>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <label
-                      className="card"
-                      style={{
-                        padding: '1rem',
-                        cursor: 'pointer',
-                        border: mode === 'simulation' ? '2px solid #D97706' : '1px solid #E2E8F0',
-                        background: mode === 'simulation' ? '#FFFBEB' : '#FFFFFF',
-                        transition: 'all 0.2s ease',
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="mode"
-                        value="simulation"
-                        checked={mode === 'simulation'}
-                        onChange={(e) => setMode(e.target.value)}
-                        style={{ display: 'none' }}
-                      />
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                        <span style={{ fontSize: '1.2rem' }}>🏛️</span>
-                        <strong style={{ color: mode === 'simulation' ? '#92400E' : 'var(--navy-900)', fontSize: '0.9rem' }}>
+                  <div
+                    className="card"
+                    style={{
+                      padding: '1rem 1.25rem',
+                      border: '2px solid #D97706',
+                      background: '#FFFBEB',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: '0.75rem',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                        <span style={{ fontSize: '1.25rem' }}>🏛️</span>
+                        <strong style={{ color: '#92400E', fontSize: '0.92rem' }}>
                           Interactive Multi-Court Simulation
                         </strong>
+                        <span className="badge badge-gold" style={{ fontSize: '0.68rem' }}>Active Architecture</span>
                       </div>
-                      <div style={{ fontSize: '0.78rem', color: mode === 'simulation' ? '#78350F' : 'var(--text-muted)', lineHeight: 1.45 }}>
-                        Self-contained offline execution with simulated peers (Chennai, Madurai, Coimbatore). <strong>Recommended for Review Panel & Viva.</strong>
+                      <div style={{ fontSize: '0.78rem', color: '#78350F', lineHeight: 1.45 }}>
+                        Self-contained offline execution with simulated regional peers (Chennai, Madurai, Coimbatore).
                       </div>
-                    </label>
-
-                    <label
-                      className="card"
-                      style={{
-                        padding: '1rem',
-                        cursor: 'pointer',
-                        border: mode === 'hosted' ? '2px solid #1D4ED8' : '1px solid #E2E8F0',
-                        background: mode === 'hosted' ? '#EFF6FF' : '#FFFFFF',
-                        transition: 'all 0.2s ease',
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="mode"
-                        value="hosted"
-                        checked={mode === 'hosted'}
-                        onChange={(e) => setMode(e.target.value)}
-                        style={{ display: 'none' }}
-                      />
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                        <span style={{ fontSize: '1.2rem' }}>🌐</span>
-                        <strong style={{ color: mode === 'hosted' ? '#1E40AF' : 'var(--navy-900)', fontSize: '0.9rem' }}>
-                          Hosted Federation
-                        </strong>
-                      </div>
-                      <div style={{ fontSize: '0.78rem', color: mode === 'hosted' ? '#1E3A8A' : 'var(--text-muted)', lineHeight: 1.45 }}>
-                        Connects over secure REST to a central FastAPI aggregation server. Recommended for multi-laptop cloud deployment.
-                      </div>
-                    </label>
+                    </div>
+                    <span className="badge badge-neutral" style={{ fontSize: '0.75rem', background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A' }}>
+                      Offline Edge DP-ASR
+                    </span>
                   </div>
                 </div>
 
@@ -848,7 +950,6 @@ export default function Home() {
                       className="input input-mono"
                       value={nPeers}
                       onChange={(e) => setNPeers(e.target.value)}
-                      disabled={mode === 'hosted'}
                     />
                   </div>
                   <div>
@@ -862,46 +963,9 @@ export default function Home() {
                       className="input input-mono"
                       value={peerNoise}
                       onChange={(e) => setPeerNoise(e.target.value)}
-                      disabled={mode === 'hosted'}
                     />
                   </div>
                 </div>
-
-                {/* Hosted Credentials */}
-                {mode === 'hosted' && (
-                  <div className="grid-3 animate-fade-in" style={{ background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '1.1rem', borderRadius: 'var(--radius-md)' }}>
-                    <div>
-                      <label className="label" style={{ color: '#1E40AF' }}>Server Aggregation URL</label>
-                      <input
-                        type="text"
-                        className="input input-mono"
-                        value={serverUrl}
-                        onChange={(e) => setServerUrl(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="label" style={{ color: '#1E40AF' }}>Court Jurisdiction ID</label>
-                      <input
-                        type="text"
-                        className="input"
-                        value={clientId}
-                        onChange={(e) => setClientId(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="label" style={{ color: '#1E40AF' }}>Federation API Key</label>
-                      <input
-                        type="password"
-                        className="input"
-                        placeholder="court_sec_..."
-                        value={apiKey}
-                        onChange={(e) => setApiKey(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                )}
 
                 <button
                   type="submit"
@@ -942,12 +1006,30 @@ export default function Home() {
               </div>
               <div className="stat-chip">
                 <span className="stat-label">SESSION BUFFER</span>
-                <span className="stat-value">{status.utterances_this_session} <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>utterances</span></span>
+                <span className="stat-value">
+                  {status.utterances_this_session > 0
+                    ? status.utterances_this_session
+                    : status.committed_samples > 0
+                    ? status.committed_samples
+                    : 0}{' '}
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    {status.utterances_this_session > 0
+                      ? 'buffered'
+                      : status.committed_samples > 0
+                      ? 'committed'
+                      : 'utterances'}
+                  </span>
+                </span>
               </div>
               <div className="stat-chip">
-                <span className="stat-label">ROLLING WER (LAST 5)</span>
+                <span className="stat-label">ROLLING WER / CER (LAST 5)</span>
                 <span className="stat-value" style={{ color: status.rolling_wer !== null && status.rolling_wer <= 15 ? 'var(--success)' : 'var(--text-primary)' }}>
                   {status.rolling_wer !== null ? `${status.rolling_wer}%` : '—'}
+                  {status.rolling_cer !== null && status.rolling_cer !== undefined ? (
+                    <span style={{ fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-muted)', marginLeft: '0.35rem' }}>
+                      / {status.rolling_cer}%
+                    </span>
+                  ) : null}
                 </span>
               </div>
               <div className="stat-chip">
@@ -1082,6 +1164,31 @@ export default function Home() {
                         gap: '1rem',
                       }}
                     >
+                      <div className="radio-group" style={{ width: '100%', justifyContent: 'center' }}>
+                        <label className={`radio-option ${micMode === 'realtime' ? 'selected' : ''}`}>
+                          <input
+                            type="radio"
+                            name="micMode"
+                            value="realtime"
+                            checked={micMode === 'realtime'}
+                            disabled={isRecording}
+                            onChange={() => setMicMode('realtime')}
+                          />
+                          <span>Real time</span>
+                        </label>
+                        <label className={`radio-option ${micMode === 'batch' ? 'selected' : ''}`}>
+                          <input
+                            type="radio"
+                            name="micMode"
+                            value="batch"
+                            checked={micMode === 'batch'}
+                            disabled={isRecording}
+                            onChange={() => setMicMode('batch')}
+                          />
+                          <span>Batch</span>
+                        </label>
+                      </div>
+
                       <div
                         style={{
                           width: '64px',
@@ -1100,20 +1207,48 @@ export default function Home() {
                       </div>
                       <div style={{ textAlign: 'center' }}>
                         <div style={{ fontWeight: 600, color: isRecording ? '#B91C1C' : 'var(--text-primary)' }}>
-                          {isRecording ? `Recording Witness Statement (${recordDuration}s)` : 'Microphone Ready'}
+                          {isRecording
+                            ? `${micMode === 'realtime' ? 'Transcribing live' : 'Recording Witness Statement'} (${recordDuration}s)`
+                            : 'Microphone Ready'}
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                          Live 16kHz audio captured securely in browser memory
+                          {micMode === 'realtime'
+                            ? 'Speech is sent to Whisper in short slices as you talk. Edit the final text in the clerk window.'
+                            : 'Full utterance is stored first, then transcribed after you stop.'}
                         </div>
                       </div>
 
+                      {micMode === 'realtime' && (isRecording || draftText) && (
+                        <div
+                          style={{
+                            width: '100%',
+                            background: '#FFFFFF',
+                            border: '1px solid #E2E8F0',
+                            borderRadius: 'var(--radius-sm)',
+                            padding: '0.7rem 0.85rem',
+                            fontSize: '0.85rem',
+                            minHeight: '64px',
+                            color: draftText ? 'var(--text-primary)' : 'var(--text-muted)',
+                            fontStyle: draftText ? 'normal' : 'italic',
+                            whiteSpace: 'pre-wrap',
+                          }}
+                        >
+                          {draftText || (isRecording ? 'Listening for speech…' : 'No live transcript yet.')}
+                          {isLiveTranscribing && (
+                            <div style={{ marginTop: '0.4rem', fontSize: '0.72rem', color: 'var(--court-blue)', fontStyle: 'normal' }}>
+                              Updating from model…
+                            </div>
+                          )}
+                        </div>
+                      )}
+
                       {!isRecording ? (
                         <button className="btn btn-primary" onClick={startRecording}>
-                          🔴 Start Recording
+                          {micMode === 'realtime' ? '🔴 Start live transcription' : '🔴 Start Recording'}
                         </button>
                       ) : (
                         <button className="btn btn-danger-outline" onClick={stopRecording}>
-                          ⏹️ Stop & Save Utterance
+                          {micMode === 'realtime' ? '⏹️ Stop & keep transcript' : '⏹️ Stop & Save Utterance'}
                         </button>
                       )}
                     </div>
@@ -1168,27 +1303,33 @@ export default function Home() {
                     </details>
                   )}
 
-                  {/* Transcribe Button */}
-                  <div style={{ marginTop: '0.5rem' }}>
-                    <button
-                      className="btn btn-primary btn-lg btn-full"
-                      disabled={!status.has_audio || isTranscribing}
-                      onClick={handleTranscribe}
-                    >
-                      {isTranscribing ? (
-                        <>
-                          <span className="spinner" /> Transcribing with Whisper-LoRA...
-                        </>
-                      ) : (
-                        '📝 Transcribe Audio (Local Whisper + LoRA)'
+                  {/* Transcribe Button — batch / file / sample. Real-time mic transcribes as you speak. */}
+                  {!(audioSource === 'mic' && micMode === 'realtime' && isRecording) && (
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <button
+                        className="btn btn-primary btn-lg btn-full"
+                        disabled={!status.has_audio || isTranscribing}
+                        onClick={handleTranscribe}
+                      >
+                        {isTranscribing ? (
+                          <>
+                            <span className="spinner" /> Transcribing with Whisper-LoRA...
+                          </>
+                        ) : audioSource === 'mic' && micMode === 'realtime' ? (
+                          '📝 Re-transcribe full utterance'
+                        ) : (
+                          '📝 Transcribe Audio (Local Whisper + LoRA)'
+                        )}
+                      </button>
+                      {!status.has_audio && (
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '0.35rem' }}>
+                          {audioSource === 'mic' && micMode === 'realtime'
+                            ? 'Start live transcription, or load audio to re-run a full pass'
+                            : 'Load a sample utterance or upload audio first'}
+                        </div>
                       )}
-                    </button>
-                    {!status.has_audio && (
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '0.35rem' }}>
-                        Load a sample utterance or upload audio first
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Right Column: Model Draft & Clerk Verification */}
@@ -1220,21 +1361,29 @@ export default function Home() {
 
                   {/* Clerk Correction Station */}
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.375rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.375rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <label className="label" style={{ margin: 0 }}>
                         3. Clerk Correction Station (Supervised Feedback)
                       </label>
                       {draftText && clerkCorrection && (
-                        <span className={`badge ${liveWerEstimate > 0 ? 'badge-warning' : 'badge-success'}`} style={{ fontSize: '0.72rem' }}>
-                          Edit Distance: ~{liveWerEstimate}% WER
-                        </span>
+                        <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+                          <span className={`badge ${liveWerEstimate > 0 ? 'badge-warning' : 'badge-success'}`} style={{ fontSize: '0.72rem' }}>
+                            Edit Distance: ~{liveWerEstimate}% WER
+                          </span>
+                          <span className={`badge ${liveCerEstimate > 0 ? 'badge-warning' : 'badge-success'}`} style={{ fontSize: '0.72rem' }}>
+                            ~{liveCerEstimate}% CER
+                          </span>
+                        </div>
                       )}
                     </div>
                     <textarea
                       className="textarea"
                       placeholder="Review or edit errors (legal terminology, regional phrasing, names)..."
                       value={clerkCorrection}
-                      onChange={(e) => setClerkCorrection(e.target.value)}
+                      onChange={(e) => {
+                        clerkEditedRef.current = true;
+                        setClerkCorrection(e.target.value);
+                      }}
                       style={{ minHeight: '110px' }}
                     />
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
@@ -1246,7 +1395,7 @@ export default function Home() {
                   <div className="grid-2" style={{ marginTop: '0.5rem' }}>
                     <button
                       className="btn btn-secondary btn-full"
-                      disabled={!draftText || isConfirming}
+                      disabled={!draftText || isConfirming || isRecording}
                       onClick={handleConfirm}
                     >
                       {isConfirming ? (
@@ -1485,6 +1634,7 @@ export default function Home() {
                             <th>Model Draft Output</th>
                             <th>Clerk Supervised Correction</th>
                             <th>WER %</th>
+                            <th>CER %</th>
                             <th>FL Round</th>
                           </tr>
                         </thead>
@@ -1498,6 +1648,11 @@ export default function Home() {
                               <td>
                                 <span className={`badge ${item.wer <= 10 ? 'badge-success' : item.wer <= 20 ? 'badge-gold' : 'badge-danger'}`}>
                                   {item.wer}%
+                                </span>
+                              </td>
+                              <td>
+                                <span className={`badge ${(item.cer ?? item.wer) <= 10 ? 'badge-success' : (item.cer ?? item.wer) <= 20 ? 'badge-gold' : 'badge-danger'}`}>
+                                  {item.cer !== undefined ? `${item.cer}%` : '—'}
                                 </span>
                               </td>
                               <td><span className="mono">Round {item.round}</span></td>

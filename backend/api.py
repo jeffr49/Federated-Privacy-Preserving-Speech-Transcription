@@ -10,6 +10,8 @@ Endpoints:
   GET  /api/status          — session state snapshot
   POST /api/init            — initialize / load model
   POST /api/transcribe      — transcribe uploaded audio
+  POST /api/transcribe-chunk — transcribe a live-mic audio slice
+  POST /api/set-draft       — store a live transcript as the session draft
   POST /api/confirm         — clerk confirm + local LoRA nudge
   POST /api/end-session     — extract delta, clip, purge audio
   POST /api/run-fl-round    — run FedAvg aggregation
@@ -26,6 +28,7 @@ import json
 import math
 import os
 import sys
+import threading
 import time
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -147,6 +150,21 @@ def calculate_wer(reference: str, hypothesis: str) -> float:
             else: d[i,j] = min(d[i-1,j]+1, d[i,j-1]+1, d[i-1,j-1]+1)
     return min(100.0, (d[len(ref_words), len(hyp_words)] / len(ref_words)) * 100.0)
 
+
+def calculate_cer(reference: str, hypothesis: str) -> float:
+    ref_chars = list(reference.strip())
+    hyp_chars = list(hypothesis.strip())
+    if not ref_chars:
+        return 0.0 if not hyp_chars else 100.0
+    d = np.zeros((len(ref_chars) + 1, len(hyp_chars) + 1), dtype=int)
+    for i in range(len(ref_chars) + 1): d[i, 0] = i
+    for j in range(len(hyp_chars) + 1): d[0, j] = j
+    for i in range(1, len(ref_chars) + 1):
+        for j in range(1, len(hyp_chars) + 1):
+            if ref_chars[i-1] == hyp_chars[j-1]: d[i,j] = d[i-1,j-1]
+            else: d[i,j] = min(d[i-1,j]+1, d[i,j-1]+1, d[i-1,j-1]+1)
+    return min(100.0, (d[len(ref_chars), len(hyp_chars)] / len(ref_chars)) * 100.0)
+
 # ---------------------------------------------------------------------------
 # Inference & adaptation
 # ---------------------------------------------------------------------------
@@ -181,28 +199,38 @@ def decode_audio_bytes(raw_bytes: bytes) -> np.ndarray:
         audio = librosa.resample(audio, orig_sr=sr, target_sr=TARGET_SR)
     return np.ascontiguousarray(audio, dtype=np.float32)
 
+INFER_LOCK = threading.Lock()
+
+
 @torch.no_grad() if HAVE_TORCH else lambda f: f
 def run_transcription(model, processor, audio: np.ndarray) -> str:
     if model is None or processor is None:
         return "[Model not initialized. Please configure and initialize Whisper-LoRA above.]"
-    model.eval()
-    feats = processor.feature_extractor(audio, sampling_rate=TARGET_SR).input_features
-    feats = torch.tensor(feats).to(DEVICE)
-    try:
-        # Multilingual auto-detection generation (works for user speech in English or Tamil)
-        gen = model.generate(input_features=feats, max_new_tokens=128, num_beams=1)
-        out = processor.tokenizer.batch_decode(gen, skip_special_tokens=True)[0].strip()
-        if out:
-            return out
-    except Exception as e:
-        print(f"[backend] Auto generation error: {e}")
+    if audio is None or len(audio) < TARGET_SR * 0.4:
+        return ""
+    # Whisper feature extractor expects at most ~30s of audio
+    max_samples = TARGET_SR * 30
+    if len(audio) > max_samples:
+        audio = audio[-max_samples:]
+    with INFER_LOCK:
+        model.eval()
+        feats = processor.feature_extractor(audio, sampling_rate=TARGET_SR).input_features
+        feats = torch.tensor(feats).to(DEVICE)
+        try:
+            # Multilingual auto-detection generation (works for user speech in English or Tamil)
+            gen = model.generate(input_features=feats, max_new_tokens=128, num_beams=1)
+            out = processor.tokenizer.batch_decode(gen, skip_special_tokens=True)[0].strip()
+            if out:
+                return out
+        except Exception as e:
+            print(f"[backend] Auto generation error: {e}")
 
-    try:
-        prompt_ids = processor.get_decoder_prompt_ids(language=LANGUAGE_NAME, task=TASK)
-        gen = model.generate(input_features=feats, max_new_tokens=128, num_beams=1, forced_decoder_ids=prompt_ids)
-        return processor.tokenizer.batch_decode(gen, skip_special_tokens=True)[0].strip()
-    except Exception as e:
-        return f"[Transcription error: {e}]"
+        try:
+            prompt_ids = processor.get_decoder_prompt_ids(language=LANGUAGE_NAME, task=TASK)
+            gen = model.generate(input_features=feats, max_new_tokens=128, num_beams=1, forced_decoder_ids=prompt_ids)
+            return processor.tokenizer.batch_decode(gen, skip_special_tokens=True)[0].strip()
+        except Exception as e:
+            return f"[Transcription error: {e}]"
 
 def apply_clerk_correction_update(model, processor, audio: np.ndarray, corrected_text: str, reward: float, lr: float):
     if model is None or processor is None:
@@ -278,6 +306,8 @@ SESSION: dict = {
     "processor": None,
     "session_start_state": None,
     "accumulated_delta": None,
+    "committed_samples": 0,
+    "committed_delta": None,
     "session_buffer": [],
     "history": [],
     "fed_round_no": 0,
@@ -317,12 +347,15 @@ app.add_middleware(
 @app.get("/api/status")
 def api_status():
     recent_wers = [h["wer"] for h in SESSION["history"][-5:]] if SESSION["history"] else []
+    recent_cers = [h.get("cer", h["wer"]) for h in SESSION["history"][-5:] if "cer" in h] if SESSION["history"] else []
     return {
         "loaded": SESSION["loaded"],
         "mode": SESSION["mode"],
         "adapter_version": SESSION["adapter_version"],
         "utterances_this_session": len(SESSION["session_buffer"]),
+        "committed_samples": SESSION.get("committed_samples", 0),
         "rolling_wer": round(float(np.mean(recent_wers)), 2) if recent_wers else None,
+        "rolling_cer": round(float(np.mean(recent_cers)), 2) if recent_cers else None,
         "fed_round_no": SESSION["fed_round_no"],
         "dp_clip_norm": SESSION["dp_clip_norm"],
         "ci_verdict": SESSION["ci_verdict"],
@@ -406,6 +439,21 @@ def api_init(req: InitRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/api/reset-session")
+def api_reset_session():
+    SESSION["loaded"] = False
+    SESSION["draft"] = ""
+    SESSION["session_buffer"] = []
+    SESSION["committed_samples"] = 0
+    SESSION["committed_delta"] = None
+    SESSION["current_audio"] = None
+    SESSION["current_raw_audio_bytes"] = None
+    SESSION["current_ref_text"] = ""
+    SESSION["current_source_label"] = ""
+    SESSION["active_visual_stage"] = 1
+    return {"ok": True}
+
+
 # ---- Load Sample Audio -----------------------------------------------------
 @app.post("/api/load-sample")
 def api_load_sample(sample_key: str = Form(...)):
@@ -475,6 +523,34 @@ def api_transcribe():
     return {"ok": True, "draft": draft, "elapsed_sec": elapsed}
 
 
+# ---- Live chunk transcription ----------------------------------------------
+@app.post("/api/transcribe-chunk")
+async def api_transcribe_chunk(file: UploadFile = File(...)):
+    if not SESSION["loaded"]:
+        raise HTTPException(status_code=400, detail="Model not loaded. Call /api/init first.")
+    raw = await file.read()
+    try:
+        audio = decode_audio_bytes(raw)
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Could not decode audio: {e}")
+    t0 = time.time()
+    text = run_transcription(SESSION["model"], SESSION["processor"], audio)
+    elapsed = round(time.time() - t0, 2)
+    return {"ok": True, "text": text, "elapsed_sec": elapsed}
+
+
+class SetDraftRequest(BaseModel):
+    draft: str
+
+
+@app.post("/api/set-draft")
+def api_set_draft(req: SetDraftRequest):
+    if not SESSION["loaded"]:
+        raise HTTPException(status_code=400, detail="Model not loaded. Call /api/init first.")
+    SESSION["draft"] = req.draft
+    return {"ok": True, "draft": req.draft}
+
+
 # ---- Confirm Clerk Correction ----------------------------------------------
 class ConfirmRequest(BaseModel):
     correction: str
@@ -483,12 +559,17 @@ class ConfirmRequest(BaseModel):
 
 @app.post("/api/confirm")
 def api_confirm(req: ConfirmRequest):
-    if not SESSION["loaded"] or not SESSION["draft"]:
-        raise HTTPException(status_code=400, detail="No draft to confirm.")
-    wer = calculate_wer(req.correction, SESSION["draft"]) if req.correction.strip() else 0.0
+    if not SESSION["loaded"]:
+        raise HTTPException(status_code=400, detail="Model not initialized. Call /api/init first.")
+    if not req.correction.strip():
+        raise HTTPException(status_code=400, detail="Correction text cannot be empty.")
+    # Use stored draft for WER & CER comparison; fall back to correction itself if no draft
+    draft_ref = SESSION.get("draft") or req.correction
+    wer = calculate_wer(req.correction, draft_ref)
+    cer = calculate_cer(req.correction, draft_ref)
     reward = min(1.0, (wer / 100.0) + 0.1)
     loss = None
-    if req.correction.strip() != SESSION["draft"].strip() and SESSION["current_audio"] is not None:
+    if req.correction.strip() != draft_ref.strip() and SESSION["current_audio"] is not None:
         loss = apply_clerk_correction_update(
             SESSION["model"], SESSION["processor"], SESSION["current_audio"],
             req.correction, reward, float(req.local_lr)
@@ -497,55 +578,72 @@ def api_confirm(req: ConfirmRequest):
         "text": req.correction,
         "reward": reward,
         "wer": wer,
+        "cer": cer,
     })
     SESSION["history"].append({
         "utterance": len(SESSION["history"]) + 1,
         "source": SESSION["current_source_label"],
-        "draft": SESSION["draft"],
+        "draft": draft_ref,
         "correction": req.correction,
         "wer": round(wer, 2),
+        "cer": round(cer, 2),
         "round": SESSION["fed_round_no"],
     })
     SESSION["draft"] = ""
     SESSION["current_audio"] = None
     SESSION["current_raw_audio_bytes"] = None
     SESSION["active_visual_stage"] = 1
-    return {"ok": True, "wer": round(wer, 2), "reward": round(reward, 3), "loss": loss}
+    return {"ok": True, "wer": round(wer, 2), "cer": round(cer, 2), "reward": round(reward, 3), "loss": loss}
 
 
 # ---- End Session -----------------------------------------------------------
 @app.post("/api/end-session")
 def api_end_session():
-    if not SESSION["loaded"] or len(SESSION["session_buffer"]) == 0:
-        raise HTTPException(status_code=400, detail="No session data to commit.")
-    if HAVE_TORCH and SESSION["model"]:
-        current_state = get_model_state(SESSION["model"])
-    else:
-        current_state = SESSION["session_start_state"]
-    delta = compute_state_delta(current_state, SESSION["session_start_state"])
-    clipped_delta, norm_val = clip_delta_l2(delta, float(SESSION["dp_clip_norm"]))
-    num_utterances = len(SESSION["session_buffer"])
-    SESSION["session_buffer"] = []
-    SESSION["current_audio"] = None
-    SESSION["current_raw_audio_bytes"] = None
-    SESSION["session_start_state"] = current_state
-    SESSION["active_visual_stage"] = 2
+    if not SESSION["loaded"]:
+        raise HTTPException(status_code=400, detail="Model not initialized. Please initialize first.")
+    if len(SESSION["session_buffer"]) == 0:
+        raise HTTPException(status_code=400, detail="No confirmed utterances in session buffer. Transcribe and confirm at least one utterance before ending the session.")
 
-    if SESSION["mode"] == "hosted" and SESSION["fl_client"]:
-        try:
-            res = SESSION["fl_client"].push_delta(clipped_delta, base_version=SESSION["adapter_version"], num_samples=num_utterances)
-            return {"ok": True, "server_response": res, "norm_before_clip": round(norm_val, 4)}
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+    try:
+        if HAVE_TORCH and SESSION["model"]:
+            current_state = get_model_state(SESSION["model"])
+        else:
+            current_state = SESSION["session_start_state"]
 
-    clipped_norm = min(norm_val, SESSION["dp_clip_norm"])
-    return {
-        "ok": True,
-        "utterances_committed": num_utterances,
-        "norm_before_clip": round(norm_val, 5),
-        "norm_after_clip": round(clipped_norm, 5),
-        "active_visual_stage": 2,
-    }
+        delta = compute_state_delta(current_state, SESSION["session_start_state"])
+        clipped_delta, norm_val = clip_delta_l2(delta, float(SESSION.get("dp_clip_norm", 1.0)))
+        num_utterances = len(SESSION["session_buffer"])
+
+        SESSION["committed_delta"] = clipped_delta
+        SESSION["committed_samples"] = SESSION.get("committed_samples", 0) + num_utterances
+        SESSION["session_buffer"] = []
+        SESSION["current_audio"] = None
+        SESSION["current_raw_audio_bytes"] = None
+        SESSION["session_start_state"] = current_state
+        SESSION["active_visual_stage"] = 2
+
+        if SESSION["mode"] == "hosted" and SESSION.get("fl_client"):
+            try:
+                res = SESSION["fl_client"].push_delta(clipped_delta, base_version=SESSION["adapter_version"], num_samples=num_utterances)
+                return {"ok": True, "server_response": res, "norm_before_clip": round(norm_val, 4)}
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=f"FL server push failed: {e}")
+
+        clipped_norm = min(norm_val, float(SESSION.get("dp_clip_norm", 1.0)))
+        return {
+            "ok": True,
+            "utterances_committed": num_utterances,
+            "norm_before_clip": round(norm_val, 5),
+            "norm_after_clip": round(clipped_norm, 5),
+            "active_visual_stage": 2,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        tb = traceback.format_exc()
+        print(f"[backend] /api/end-session ERROR:\n{tb}")
+        raise HTTPException(status_code=500, detail=f"End-session failed: {type(e).__name__}: {e}")
 
 
 # ---- Run FL Round ----------------------------------------------------------
@@ -557,14 +655,34 @@ def api_run_fl_round():
         current_state = get_model_state(SESSION["model"])
     else:
         current_state = SESSION["session_start_state"]
-    local_delta = compute_state_delta(current_state, SESSION["session_start_state"])
+
+    # Use committed delta from End Session if available, else compute from current vs session start
+    if SESSION.get("committed_delta") is not None:
+        local_delta = SESSION["committed_delta"]
+    else:
+        local_delta = compute_state_delta(current_state, SESSION["session_start_state"])
+
+    round_history_samples = len([h for h in SESSION["history"] if h.get("round", 0) == SESSION["fed_round_no"]])
+    local_samples = max(
+        SESSION.get("committed_samples", 0),
+        len(SESSION["session_buffer"]),
+        round_history_samples,
+        1
+    )
+
     new_global_state, round_metrics = run_federated_averaging(
-        current_state, local_delta, local_samples=max(1, len(SESSION["session_buffer"])),
+        current_state, local_delta, local_samples=local_samples,
         peers=SESSION["peers"], clip_norm=float(SESSION["dp_clip_norm"])
     )
     if HAVE_TORCH and SESSION["model"]:
         set_model_state(SESSION["model"], new_global_state)
         SESSION["session_start_state"] = new_global_state
+    else:
+        SESSION["session_start_state"] = new_global_state
+
+    SESSION["committed_delta"] = None
+    SESSION["committed_samples"] = 0
+    SESSION["session_buffer"] = []
     SESSION["fed_round_no"] += 1
     SESSION["adapter_version"] += 1
     SESSION["active_visual_stage"] = 4
