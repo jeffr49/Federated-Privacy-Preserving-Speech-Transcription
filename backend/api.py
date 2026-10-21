@@ -523,34 +523,6 @@ def api_transcribe():
     return {"ok": True, "draft": draft, "elapsed_sec": elapsed}
 
 
-# ---- Live chunk transcription ----------------------------------------------
-@app.post("/api/transcribe-chunk")
-async def api_transcribe_chunk(file: UploadFile = File(...)):
-    if not SESSION["loaded"]:
-        raise HTTPException(status_code=400, detail="Model not loaded. Call /api/init first.")
-    raw = await file.read()
-    try:
-        audio = decode_audio_bytes(raw)
-    except Exception as e:
-        raise HTTPException(status_code=422, detail=f"Could not decode audio: {e}")
-    t0 = time.time()
-    text = run_transcription(SESSION["model"], SESSION["processor"], audio)
-    elapsed = round(time.time() - t0, 2)
-    return {"ok": True, "text": text, "elapsed_sec": elapsed}
-
-
-class SetDraftRequest(BaseModel):
-    draft: str
-
-
-@app.post("/api/set-draft")
-def api_set_draft(req: SetDraftRequest):
-    if not SESSION["loaded"]:
-        raise HTTPException(status_code=400, detail="Model not loaded. Call /api/init first.")
-    SESSION["draft"] = req.draft
-    return {"ok": True, "draft": req.draft}
-
-
 # ---- Confirm Clerk Correction ----------------------------------------------
 class ConfirmRequest(BaseModel):
     correction: str

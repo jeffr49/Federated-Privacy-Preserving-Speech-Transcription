@@ -66,22 +66,14 @@ export default function Home() {
   const [isConfirming, setIsConfirming] = useState(false);
   const [isEndingSession, setIsEndingSession] = useState(false);
 
-  // Mic recording
-  const [micMode, setMicMode] = useState('batch'); // 'batch' | 'realtime'
+  // Mic recording (Batch)
   const [isRecording, setIsRecording] = useState(false);
-  const [isLiveTranscribing, setIsLiveTranscribing] = useState(false);
   const [recordDuration, setRecordDuration] = useState(0);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
   const timerRef = useRef(null);
   const audioCtxRef = useRef(null);
   const micStreamRef = useRef(null);
   const audioProcessorRef = useRef(null);
   const pcmSamplesRef = useRef([]);
-  const liveChunkTimerRef = useRef(null);
-  const lastSentSampleIndexRef = useRef(0);
-  const transcribeInFlightRef = useRef(false);
-  const liveTranscriptRef = useRef('');
   const clerkEditedRef = useRef(false);
   const hydratedDraftRef = useRef(false);
 
@@ -143,7 +135,6 @@ export default function Home() {
     const interval = setInterval(refreshStatus, 6000);
     return () => {
       clearInterval(interval);
-      if (liveChunkTimerRef.current) clearInterval(liveChunkTimerRef.current);
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, []);
@@ -224,49 +215,9 @@ export default function Home() {
     }
   };
 
-  const applyLiveText = (text) => {
-    liveTranscriptRef.current = text;
-    setDraftText(text);
-    if (!clerkEditedRef.current) {
-      setClerkCorrection(text);
-    }
-  };
-
-  const flushLiveChunk = async (finalize = false) => {
-    if (transcribeInFlightRef.current && !finalize) return;
-    while (transcribeInFlightRef.current) {
-      await new Promise((resolve) => setTimeout(resolve, 120));
-    }
-
-    const start = lastSentSampleIndexRef.current;
-    const chunk = pcmSamplesRef.current.slice(start);
-    const minSamples = finalize ? 8000 : 16000; // 0.5s leftover vs 1s live slice
-    if (chunk.length < minSamples) return;
-
-    lastSentSampleIndexRef.current = pcmSamplesRef.current.length;
-    transcribeInFlightRef.current = true;
-    setIsLiveTranscribing(true);
-    try {
-      const wavBlob = encodeWavPcm16(new Float32Array(chunk), 16000);
-      const file = new File([wavBlob], `live_chunk_${Date.now()}.wav`, { type: 'audio/wav' });
-      const res = await api.transcribeChunk(file);
-      const piece = (res.text || '').trim();
-      if (piece) {
-        applyLiveText([liveTranscriptRef.current, piece].filter(Boolean).join(' '));
-      }
-    } catch (err) {
-      showToast(`Live transcription error: ${err.message}`, 'error');
-    } finally {
-      transcribeInFlightRef.current = false;
-      setIsLiveTranscribing(false);
-    }
-  };
-
   // Handle Microphone Recording via Web Audio API (true 16kHz PCM WAV)
   const startRecording = async () => {
     pcmSamplesRef.current = [];
-    lastSentSampleIndexRef.current = 0;
-    liveTranscriptRef.current = '';
     clerkEditedRef.current = false;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -308,14 +259,6 @@ export default function Home() {
       source.connect(processor);
       processor.connect(ctx.destination);
 
-      if (micMode === 'realtime') {
-        setDraftText('');
-        setClerkCorrection('');
-        liveChunkTimerRef.current = setInterval(() => {
-          flushLiveChunk(false);
-        }, 2200);
-      }
-
       setIsRecording(true);
       setRecordDuration(0);
       timerRef.current = setInterval(() => {
@@ -329,10 +272,6 @@ export default function Home() {
   const stopMicCapture = () => {
     setIsRecording(false);
     clearInterval(timerRef.current);
-    if (liveChunkTimerRef.current) {
-      clearInterval(liveChunkTimerRef.current);
-      liveChunkTimerRef.current = null;
-    }
     if (audioProcessorRef.current) {
       audioProcessorRef.current.disconnect();
       audioProcessorRef.current = null;
@@ -348,11 +287,10 @@ export default function Home() {
   };
 
   const stopRecording = async () => {
-    const mode = micMode;
     stopMicCapture();
 
     const rawSamples = new Float32Array(pcmSamplesRef.current);
-    if (rawSamples.length < 1600) {
+    if (rawSamples.length < 16000) {
       showToast('Recording too short (please speak for at least 1 second).', 'error');
       return;
     }
@@ -361,18 +299,6 @@ export default function Home() {
     const file = new File([wavBlob], `mic_utterance_${Date.now()}.wav`, { type: 'audio/wav' });
 
     try {
-      if (mode === 'realtime') {
-        await flushLiveChunk(true);
-        await api.uploadAudio(file);
-        if (liveTranscriptRef.current) {
-          await api.setDraft(liveTranscriptRef.current);
-        }
-        setAudioUrl(URL.createObjectURL(wavBlob));
-        showToast(`Live transcript ready (${(rawSamples.length / 16000).toFixed(1)}s). You can edit the clerk correction.`, 'success');
-        await refreshStatus();
-        return;
-      }
-
       await api.uploadAudio(file);
       setAudioUrl(URL.createObjectURL(wavBlob));
       setDraftText('');
@@ -1164,31 +1090,6 @@ export default function Home() {
                         gap: '1rem',
                       }}
                     >
-                      <div className="radio-group" style={{ width: '100%', justifyContent: 'center' }}>
-                        <label className={`radio-option ${micMode === 'realtime' ? 'selected' : ''}`}>
-                          <input
-                            type="radio"
-                            name="micMode"
-                            value="realtime"
-                            checked={micMode === 'realtime'}
-                            disabled={isRecording}
-                            onChange={() => setMicMode('realtime')}
-                          />
-                          <span>Real time</span>
-                        </label>
-                        <label className={`radio-option ${micMode === 'batch' ? 'selected' : ''}`}>
-                          <input
-                            type="radio"
-                            name="micMode"
-                            value="batch"
-                            checked={micMode === 'batch'}
-                            disabled={isRecording}
-                            onChange={() => setMicMode('batch')}
-                          />
-                          <span>Batch</span>
-                        </label>
-                      </div>
-
                       <div
                         style={{
                           width: '64px',
@@ -1207,48 +1108,20 @@ export default function Home() {
                       </div>
                       <div style={{ textAlign: 'center' }}>
                         <div style={{ fontWeight: 600, color: isRecording ? '#B91C1C' : 'var(--text-primary)' }}>
-                          {isRecording
-                            ? `${micMode === 'realtime' ? 'Transcribing live' : 'Recording Witness Statement'} (${recordDuration}s)`
-                            : 'Microphone Ready'}
+                          {isRecording ? `Recording Witness Statement (${recordDuration}s)` : 'Microphone Ready'}
                         </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                          {micMode === 'realtime'
-                            ? 'Speech is sent to Whisper in short slices as you talk. Edit the final text in the clerk window.'
-                            : 'Full utterance is stored first, then transcribed after you stop.'}
+                          Live 16kHz audio captured securely in browser memory. Click stop when finished to transcribe.
                         </div>
                       </div>
 
-                      {micMode === 'realtime' && (isRecording || draftText) && (
-                        <div
-                          style={{
-                            width: '100%',
-                            background: '#FFFFFF',
-                            border: '1px solid #E2E8F0',
-                            borderRadius: 'var(--radius-sm)',
-                            padding: '0.7rem 0.85rem',
-                            fontSize: '0.85rem',
-                            minHeight: '64px',
-                            color: draftText ? 'var(--text-primary)' : 'var(--text-muted)',
-                            fontStyle: draftText ? 'normal' : 'italic',
-                            whiteSpace: 'pre-wrap',
-                          }}
-                        >
-                          {draftText || (isRecording ? 'Listening for speech…' : 'No live transcript yet.')}
-                          {isLiveTranscribing && (
-                            <div style={{ marginTop: '0.4rem', fontSize: '0.72rem', color: 'var(--court-blue)', fontStyle: 'normal' }}>
-                              Updating from model…
-                            </div>
-                          )}
-                        </div>
-                      )}
-
                       {!isRecording ? (
                         <button className="btn btn-primary" onClick={startRecording}>
-                          {micMode === 'realtime' ? '🔴 Start live transcription' : '🔴 Start Recording'}
+                          🔴 Start Recording
                         </button>
                       ) : (
                         <button className="btn btn-danger-outline" onClick={stopRecording}>
-                          {micMode === 'realtime' ? '⏹️ Stop & keep transcript' : '⏹️ Stop & Save Utterance'}
+                          ⏹️ Stop & Save Utterance
                         </button>
                       )}
                     </div>
@@ -1303,33 +1176,27 @@ export default function Home() {
                     </details>
                   )}
 
-                  {/* Transcribe Button — batch / file / sample. Real-time mic transcribes as you speak. */}
-                  {!(audioSource === 'mic' && micMode === 'realtime' && isRecording) && (
-                    <div style={{ marginTop: '0.5rem' }}>
-                      <button
-                        className="btn btn-primary btn-lg btn-full"
-                        disabled={!status.has_audio || isTranscribing}
-                        onClick={handleTranscribe}
-                      >
-                        {isTranscribing ? (
-                          <>
-                            <span className="spinner" /> Transcribing with Whisper-LoRA...
-                          </>
-                        ) : audioSource === 'mic' && micMode === 'realtime' ? (
-                          '📝 Re-transcribe full utterance'
-                        ) : (
-                          '📝 Transcribe Audio (Local Whisper + LoRA)'
-                        )}
-                      </button>
-                      {!status.has_audio && (
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '0.35rem' }}>
-                          {audioSource === 'mic' && micMode === 'realtime'
-                            ? 'Start live transcription, or load audio to re-run a full pass'
-                            : 'Load a sample utterance or upload audio first'}
-                        </div>
+                  {/* Transcribe Button */}
+                  <div style={{ marginTop: '0.5rem' }}>
+                    <button
+                      className="btn btn-primary btn-lg btn-full"
+                      disabled={!status.has_audio || isTranscribing}
+                      onClick={handleTranscribe}
+                    >
+                      {isTranscribing ? (
+                        <>
+                          <span className="spinner" /> Transcribing with Whisper-LoRA...
+                        </>
+                      ) : (
+                        '📝 Transcribe Audio (Local Whisper + LoRA)'
                       )}
-                    </div>
-                  )}
+                    </button>
+                    {!status.has_audio && (
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '0.35rem' }}>
+                        Load a sample utterance, record from mic, or upload audio first
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Right Column: Model Draft & Clerk Verification */}

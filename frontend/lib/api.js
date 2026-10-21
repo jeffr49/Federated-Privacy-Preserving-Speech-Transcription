@@ -34,12 +34,6 @@ export const api = {
     return request('POST', '/api/upload-audio', fd, true);
   },
   transcribe: () => request('POST', '/api/transcribe'),
-  transcribeChunk: (file) => {
-    const fd = new FormData();
-    fd.append('file', file);
-    return request('POST', '/api/transcribe-chunk', fd, true);
-  },
-  setDraft: (draft) => request('POST', '/api/set-draft', { draft }),
   confirm: (correction, localLr) => request('POST', '/api/confirm', { correction, local_lr: localLr }),
   endSession: () => request('POST', '/api/end-session'),
   runFLRound: () => request('POST', '/api/run-fl-round'),
